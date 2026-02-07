@@ -286,7 +286,7 @@
         }
 
         // ==========================================
-        // 1. High Precision Lunar Calculation (V3)
+        // 1. High Precision Lunar Calculation (V3 - Final Tuned)
         // ==========================================
         function calculateRealLunarDate(day, month, yearAD) {
             const date = new Date(yearAD, month - 1, day);
@@ -298,7 +298,8 @@
             let moonAge = diffDays % synodicMonth;
             if (moonAge < 0) moonAge += synodicMonth;
             
-            // Calibration Offset (+1.3 days) เพื่อให้ตรงกับปี 2538 และปัจจุบัน
+            // Calibration Offset V3: +1.3 days
+            // ทำให้ 25 ก.ย. 2538 (0.36) -> 1.66 -> ขึ้น 2 ค่ำ (ถูกต้อง)
             moonAge += 1.3; 
             if (moonAge > synodicMonth) moonAge -= synodicMonth;
 
@@ -398,7 +399,7 @@
             // --- 6. เหมันตฤดู ---
             { startM: 12, startP: "Waning", endM: 2, endP: "Waxing", 
               main: "ธาตุน้ำ (อาโป)", 
-              sub: "พิกัดแห่งเสมหะสมุฏฐาน และวาตะสมุฏฐานระคนกัน",
+              sub: "พิกัดแห่งเสมหะสมุฏฐาน และวาตะสมุฏฐานระคนกัน", // Updated text
               color: "linear-gradient(135deg, #90CAF9, #2196F3)",
               avatarUrl: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png", // New Water Image
               desc: "ผดผื่น สิว ลมพิษ คันง่าย ภูมิแพ้ผิวหนัง หรือท้องผูกง่ายจากความเย็น",
