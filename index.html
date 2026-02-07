@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>วิเคราะห์ธาตุเจ้าเรือน (ฉบับรพ.สะเดา) - แม่นยำ</title>
+    <title>วิเคราะห์ธาตุเจ้าเรือน (รพ.สะเดา) - แม่นยำ</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
         }
 
         /* Card Layout */
-        .card-scene { width: 100%; height: 85vh; max-height: 900px; min-height: 700px; position: relative; perspective: 1000px; margin: 20px 0; }
+        .card-scene { width: 100%; height: 85vh; max-height: 950px; min-height: 750px; position: relative; perspective: 1000px; margin: 20px 0; }
         .card-object { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.4, 0.2, 0.2, 1); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15); }
         .card-front { background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(212, 175, 55, 0.3); transform: rotateY(0deg); }
@@ -96,34 +96,38 @@
 
             <div id="resultFace" class="card-face card-back">
                 
-                <div id="resultHeader" class="back-header h-60 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700">
+                <div id="resultHeader" class="back-header h-64 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700">
                     <div class="absolute inset-0 bg-black/10"></div>
                     <div class="avatar-container relative z-10">
                         <img id="avatarImg" src="" alt="3D Avatar" class="avatar-img hidden">
                     </div>
                     <h2 class="text-2xl font-bold drop-shadow-md z-10 mt-1" id="resMain">...</h2>
-                    <div class="z-10 flex flex-col items-center">
+                    
+                    <div class="z-10 flex flex-col items-center mt-1">
                          <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md z-10 border border-white/30 mb-1" id="resSub">...</span>
-                         <span class="text-[9px] text-white/80" id="lunarInfo">...</span>
+                         <div class="bg-black/30 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10 mt-1">
+                             <p class="text-[11px] text-yellow-200 font-medium">
+                                 <i class="fas fa-moon mr-1"></i>ผลการคำนวณ: <span id="lunarInfo" class="text-white">...</span>
+                             </p>
+                         </div>
                     </div>
                 </div>
 
                 <div class="back-content space-y-4">
                     
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                        <h3 class="text-green-800 font-bold text-sm mb-2"><i class="fas fa-heartbeat bg-green-100 p-1.5 rounded-full text-green-600 mr-2 text-xs"></i> จุดอ่อนสุขภาพเฉพาะคุณ</h3>
+                        <h3 class="text-green-800 font-bold text-sm mb-2"><i class="fas fa-notes-medical bg-green-100 p-1.5 rounded-full text-green-600 mr-2 text-xs"></i> ปัญหาสุขภาพในช่วงนี้</h3>
                         <p id="resDesc" class="text-gray-600 text-sm leading-relaxed font-medium"></p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-red-50 p-3 rounded-2xl border border-red-200">
-                            <h4 class="font-bold text-red-800 text-xs mb-1"><i class="fas fa-ban mr-1 text-red-600"></i> สิ่งที่ต้องเลี่ยง</h4>
-                            <p id="resAvoid" class="text-xs text-gray-600 leading-relaxed"></p>
-                        </div>
-                        <div class="bg-blue-50 p-3 rounded-2xl border border-blue-200">
-                            <h4 class="font-bold text-blue-800 text-xs mb-1"><i class="fas fa-user-check mr-1 text-blue-600"></i> ลักษณะนิสัย</h4>
-                            <p id="resTrait" class="text-xs text-gray-600 leading-relaxed"></p>
-                        </div>
+                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200">
+                        <h3 class="text-blue-800 font-bold text-sm mb-2"><i class="fas fa-user-circle mr-2 text-blue-600"></i> ลักษณะทั่วไป</h3>
+                        <p id="resTrait" class="text-gray-600 text-sm leading-relaxed"></p>
+                    </div>
+
+                    <div class="bg-red-50 p-4 rounded-2xl border border-red-200">
+                        <h3 class="text-red-800 font-bold text-sm mb-2"><i class="fas fa-exclamation-triangle mr-2 text-red-600"></i> ข้อควรระวัง/หลีกเลี่ยง</h3>
+                        <p id="resAvoid" class="text-gray-600 text-sm leading-relaxed"></p>
                     </div>
 
                     <div class="bg-yellow-50 p-4 rounded-2xl border border-yellow-100">
@@ -135,7 +139,7 @@
                 <div class="back-footer">
                     <div class="text-center mb-2">
                         <p class="text-[10px] text-gray-400 bg-gray-50 inline-block px-3 py-1 rounded-full border border-gray-100">
-                            <i class="fas fa-book mr-1 text-green-600"></i> อ้างอิง: เอกสารวิเคราะห์สมุฏฐาน รพ.สะเดา
+                            <i class="fas fa-book mr-1 text-green-600"></i> อ้างอิง: ข้อมูลวิเคราะห์สมุฏฐาน รพ.สะเดา
                         </p>
                     </div>
                     <button onclick="resetCard()" class="w-full py-3 bg-gray-100 rounded-xl text-gray-600 text-sm font-bold hover:bg-gray-200 transition flex justify-center items-center gap-2">
@@ -162,10 +166,9 @@
             yearSelect.value = (currentYearBE - 30 - 543);
         }
 
-        // 1. Logic แปลงเดือนสากล -> เดือนไทย (โดยประมาณ)
+        // 1. Logic แปลงเดือนสากล -> เดือนไทย (Approximate)
         function getThaiLunarInfo(day, month) {
-            // Mapping เดือนสากล -> เดือนไทย (ประมาณการตามปฏิทินแพทย์แผนไทย)
-            // ธ.ค. = เดือน 1 (อ้าย), ม.ค. = เดือน 2 (ยี่) ...
+            // Mapping เดือนสากล -> เดือนไทย
             const monthMap = {
                 12: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 
                 6: 7, 7: 8, 8: 9, 9: 10, 10: 11, 11: 12
@@ -173,161 +176,120 @@
             
             let thaiMonth = monthMap[month];
             
-            // Logic ข้างขึ้น/ข้างแรม (โดยประมาณ: 1-15=ขึ้น, 16-31=แรม)
-            let phase = (day <= 15) ? "Waxing" : "Waning"; 
+            // คำนวณดิถี (ข้างขึ้น/ข้างแรม) แบบประมาณการ
+            let phase = "";
+            let phaseDay = 0;
             
-            return { thaiMonth: thaiMonth, day: day, phase: phase };
+            if (day <= 15) {
+                phase = "Waxing"; // ข้างขึ้น
+                phaseDay = day;
+            } else {
+                phase = "Waning"; // ข้างแรม
+                phaseDay = day - 15;
+            }
+            
+            return { 
+                thaiMonth: thaiMonth, 
+                day: day, 
+                phase: phase, 
+                phaseDay: phaseDay,
+                display: `${phase === "Waxing" ? "ขึ้น" : "แรม"} ${phaseDay} ค่ำ เดือน ${thaiMonth}`
+            };
         }
 
-        // 2. Database: ข้อมูลจากไฟล์ PDF (Sadao Hospital Rules)
-        // Structure: rangeStart (Month), phaseStart (1=Waxing, 2=Waning), ...
-        
+        // 2. Database: ข้อมูลจากไฟล์ Text ที่คุณให้มา (Sadao Rules)
         const sadaoData = [
-            // --- ธาตุดิน (เดือน 1-4) ---
-            { 
-                startM: 1, startP: "Waning", endM: 2, endP: "Waxing", // แรม 1 ค่ำ เดือน 1 - ขึ้น 15 ค่ำ เดือน 2
-                main: "ธาตุดิน (ปถวี)", sub: "ช่วงเดือน 1-2", color: "from-yellow-600 to-brown-700",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Construction%20Worker.png",
-                desc: "มีอาการท้องผูก ขับถ่ายลำบาก ปวดท้อง ลมติดในเส้นบ่อย",
-                avoid: "อาหารมันที่ย่อยยาก ของทอด",
-                trait: "รูปร่างสูงใหญ่ แข็งแรง กระดูกใหญ่ เสียงดังฟังชัด จิตใจหนักแน่น",
-                food: "อาหารรสฝาด หวาน มัน เค็ม เช่น ผักกูด, มังคุด, ฟักทอง, เผือก, ถั่วต่างๆ"
-            },
-            { 
-                startM: 2, startP: "Waning", endM: 3, endP: "Waxing", // แรม 1 ค่ำ เดือน 2 - ขึ้น 15 ค่ำ เดือน 3
-                main: "ธาตุดิน (ปถวี)", sub: "ช่วงเดือน 2-3", color: "from-yellow-600 to-brown-700",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Lifting%20Weights.png",
-                desc: "หายใจไม่สุด หายใจไม่เต็มอิ่ม เหนื่อยง่ายกว่าปกติ",
-                avoid: "การทำงานหนักเกินกำลัง พักผ่อนน้อย",
-                trait: "รูปร่างสันทัด แข็งแรง แต่อาจมีปัญหาระบบทางเดินหายใจแฝง",
-                food: "อาหารรสสุขุม ร้อนเล็กน้อย เช่น น้ำขิง, แกงเลียง"
-            },
-            { 
-                startM: 3, startP: "Waning", endM: 4, endP: "Waxing", // แรม 1 ค่ำ เดือน 3 - ขึ้น 15 ค่ำ เดือน 4
-                main: "ธาตุดิน (ปถวี)", sub: "ช่วงเดือน 3-4", color: "from-yellow-600 to-brown-700",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Walking.png",
-                desc: "ถ่ายเหลวได้ง่าย ลำไส้แปรปรวน สตรีอาจมีปัญหาประจำเดือน ระบบปัสสาวะ",
-                avoid: "อาหารแสลง อาหารรสจัด อาหารหมักดอง",
-                trait: "สุขุมรอบคอบ ดื้อรั้นเล็กน้อย",
-                food: "อาหารรสฝาดสมาน เช่น กล้วยน้ำว้าดิบ, น้ำฝรั่ง, ยำหัวปลี"
-            },
+            // --- ธาตุดิน ---
+            { startM: 1, startP: "Waning", endM: 2, endP: "Waxing", main: "ธาตุดิน (ปถวี)", sub: "ช่วงเดือน 1-2", color: "from-yellow-600 to-brown-700", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Construction%20Worker.png",
+              desc: "มีอาการท้องผูก ขับถ่ายลำบาก ปวดท้อง ลมติดในเส้น",
+              avoid: "อาหารมันที่ย่อยยาก ของทอด",
+              trait: "รูปร่างสูงใหญ่ แข็งแรง กระดูกใหญ่ ผมดกดำ พูดจาฉะฉาน หนักแน่น สุขุมรอบคอบ",
+              food: "ควรกินครบ 5 หมู่ เลือกอาหารรสฝาด หวาน มัน เค็ม เช่น ผักกูด มังคุด ฝรั่งดิบ ฟักทอง เผือก ถั่วต่างๆ เงาะ น้ำนม อ้อย เกลือ" },
+            { startM: 2, startP: "Waning", endM: 3, endP: "Waxing", main: "ธาตุดิน (ปถวี)", sub: "ช่วงเดือน 2-3", color: "from-yellow-600 to-brown-700", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Lifting%20Weights.png",
+              desc: "มีอาการหายใจไม่สุด หายใจไม่เต็มอิ่ม เหนื่อยง่าย",
+              avoid: "การทำงานหนักเกินกำลัง พักผ่อนน้อย",
+              trait: "รูปร่างสันทัด แข็งแรง แต่อาจมีปัญหาระบบทางเดินหายใจแฝง",
+              food: "อาหารรสสุขุม ร้อนเล็กน้อย และอาหารรสฝาด หวาน มัน เค็ม" },
+            { startM: 3, startP: "Waning", endM: 4, endP: "Waxing", main: "ธาตุดิน (ปถวี)", sub: "ช่วงเดือน 3-4", color: "from-yellow-600 to-brown-700", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Walking.png",
+              desc: "ถ่ายเหลวได้ง่าย (รับประทานอาหารแสลง) ลำไส้แปรปรวน ปัญหาประจำเดือน ปัญหาระบบปัสสาวะ",
+              avoid: "อาหารแสลง อาหารมันที่ย่อยยาก",
+              trait: "จิตใจหนักแน่นมั่นคง ดื้อรั้น",
+              food: "อาหารรสฝาดสมาน เช่น กล้วยน้ำว้าดิบ และอาหารรสหวาน มัน เค็ม" },
 
-            // --- ธาตุไฟ (เดือน 4-7 และ 8-9) ---
-            { 
-                startM: 4, startP: "Waning", endM: 5, endP: "Waxing", // แรม 1 ค่ำ เดือน 4 - ขึ้น 15 ค่ำ เดือน 5
-                main: "ธาตุไฟ (เตโช)", sub: "ช่วงเดือน 4-5", color: "from-orange-500 to-red-600",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Sweating.png",
-                desc: "เป็นลมง่าย หน้ามืด ไข้แดด ร้อนใน นอนหลับยาก",
-                avoid: "แสงแดดจัด อารมณ์โมโห เครื่องดื่มแอลกอฮอล์",
-                trait: "ผิวขาวเหลือง พูดชัด หิวบ่อย กินจุ ขี้หงุดหงิด",
-                food: "อาหารรสจืด เย็น ขม เช่น แตงโม, ต้มจืดฟัก, น้ำเก๊กฮวย"
-            },
-            { 
-                startM: 6, startP: "Waning", endM: 7, endP: "Waxing", // แรม 1 ค่ำ เดือน 6 - ขึ้น 15 ค่ำ เดือน 7
-                main: "ธาตุไฟ (เตโช)", sub: "ช่วงเดือน 6-7", color: "from-orange-500 to-red-600",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Running.png",
-                desc: "ความดันโลหิตแปรปรวน อารมณ์ขึ้นลงง่าย ตื่นง่าย หลับไม่สนิท",
-                avoid: "ความเครียด อาหารรสจัด (เผ็ด/เปรี้ยว/เค็ม)",
-                trait: "คล่องแคล่ว โกรธง่ายหายเร็ว ผมหงอกก่อนวัย",
-                food: "อาหารรสขมเย็น เช่น แกงจืดมะระ, บรเพ็ด, ใบบัวบก"
-            },
-            { 
-                startM: 8, startP: "Waning", endM: 9, endP: "Waxing", // แรม 1 ค่ำ เดือน 8 - ขึ้น 15 ค่ำ เดือน 9 (ไฟผสมลม)
-                main: "ธาตุไฟระคนลม", sub: "ช่วงเดือน 8-9", color: "from-red-500 to-green-500",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Facepalming.png",
-                desc: "ปวดศีรษะ ปวดกระบอกตา หูอื้อ วิงเวียนศีรษะ (ไมเกรน)",
-                avoid: "แสงแดดจ้า การใช้สายตาเยอะ อาหารรสเผ็ดร้อนเกินไป",
-                trait: "คิดเร็วทำเร็ว แต่อาจเครียดลงกระเพาะหรือขึ้นสมองง่าย",
-                food: "อาหารรสหอมเย็น จืด เช่น แกงจืดตำลึง, ยาหอม, น้ำดอกไม้"
-            },
+            // --- ธาตุไฟ ---
+            { startM: 4, startP: "Waning", endM: 5, endP: "Waxing", main: "ธาตุไฟ (เตโช)", sub: "ช่วงเดือน 4-5", color: "from-orange-500 to-red-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Sweating.png",
+              desc: "เป็นลม หน้ามืด ไข้แดด ร้อนใน หลับยาก",
+              avoid: "อาหารรสจัด เผ็ดจัด เปรี้ยวจัด เค็มจัด โมโห ดื่มแอลกอฮอล์ แสงแดด",
+              trait: "รูปร่างสมส่วน ผิวขาวเหลือง พูดชัด เสียงดัง หิวบ่อย กินจุ ขี้หงุดหงิด โกรธง่ายหายเร็ว",
+              food: "อาหารรสจืด เย็น ขม เช่น แตงโม ต้มจืดฟัก" },
+            { startM: 6, startP: "Waning", endM: 7, endP: "Waxing", main: "ธาตุไฟ (เตโช)", sub: "ช่วงเดือน 6-7", color: "from-orange-500 to-red-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Running.png",
+              desc: "ความดันโลหิต อารมณ์แปรปรวน นอนหลับยาก ตื่นง่าย",
+              avoid: "ความเครียด อาหารรสจัด แอลกอฮอล์",
+              trait: "คล่องแคล่ว โกรธง่ายหายเร็ว ผมหงอกก่อนวัย",
+              food: "อาหารรสขมเย็น ช่วยลดความร้อน" },
+            { startM: 8, startP: "Waning", endM: 9, endP: "Waxing", main: "ธาตุไฟ (เตโช)", sub: "ช่วงเดือน 8-9", color: "from-orange-500 to-red-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Facepalming.png",
+              desc: "ปวดศีรษะ ปวดกระบอกตา หูอื้อ วิงเวียนศีรษะ",
+              avoid: "แสงแดดจ้า การใช้สายตาเยอะ อาหารรสเผ็ดร้อนเกินไป",
+              trait: "คิดเร็วทำเร็ว หงุดหงิดง่าย",
+              food: "อาหารรสหอมเย็น จืด" },
 
-            // --- ธาตุลม (เดือน 7-10) ---
-            { 
-                startM: 7, startP: "Waning", endM: 8, endP: "Waxing", // แรม 1 ค่ำ เดือน 7 - ขึ้น 15 ค่ำ เดือน 8
-                main: "ธาตุลม (วาโย)", sub: "ช่วงเดือน 7-8", color: "from-emerald-400 to-green-600",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Gesturing%20NO.png",
-                desc: "ไอ ระคายเคืองคอ เจ็บคอ จุกคอ ลมตีขึ้นเบื้องบน",
-                avoid: "การอดนอน ของทอด น้ำเย็นจัด",
-                trait: "ร่างกายผอม ผิวแห้ง ผมบาง พูดเก่ง ขี้กลัว วิตกกังวล",
-                food: "อาหารรสเผ็ดร้อนเล็กน้อย ชุ่มคอ เช่น น้ำมะนาวผสมน้ำผึ้ง, ต้มยำไก่"
-            },
-            { 
-                startM: 8, startP: "Waning", endM: 9, endP: "Waxing", // แรม 1 ค่ำ เดือน 8 - ขึ้น 15 ค่ำ เดือน 9 (ซ้ำกับไฟ แต่เน้นอาการลม)
-                // *หมายเหตุ: ช่วงนี้คาบเกี่ยวกับธาตุไฟ ในทางปฏิบัติให้ดูอาการประกอบ
-                main: "ธาตุลม (วาโย)", sub: "ช่วงเดือน 8-9", color: "from-emerald-400 to-green-600",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Cartwheeling.png",
-                desc: "ท้องอืด แน่นท้อง อาหารไม่ย่อย เรอเหม็นเปรี้ยว",
-                avoid: "การเคี้ยวอาหารไม่ละเอียด ทานเร็วเกินไป",
-                trait: "เคลื่อนไหวเร็ว อารมณ์แปรปรวน",
-                food: "สมุนไพรขับลม เช่น ขิง, ข่า, ตะไคร้, กะเพรา"
-            },
-            { 
-                startM: 9, startP: "Waning", endM: 10, endP: "Waxing", // แรม 1 ค่ำ เดือน 9 - ขึ้น 15 ค่ำ เดือน 10
-                main: "ธาตุลม (วาโย)", sub: "ช่วงเดือน 9-10", color: "from-emerald-400 to-green-600",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Pouting.png",
-                desc: "กรดไหลย้อน ท้องเฟ้อ ท้องบิด แสบร้อนกลางอก อาหารไม่ย่อย",
-                avoid: "การอดอาหาร ทานรสจัด กาแฟ อัดลม",
-                trait: "คิดมาก วิตกกังวลลงกระเพาะ",
-                food: "ขมิ้นชัน, กล้วยน้ำว้า, กระเจี๊ยบเขียว"
-            },
+            // --- ธาตุลม ---
+            { startM: 7, startP: "Waning", endM: 8, endP: "Waxing", main: "ธาตุลม (วาโย)", sub: "ช่วงเดือน 7-8", color: "from-emerald-400 to-green-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Gesturing%20NO.png",
+              desc: "ไอ ระคายเคืองคอ เจ็บคอ จุกคอ ลมตีขึ้น",
+              avoid: "การอดอาหาร อดนอน กลั้นอุจจาระ/ปัสสาวะ ยกของหนัก อาหารรสจัด วิตกกังวล",
+              trait: "ร่างกายผอม ผิวแห้ง ผมบาง พูดเยอะ อารมณ์แปรปรวน ขี้กลัว วิตกกังวล อยากรู้อยากเห็น",
+              food: "อาหารรสเผ็ดร้อนเล็กน้อย ชุ่มคอ" },
+            { startM: 8, startP: "Waning", endM: 9, endP: "Waxing", main: "ธาตุลม (วาโย)", sub: "ช่วงเดือน 8-9", color: "from-emerald-400 to-green-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Cartwheeling.png",
+              desc: "ท้องอืด แน่นท้อง อาหารไม่ย่อย เรอเหม็นเปรี้ยว",
+              avoid: "เคี้ยวอาหารไม่ละเอียด ทานเร็วเกินไป ความเครียด",
+              trait: "เคลื่อนไหวเร็ว อารมณ์แปรปรวน",
+              food: "สมุนไพรขับลม เช่น ขิง ข่า ตะไคร้" },
+            { startM: 9, startP: "Waning", endM: 10, endP: "Waxing", main: "ธาตุลม (วาโย)", sub: "ช่วงเดือน 9-10", color: "from-emerald-400 to-green-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Pouting.png",
+              desc: "กรดไหลย้อน ท้องเฟ้อ ท้องบิด แสบร้อนกลางอก อาหารไม่ย่อย",
+              avoid: "การอดอาหาร ทานรสจัด กาแฟ อัดลม",
+              trait: "คิดมาก วิตกกังวลลงกระเพาะ นอนหลับยาก",
+              food: "อาหารย่อยง่าย รสไม่จัด" },
 
-            // --- ธาตุน้ำ (เดือน 10-1) ---
-            { 
-                startM: 10, startP: "Waning", endM: 11, endP: "Waxing", // แรม 1 ค่ำ เดือน 10 - ขึ้น 15 ค่ำ เดือน 11
-                main: "ธาตุน้ำ (อาโป)", sub: "ช่วงเดือน 10-11", color: "from-blue-400 to-cyan-600",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Getting%20Massage.png",
-                desc: "ปวดในข้อ ปวดเข่า ปวดกระดูก ริดสีดวง ฝี สิว",
-                avoid: "อาหารรสหวานจัด มันจัด การนั่งนานๆ",
-                trait: "รูปร่างอวบ ผิวขาว ตาโต พูดช้า เสียงไพเราะ",
-                food: "อาหารรสเบื่อเมา (แก้ปวด) รสขม เช่น ใบยอ, มะรุม"
-            },
-            { 
-                startM: 11, startP: "Waning", endM: 12, endP: "Waxing", // แรม 1 ค่ำ เดือน 11 - ขึ้น 15 ค่ำ เดือน 12
-                main: "ธาตุน้ำ (อาโป)", sub: "ช่วงเดือน 11-12", color: "from-blue-400 to-cyan-600",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Sneezing.png",
-                desc: "ภูมิแพ้ หวัด น้ำมูก กรน หายใจติดขัด แน่นหน้าอก",
-                avoid: "อากาศเย็นจัด ฝุ่นละออง อาหารฤทธิ์เย็น",
-                trait: "เคลื่อนไหวช้า ชอบนอน ใจเย็น",
-                food: "อาหารรสเผ็ดร้อน รสเปรี้ยว เช่น ต้มยำ, หอมแดง, กระเทียม"
-            },
-            { 
-                startM: 12, startP: "Waning", endM: 1, endP: "Waxing", // แรม 1 ค่ำ เดือน 12 - ขึ้น 15 ค่ำ เดือน 1
-                main: "ธาตุน้ำ (อาโป)", sub: "ช่วงเดือน 12-1", color: "from-blue-400 to-cyan-600",
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Shrugging.png",
-                desc: "ผดผื่น สิว ลมพิษ คันง่าย ภูมิแพ้ผิวหนัง",
-                avoid: "การนอนกลางวันมากเกินไป อาหารหมักดอง",
-                trait: "ผิวพรรณละเอียดสวย แต่อาจแพ้ง่าย",
-                food: "อาหารรสขม รสจืด เพื่อฟอกเลือด เช่น สะเดา, มะระ, ฟ้าทะลายโจร"
-            }
+            // --- ธาตุน้ำ ---
+            { startM: 10, startP: "Waning", endM: 11, endP: "Waxing", main: "ธาตุน้ำ (อาโป)", sub: "ช่วงเดือน 10-11", color: "from-blue-400 to-cyan-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Getting%20Massage.png",
+              desc: "อาการปวดในข้อ ปวดข้อเข่า ปวดกระดูก ริดสีดวง ฝี สิว",
+              avoid: "รับประทานอาหาร รสหวานจัด รสเปรี้ยวจัด รสเค็มจัด นอนกลางวันมากเกินไป",
+              trait: "รูปร่างอวบ ผิวขาว ตาโต พูดช้าเสียงไพเราะ เคลื่อนไหวช้า ผมละเอียดสวย ผมดกดำ ชอบนอน ใจเย็น",
+              food: "อาหารรสเบื่อเมา (แก้ปวด) รสขม" },
+            { startM: 11, startP: "Waning", endM: 12, endP: "Waxing", main: "ธาตุน้ำ (อาโป)", sub: "ช่วงเดือน 11-12", color: "from-blue-400 to-cyan-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Sneezing.png",
+              desc: "ภูมิแพ้ หวัด น้ำมูก กรน หายใจติดขัด แน่นหน้าอก",
+              avoid: "อากาศเย็นจัด ฝุ่นละออง อาหารรสหวาน/มัน/เค็มจัด",
+              trait: "เคลื่อนไหวช้า ชอบนอน ใจเย็น",
+              food: "อาหารรสเผ็ดร้อน รสเปรี้ยว ช่วยขับเสมหะ" },
+            { startM: 12, startP: "Waning", endM: 1, endP: "Waxing", main: "ธาตุน้ำ (อาโป)", sub: "ช่วงเดือน 12-1", color: "from-blue-400 to-cyan-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Shrugging.png",
+              desc: "ผดผื่น สิว ลมพิษ คันง่าย ภูมิแพ้ผิวหนัง",
+              avoid: "การนอนกลางวันมากเกินไป อาหารหมักดอง รสจัด",
+              trait: "ผิวพรรณละเอียดสวย แต่อาจแพ้ง่าย",
+              food: "อาหารรสขม รสจืด เพื่อฟอกเลือด" }
         ];
 
-        // 3. Logic การจับคู่ (Matching Algorithm)
+        // 3. Logic การจับคู่ (Matching)
         function getSadaoElement(thaiInfo) {
             let tm = thaiInfo.thaiMonth;
             let tp = thaiInfo.phase; // "Waxing" or "Waning"
 
-            // Loop check
             for (let rule of sadaoData) {
-                // เงื่อนไข: ถ้าอยู่ในช่วง (StartM/StartP) ถึง (EndM/EndP)
-                // กรณีปกติ (ไม่ข้ามปี)
+                // Logic: เช็คว่าอยู่ในช่วง Start -> End หรือไม่
                 if (rule.startM < rule.endM) {
-                    // Check Start Boundary
+                    // กรณีเดือนเรียงกันปกติ (เช่น 1->2)
                     let isAfterStart = (tm > rule.startM) || (tm === rule.startM && tp === rule.startP);
-                    // Check End Boundary
-                    let isBeforeEnd = (tm < rule.endM) || (tm === rule.endM && tp === "Waxing"); // End is always Waxing 15
+                    let isBeforeEnd = (tm < rule.endM) || (tm === rule.endM && tp === "Waxing"); // จบที่ขึ้น 15 ค่ำเสมอ
                     
                     if (isAfterStart && isBeforeEnd) return rule;
-                }
-                // กรณีข้ามปี (เช่น เดือน 12 -> 1)
-                else {
-                    let isAfterStart = (tm === rule.startM && tp === rule.startP) || (tm > rule.startM); // e.g. 12 Waning
-                    let isBeforeEnd = (tm === rule.endM && tp === "Waxing") || (tm < rule.endM); // e.g. 1 Waxing
+                } else {
+                    // กรณีข้ามปี (เช่น 12->1)
+                    let isAfterStart = (tm === rule.startM && tp === rule.startP) || (tm > rule.startM);
+                    let isBeforeEnd = (tm === rule.endM && tp === "Waxing") || (tm < rule.endM);
                     
                     if (isAfterStart || isBeforeEnd) return rule;
                 }
             }
-            // Fallback: ถ้าไม่ตรงล็อคเป๊ะๆ ให้ใช้เดือนหลัก
-            return sadaoData[0]; 
+            return sadaoData[0]; // Fallback
         }
 
         async function startAnalysis() {
@@ -346,8 +308,8 @@
             document.getElementById('resMain').innerText = result.main;
             document.getElementById('resSub').innerText = result.sub;
             
-            let phaseText = (lunarInfo.phase === "Waxing") ? "ข้างขึ้น" : "ข้างแรม";
-            document.getElementById('lunarInfo').innerText = `(ตรงกับ: เดือน ${lunarInfo.thaiMonth} ไทย / ${phaseText} โดยประมาณ)`;
+            // แสดงผลการคำนวณให้คนไข้เห็น
+            document.getElementById('lunarInfo').innerText = lunarInfo.display;
 
             document.getElementById('resDesc').innerText = result.desc;
             document.getElementById('resAvoid').innerText = result.avoid;
@@ -355,7 +317,7 @@
             document.getElementById('resFood').innerText = result.food;
 
             const header = document.getElementById('resultHeader');
-            header.className = `back-header h-60 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700 ${result.color}`;
+            header.className = `back-header h-64 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700 ${result.color}`;
             
             const avatarImg = document.getElementById('avatarImg');
             avatarImg.src = result.avatarUrl;
