@@ -11,7 +11,6 @@
     
     <style>
         :root { --primary-gold: #D4AF37; --deep-green: #1B4D3E; }
-        /* ✅ FIX 1: ปลดล็อกให้ Body เลื่อนได้ */
         body { font-family: 'Prompt', sans-serif; background: #fdfbf7; /* overflow: hidden; ลบออกเพื่อให้เลื่อนได้ */ }
         
         .thai-bg {
@@ -19,14 +18,14 @@
             background-size: 24px 24px; background-position: 0 0, 12px 12px; opacity: 0.05; position: absolute; inset: 0; z-index: -1;
         }
 
-        /* Card Layout - ปรับความสูงให้พอดีมือถือมากขึ้น */
+        /* Card Layout */
         .card-scene { 
             width: 100%; 
-            height: 680px; /* กำหนดความสูงคงที่ที่เหมาะสม */
+            height: 700px; /* ปรับความสูงให้พอดีกับ Avatar ใหม่ */
             position: relative; 
             perspective: 1000px; 
             margin-top: 10px;
-            margin-bottom: 20px; /* เพิ่มระยะห่างด้านล่าง */
+            margin-bottom: 20px;
         }
 
         .card-object { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.4, 0.2, 0.2, 1); }
@@ -35,65 +34,40 @@
         .card-front { background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(212, 175, 55, 0.3); transform: rotateY(0deg); }
         .card-back { background: white; transform: rotateY(180deg); display: flex; flex-direction: column; }
         
-        /* ✅ FIX 1: พื้นที่ Scroll ต้องดันขึ้นมาให้พ้นปุ่มด้านล่าง */
+        /* Scroll Area */
         .scroll-content { 
             flex-grow: 1; 
             overflow-y: auto; 
-            padding-bottom: 180px; /* เพิ่มพื้นที่กันชนด้านล่างให้เยอะขึ้น */
+            padding-bottom: 180px; 
             -webkit-overflow-scrolling: touch; 
         } 
         
         .is-flipped { transform: rotateY(180deg); }
         .custom-select { appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231B4D3E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.75rem center; background-repeat: no-repeat; background-size: 1.2em 1.2em; }
 
-        /* ✅ NEW: 3D Toon Character Animation */
-        .toon-container {
-            position: relative;
-            width: 100px;
-            height: 120px;
+        /* ✅ NEW: 3D Avatar Styles */
+        .avatar-3d-container {
+            height: 160px; /* พื้นที่สำหรับ Avatar */
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            margin-bottom: -10px;
+            position: relative;
             z-index: 20;
-            filter: drop-shadow(0 8px 10px rgba(0,0,0,0.2));
-            animation: breathe-toon 3s ease-in-out infinite;
+            margin-bottom: -10px;
+        }
+        
+        .avatar-img {
+            height: 100%;
+            width: auto;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); /* เงาให้ดูมีมิติ */
+            /* อนิเมชั่นลอยขึ้นลงที่ชัดเจน */
+            animation: avatar-float 3s ease-in-out infinite; 
         }
 
-        /* ชิ้นส่วนตัวการ์ตูน */
-        .toon-head {
-            position: absolute;
-            top: 0;
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle at 30% 30%, #ffffff, #e2e2e2);
-            border-radius: 50%;
-            z-index: 2;
+        @keyframes avatar-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); } /* ขยับขึ้น 15px ให้เห็นชัดๆ */
         }
-        .toon-body {
-            position: absolute;
-            bottom: 0;
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(to bottom, #ffffff, #d1d1d1);
-            border-radius: 40% 40% 20% 20% / 60% 60% 40% 40%;
-            z-index: 1;
-        }
-
-        /* ท่าทางการแปลงร่างตามธาตุ */
-        .shape-water .toon-body { width: 90px; height: 60px; border-radius: 50% 50% 30% 30% / 70% 70% 40% 40%; } /* เจ้าเนื้อ กลม */
-        .shape-water .toon-head { width: 65px; height: 65px; top: 5px; }
-
-        .shape-fire .toon-body { width: 70px; height: 75px; border-radius: 35% 35% 25% 25% / 50% 50% 40% 40%; } /* สมส่วน กระชับ */
-        .shape-fire .toon-head { top: -5px; }
-
-        .shape-wind .toon-body { width: 55px; height: 85px; border-radius: 30% 30% 20% 20% / 40% 40% 30% 30%; } /* ผอมสูง เพรียว */
-        .shape-wind .toon-head { width: 55px; height: 55px; top: -10px; }
-
-        .shape-earth .toon-body { width: 85px; height: 80px; border-radius: 20% 20% 15% 15% / 30% 30% 20% 20%; } /* ใหญ่ บึกบึน */
-        .shape-earth .toon-head { width: 65px; height: 65px; top: 0; }
-
-        @keyframes breathe-toon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
@@ -157,15 +131,14 @@
             </div>
 
             <div id="resultFace" class="card-face card-back">
-                <div id="resultHeader" class="h-48 p-4 text-white flex flex-col items-center justify-start relative transition-all duration-700 shrink-0 bg-gradient-to-br">
+                <div id="resultHeader" class="h-56 p-4 text-white flex flex-col items-center justify-start relative transition-all duration-700 shrink-0 bg-gradient-to-br">
                     <div class="absolute inset-0 bg-black/10"></div>
                     
-                    <div id="toonCharacter" class="toon-container">
-                        <div class="toon-head"></div>
-                        <div class="toon-body"></div>
+                    <div class="avatar-3d-container">
+                        <img id="avatarImg" src="" alt="Body Type 3D Avatar" class="avatar-img hidden">
                     </div>
                     
-                    <h2 class="text-2xl font-bold drop-shadow-md z-10 -mt-1" id="resMain">...</h2>
+                    <h2 class="text-2xl font-bold drop-shadow-md z-10 mt-2" id="resMain">...</h2>
                     <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md z-10 border border-white/30" id="resSub">...</span>
                 </div>
 
@@ -239,11 +212,13 @@
             yearSelect.value = (currentYearBE - 30 - 543);
         }
 
-        // Database
+        // Database with 3D Image URLs (ตัวอย่าง URL)
         const elementData = [
             { 
                 start: [12, 16], end: [1, 15], 
-                main: "น้ำ (เหมันตฤดู)", sub: "เสมหะพิกัดศอ (ช่วงปลาย)", color: "from-blue-400 to-cyan-600", shape: "shape-water",
+                main: "น้ำ (เหมันตฤดู)", sub: "เสมหะพิกัดศอ (ช่วงปลาย)", color: "from-blue-400 to-cyan-600", 
+                // ✅ Avatar URL: ธาตุน้ำ (เจ้าเนื้อ)
+                avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/fat-man-pose-4705396-3915148.png",
                 goodTaste: "รสเปรี้ยว, รสขมเล็กน้อย", badTaste: "รสหวานจัด, มันจัด, เค็มจัด",
                 desc: "มักไอแห้ง เจ็บคอ ผิวแห้งแตกจากอากาศเย็น (รูปร่างมักเจ้าเนื้อ สมบูรณ์)", 
                 food: "แกงส้มดอกแค, ต้มยำน้ำใส", herb: "มะแว้ง, สมอพิเภก", 
@@ -251,7 +226,9 @@
             },
             { 
                 start: [1, 16], end: [2, 15], 
-                main: "น้ำ (เหมันตฤดู)", sub: "คูถเสมหะ (ลำไส้)", color: "from-blue-400 to-cyan-600", shape: "shape-water",
+                main: "น้ำ (เหมันตฤดู)", sub: "คูถเสมหะ (ลำไส้)", color: "from-blue-400 to-cyan-600",
+                // ✅ Avatar URL: ธาตุน้ำ (เจ้าเนื้อ)
+                avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/fat-man-pose-4705396-3915148.png",
                 goodTaste: "รสเผ็ดร้อนเล็กน้อย, รสเปรี้ยว", badTaste: "รสฝาด, รสหวาน, รสมัน",
                 desc: "ท้องอืด ถ่ายยาก อุจจาระธาตุพิการ (รูปร่างมักเจ้าเนื้อ ผิวพรรณเต่งตึง)", 
                 food: "เม็ดแมงลัก, ส้มโอ, แกงเลียง", herb: "ดีปลี, ชุมเห็ดเทศ", 
@@ -259,7 +236,9 @@
             },
             { 
                 start: [2, 16], end: [3, 15], 
-                main: "ไฟ (คิมหันตฤดู)", sub: "พัทธปิตตะ (ดีในฝัก)", color: "from-orange-400 to-red-600", shape: "shape-fire",
+                main: "ไฟ (คิมหันตฤดู)", sub: "พัทธปิตตะ (ดีในฝัก)", color: "from-orange-400 to-red-600",
+                // ✅ Avatar URL: ธาตุไฟ (สมส่วน/นักกีฬา)
+                avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/man-running-4705404-3915156.png?f=webp",
                 goodTaste: "รสขม, รสเย็น, รสจืด", badTaste: "รสเผ็ดร้อน, รสเปรี้ยวจัด",
                 desc: "หงุดหงิดง่าย ขมปาก ท้องผูก (รูปร่างสันทัด กล้ามเนื้อกระชับ)", 
                 food: "ต้มจืดมะระขี้นก, สะเดาน้ำปลาหวาน", herb: "บรเพ็ด, ย่านาง", 
@@ -267,7 +246,9 @@
             },
             { 
                 start: [3, 16], end: [4, 15], 
-                main: "ไฟ (คิมหันตฤดู)", sub: "อพัทธปิตตะ (ดีนอกฝัก)", color: "from-orange-400 to-red-600", shape: "shape-fire",
+                main: "ไฟ (คิมหันตฤดู)", sub: "อพัทธปิตตะ (ดีนอกฝัก)", color: "from-orange-400 to-red-600",
+                // ✅ Avatar URL: ธาตุไฟ (สมส่วน/นักกีฬา)
+                avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/man-running-4705404-3915156.png?f=webp",
                 goodTaste: "รสจืด, รสเย็น, ฝาดสมาน", badTaste: "รสเผ็ดจัด, รสเปรี้ยวหมักดอง",
                 desc: "จุกเสียด แสบร้อนกลางอก อาหารไม่ย่อย", 
                 food: "ผักบุ้งลวก, แกงจืดตำลึง", herb: "ขมิ้นชัน, ว่านหางจระเข้", 
@@ -275,7 +256,9 @@
             },
             { 
                 start: [4, 16], end: [5, 15], 
-                main: "ไฟ (คิมหันตฤดู)", sub: "กำเดา (ความร้อน)", color: "from-orange-400 to-red-600", shape: "shape-fire",
+                main: "ไฟ (คิมหันตฤดู)", sub: "กำเดา (ความร้อน)", color: "from-orange-400 to-red-600",
+                // ✅ Avatar URL: ธาตุไฟ (สมส่วน/นักกีฬา)
+                avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/man-running-4705404-3915156.png?f=webp",
                 goodTaste: "รสขม, รสเย็น", badTaste: "รสเค็ม, รสเผ็ดร้อน",
                 desc: "เสี่ยงลมแดด ปวดหัวไมเกรน ร้อนใน (รูปร่างสมส่วน ขี้ร้อน)", 
                 food: "แตงโม, ฟักเขียวต้มไก่", herb: "รากบัว, เกสรทั้ง 5", 
@@ -283,7 +266,9 @@
             },
             { 
                 start: [5, 16], end: [6, 15], 
-                main: "ลม (วสันตฤดู)", sub: "หทัยวาตะ (หัวใจ)", color: "from-emerald-400 to-green-600", shape: "shape-wind",
+                main: "ลม (วสันตฤดู)", sub: "หทัยวาตะ (หัวใจ)", color: "from-emerald-400 to-green-600",
+                // ✅ Avatar URL: ธาตุลม (ผอมสูง/เพรียว)
+                avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/thin-man-4705399-3915151.png",
                 goodTaste: "รสสุขุม (หอมเย็น), รสหวาน", badTaste: "รสขม, รสฝาด",
                 desc: "ใจสั่น วิตกกังวลง่าย นอนไม่หลับ (รูปร่างโปร่ง ผอมบาง)", 
                 food: "ข้าวมันส้มตำ, แกงเลียง", herb: "ยาหอม, ดอกมะลิ", 
@@ -291,7 +276,9 @@
             },
             { 
                 start: [6, 16], end: [7, 15], 
-                main: "ลม (วสันตฤดู)", sub: "สัตถกวาตะ (ลมคม)", color: "from-emerald-400 to-green-600", shape: "shape-wind",
+                main: "ลม (วสันตฤดู)", sub: "สัตถกวาตะ (ลมคม)", color: "from-emerald-400 to-green-600",
+                 // ✅ Avatar URL: ธาตุลม (ผอมสูง/เพรียว)
+                 avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/thin-man-4705399-3915151.png",
                 goodTaste: "รสเผ็ดร้อน, รสมัน", badTaste: "รสเย็น, รสจืด",
                 desc: "ปวดกล้ามเนื้อ เจ็บแปลบ ยอกตามตัว (รูปร่างสูงโปร่ง)", 
                 food: "ผัดฉ่า, แกงป่า, พริกไทยดำ", herb: "เถาวัลย์เปรียง, ไพล", 
@@ -299,7 +286,9 @@
             },
             { 
                 start: [7, 16], end: [8, 15], 
-                main: "ลม (วสันตฤดู)", sub: "สุมนาวาตะ (เส้นเลือด)", color: "from-emerald-400 to-green-600", shape: "shape-wind",
+                main: "ลม (วสันตฤดู)", sub: "สุมนาวาตะ (เส้นเลือด)", color: "from-emerald-400 to-green-600",
+                 // ✅ Avatar URL: ธาตุลม (ผอมสูง/เพรียว)
+                 avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/thin-man-4705399-3915151.png",
                 goodTaste: "รสร้อน, รสสุขุม", badTaste: "รสมันจัด, รสหวานจัด",
                 desc: "หน้ามืด วิงเวียน เป็นลมง่าย (รูปร่างผอม เส้นเลือดปูด)", 
                 food: "ต้มข่าไก่ใส่ข่าเยอะๆ, น้ำขิง", herb: "เหง้าขิง, พริกไทย", 
@@ -307,7 +296,9 @@
             },
             { 
                 start: [8, 16], end: [9, 15], 
-                main: "น้ำ (เหมันตฤดู)", sub: "ศอเสมหะ (คอ)", color: "from-blue-400 to-cyan-600", shape: "shape-water",
+                main: "น้ำ (เหมันตฤดู)", sub: "ศอเสมหะ (คอ)", color: "from-blue-400 to-cyan-600",
+                // ✅ Avatar URL: ธาตุน้ำ (เจ้าเนื้อ)
+                avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/fat-man-pose-4705396-3915148.png",
                 goodTaste: "รสเปรี้ยว, รสขม, รสเผ็ดเล็กน้อย", badTaste: "รสหวาน, รสมัน, รสเค็ม",
                 desc: "ไอ เสียงแหบ เสมหะเหนียว (รูปร่างเจ้าเนื้อ)", 
                 food: "น้ำมะนาว, ต้มส้มปลากระบอก", herb: "มะแว้ง, มะขามป้อม", 
@@ -315,7 +306,9 @@
             },
             { 
                 start: [9, 16], end: [10, 15], 
-                main: "น้ำ (เหมันตฤดู)", sub: "อุระเสมหะ (อก)", color: "from-blue-400 to-cyan-600", shape: "shape-water",
+                main: "น้ำ (เหมันตฤดู)", sub: "อุระเสมหะ (อก)", color: "from-blue-400 to-cyan-600",
+                // ✅ Avatar URL: ธาตุน้ำ (เจ้าเนื้อ)
+                avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/fat-man-pose-4705396-3915148.png",
                 goodTaste: "รสเผ็ดร้อน, รสขม", badTaste: "รสเย็น, รสหวานจัด",
                 desc: "หอบหืด ภูมิแพ้ หายใจไม่สะดวก", 
                 food: "หอมแดง, กระเทียม, ซุปไก่", herb: "หนุมานประสานกาย", 
@@ -323,7 +316,9 @@
             },
             { 
                 start: [10, 16], end: [11, 15], 
-                main: "น้ำ (เหมันตฤดู)", sub: "คูถเสมหะ (ช่วงต้น)", color: "from-blue-400 to-cyan-600", shape: "shape-water",
+                main: "น้ำ (เหมันตฤดู)", sub: "คูถเสมหะ (ช่วงต้น)", color: "from-blue-400 to-cyan-600",
+                // ✅ Avatar URL: ธาตุน้ำ (เจ้าเนื้อ)
+                avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/fat-man-pose-4705396-3915148.png",
                 goodTaste: "รสฝาด, รสเปรี้ยว, รสเผ็ด", badTaste: "รสมัน, รสหวาน",
                 desc: "ท้องอืด แน่นท้อง ขับถ่ายแปรปรวน", 
                 food: "แกงส้มมะรุม, ยำถั่วพู", herb: "สมอไทย, ธรณีสันฑะฆาต", 
@@ -331,7 +326,9 @@
             },
             { 
                 start: [11, 16], end: [12, 15], 
-                main: "ดิน (รอยต่อ)", sub: "ปถวีธาตุ (ธาตุหนัก)", color: "from-yellow-600 to-brown-600", shape: "shape-earth",
+                main: "ดิน (รอยต่อ)", sub: "ปถวีธาตุ (ธาตุหนัก)", color: "from-yellow-600 to-brown-600",
+                // ✅ Avatar URL: ธาตุดิน (บึกบึน/โครงสร้างใหญ่)
+                avatarUrl: "https://cdn3d.iconscout.com/3d/premium/thumb/muscular-man-4705401-3915153.png",
                 goodTaste: "รสฝาด, รสหวาน, รสมัน, รสเค็ม", badTaste: "-",
                 desc: "ตัวหนัก อ่อนเพลีย ไม่กระฉับกระเฉง (รูปร่างใหญ่ โครงสร้างหนา)", 
                 food: "น้ำฝรั่ง, กล้วยน้ำว้า", herb: "ตรีผลา (ปรับสมดุล)", 
@@ -368,11 +365,12 @@
             document.getElementById('resRef').innerText = result.ref || "คัมภีร์แพทย์แผนไทย";
 
             const header = document.getElementById('resultHeader');
-            header.className = `h-48 p-4 text-white flex flex-col items-center justify-start relative transition-all duration-700 shrink-0 bg-gradient-to-br ${result.color}`;
+            header.className = `h-56 p-4 text-white flex flex-col items-center justify-start relative transition-all duration-700 shrink-0 bg-gradient-to-br ${result.color}`;
             
-            // ✅ NEW: Update 3D Toon Shape
-            const toonChar = document.getElementById('toonCharacter');
-            toonChar.className = `toon-container ${result.shape}`;
+            // ✅ NEW: Update 3D Image Source & Show
+            const avatarImg = document.getElementById('avatarImg');
+            avatarImg.src = result.avatarUrl;
+            avatarImg.classList.remove('hidden');
 
             document.getElementById('cardObject').classList.add('is-flipped');
             
