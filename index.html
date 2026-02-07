@@ -132,11 +132,13 @@
         .warning-text { font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 10px; }
         .food-advice { font-size: 12px; color: #555; background: rgba(241,248,233,0.95); padding: 10px; border-radius: 10px; border: 1px dashed #81C784; display: flex; align-items: flex-start; }
 
-        /* Results Styling (Clean & Gradient Header) */
+        /* Results Styling */
+        /* Updated: Gradient Header */
         .back-header { 
-            /* Gradient Background will be set by JS */
-            padding: 50px 20px 40px; text-align: center; color: white; border-radius: 0 0 40% 40% / 0 0 30px 30px; position: relative; flex-shrink: 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* เพิ่มเงาให้หัวข้อลอย */
+            /* Gradient set by JS */
+            padding: 50px 20px 40px; text-align: center; color: white; 
+            border-radius: 0 0 40% 40% / 0 0 30px 30px; 
+            position: relative; flex-shrink: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
         .avatar-real { width: 150px; height: 150px; margin: -5px auto 10px; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3)); animation: float 4s ease-in-out infinite; border-radius: 50%; background-color: white; border: 4px solid rgba(255,255,255,0.3); }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
@@ -148,9 +150,7 @@
         .food-tag { display: inline-block; padding: 8px 14px; margin: 0 6px 8px 0; background: white; border: 1px solid #E0E0E0; border-radius: 25px; font-size: 12px; color: #333; cursor: pointer; transition: all 0.2s; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
         .food-tag:hover { background: var(--gold-light); border-color: var(--gold-main); transform: translateY(-2px); }
         .food-tag i { color: var(--green-leaf); margin-left: 4px; font-size: 10px;}
-        
-        /* Removed Lunar Badge Style (Not needed anymore) */
-        
+        .lunar-badge { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); padding: 6px 15px; border-radius: 20px; font-size: 13px; color: #FFD700; display: inline-block; backdrop-filter: blur(4px); margin-bottom: 5px; }
         .conception-text { font-size: 11px; color: rgba(255,255,255,0.8); display: inline-block; padding: 2px 8px; }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -320,7 +320,7 @@
             for(let i=0; i<100; i++) { 
                 let yAD = currentYear - i; 
                 let opt = document.createElement('option'); 
-                opt.value = yAD; opt.innerHTML = yAD; // Default display AD first, changed by updateUI
+                opt.value = yAD; opt.innerHTML = yAD; 
                 yearSelect.appendChild(opt); 
             }
             yearSelect.value = (currentYear - 30);
@@ -335,7 +335,6 @@
             document.getElementById('btn-en').className = `lang-btn ${lang==='en'?'active':''}`;
             updateUI();
             updateDailyForecast();
-            // If flipped, re-analyze to update result text
             const card = document.getElementById('cardObject');
             if (card.classList.contains('is-flipped')) {
                 startAnalysis(); 
@@ -343,13 +342,11 @@
         }
 
         function updateUI() {
-            // Update Text Elements
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (i18n[currentLang][key]) el.innerText = i18n[currentLang][key];
             });
 
-            // Update Month Options
             const mSelect = document.getElementById('inputMonth');
             const selectedM = mSelect.value || "1";
             mSelect.innerHTML = "";
@@ -360,9 +357,7 @@
             });
             mSelect.value = selectedM;
 
-            // Update Year Options (TH=BE, EN=AD)
             const ySelect = document.getElementById('inputYear');
-            const selectedY = parseInt(ySelect.value);
             const opts = ySelect.options;
             for(let i=0; i<opts.length; i++) {
                 let val = parseInt(opts[i].value);
@@ -371,7 +366,7 @@
         }
 
         // ==========================================
-        // Logic
+        // Logic (Calibrated for Correct Thai Month)
         // ==========================================
         function calculateRealLunarDate(targetDate) {
             const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); 
@@ -391,8 +386,11 @@
             let daysToNewMoon = moonAge;
             let lastNewMoonDate = new Date(targetDate);
             lastNewMoonDate.setDate(targetDate.getDate() - Math.floor(daysToNewMoon));
+            
+            // --- FIX: Correct Month Mapping ---
             let nmMonth = lastNewMoonDate.getMonth() + 1; 
-            const standardMap = { 11:1, 12:2, 1:3, 2:4, 3:5, 4:6, 5:7, 6:8, 7:9, 8:10, 9:11, 10:12 };
+            // 12=Dec=1(Ai), 1=Jan=2(Yee), 2=Feb=3...
+            const standardMap = { 12:1, 1:2, 2:3, 3:4, 4:5, 5:6, 6:7, 7:8, 8:9, 9:10, 10:11, 11:12 };
             let thaiMonth = standardMap[nmMonth];
 
             if (adhikamasaYears.includes(targetDate.getFullYear())) {
@@ -411,7 +409,7 @@
             return { phase, lunarDay, thaiMonth, display };
         }
 
-        // --- CONTENT DATA (DUAL LANGUAGE) ---
+        // --- CONTENT DATA ---
         const contentData = {
             fire: {
                 th: {
@@ -596,7 +594,6 @@
             items.forEach(item => {
                 const tag = document.createElement("a");
                 tag.className = "food-tag";
-                // Always search with Thai keyword appended for better results
                 const searchQuery = (currentLang === 'en') ? `${item} Thai food` : `${item} อาหาร`;
                 tag.href = `https://www.google.com/search?tbm=isch&q=${searchQuery}`; 
                 tag.target = "_blank";
@@ -609,7 +606,6 @@
             const d = parseInt(document.getElementById('inputDay').value);
             const m = parseInt(document.getElementById('inputMonth').value);
             const yVal = parseInt(document.getElementById('inputYear').value);
-            // Convert displayed Year to AD for calculation
             const yAD = (currentLang === 'th') ? yVal - 543 : yVal;
 
             let birthDate = new Date(yAD, m - 1, d);
@@ -619,30 +615,27 @@
             const lunarInfo = calculateRealLunarDate(conceptionDate);
             const data = getElementData(lunarInfo.thaiMonth);
             
-            // Map color/avatar based on element key again (simplified logic for UI)
+            // Gradient Header Logic
             let color = "", avatar = "";
             if(data.name.includes("Fire") || data.name.includes("ไฟ")) { 
-                color = "linear-gradient(135deg, #FF9966, #FF5E62)"; // Vibrant Sunset
+                color = "linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)"; 
                 avatar = "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png"; 
             }
             else if(data.name.includes("Wind") || data.name.includes("ลม")) { 
-                color = "linear-gradient(135deg, #11998e, #38ef7d)"; // Fresh Green
+                color = "linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)"; 
                 avatar = "https://img2.pic.in.th/261c90e765ec6b116.png"; 
             }
             else if(data.name.includes("Water") || data.name.includes("น้ำ")) { 
-                color = "linear-gradient(135deg, #2980B9, #6DD5FA)"; // Ocean Blue
+                color = "linear-gradient(135deg, #36D1DC 0%, #5B86E5 100%)"; 
                 avatar = "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png"; 
             }
             else { 
-                color = "linear-gradient(135deg, #BA8B02, #181818)"; // Earth Gold
+                color = "linear-gradient(135deg, #CAC531 0%, #F3F9A7 100%)"; 
                 avatar = "https://img2.pic.in.th/1c8b450894dd6fe8e.png"; 
             }
 
             document.getElementById('resMain').innerText = data.name;
             document.getElementById('resSub').innerText = data.sub; 
-            
-            // Remove Conception Date Display
-            // document.getElementById('conceptionLunarDisplay').innerText = lunarInfo.display;
             
             document.getElementById('avatarImg').src = avatar;
             document.getElementById('avatarImg').classList.remove('hidden');
@@ -651,10 +644,8 @@
             document.getElementById('resTrait').innerText = data.trait;
             document.getElementById('resHealth').innerText = data.health;
             document.getElementById('resTasteGood').innerText = data.recTaste;
-            // FIXED: Use correct data key
             document.getElementById('resTasteGoodReason').innerText = data.recReason;
             document.getElementById('resTasteBad').innerText = data.badTaste;
-            // FIXED: Use correct data key
             document.getElementById('resTasteBadReason').innerText = data.badReason;
 
             createFoodTags(data.foods, 'foodList');
