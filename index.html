@@ -11,9 +11,7 @@
     
     <style>
         :root { --primary-gold: #D4AF37; --deep-green: #1B4D3E; }
-        /* อนุญาตให้ Body เลื่อนได้หากจอเล็กมาก */
         body { font-family: 'Prompt', sans-serif; background: #fdfbf7; overflow-y: auto; }
-        
         .thai-bg {
             background-image: radial-gradient(#1B4D3E 1px, transparent 1px), radial-gradient(#D4AF37 1px, transparent 1px);
             background-size: 24px 24px; background-position: 0 0, 12px 12px; opacity: 0.05; position: absolute; inset: 0; z-index: -1;
@@ -21,79 +19,27 @@
 
         /* Card Layout */
         .card-scene { 
-            width: 100%; 
-            height: 80vh; /* ความสูงยืดหยุ่นตามหน้าจอ */
-            max-height: 800px; 
-            min-height: 600px; 
-            position: relative; 
-            perspective: 1000px; 
-            margin: 20px 0;
+            width: 100%; height: 85vh; max-height: 850px; min-height: 650px; 
+            position: relative; perspective: 1000px; margin: 20px 0;
         }
-
         .card-object { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.4, 0.2, 0.2, 1); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15); }
-        
         .card-front { background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(212, 175, 55, 0.3); transform: rotateY(0deg); }
+        .card-back { background: white; transform: rotateY(180deg); display: flex; flex-direction: column; height: 100%; }
         
-        /* ✅ CSS FIX: จัด Layout การ์ดหลังให้เลื่อนได้ */
-        .card-back { 
-            background: white; 
-            transform: rotateY(180deg); 
-            display: flex; 
-            flex-direction: column; /* เรียงบนลงล่าง */
-            height: 100%; /* เต็มความสูง */
-        }
-        
-        /* ส่วน Header (รูปคน) - ไม่เลื่อน */
-        .back-header {
-            flex-shrink: 0; /* ห้ามหด */
-            position: relative;
-            z-index: 2;
-        }
-
-        /* ส่วนเนื้อหา - เลื่อนได้ */
-        .back-content { 
-            flex-grow: 1; /* ยืดเต็มพื้นที่ที่เหลือ */
-            overflow-y: auto; /* ให้เลื่อนเฉพาะส่วนนี้ */
-            padding: 20px;
-            padding-bottom: 20px; /* เว้นระยะด้านล่าง */
-            -webkit-overflow-scrolling: touch; /* ลื่นบน iOS */
-        } 
-
-        /* ส่วน Footer (ปุ่ม) - ไม่เลื่อน */
-        .back-footer {
-            flex-shrink: 0;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(5px);
-            border-top: 1px solid #eee;
-            padding: 15px;
-            z-index: 10;
-        }
+        .back-header { flex-shrink: 0; position: relative; z-index: 2; }
+        .back-content { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; -webkit-overflow-scrolling: touch; } 
+        .back-footer { flex-shrink: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border-top: 1px solid #eee; padding: 15px; z-index: 10; }
         
         .is-flipped { transform: rotateY(180deg); }
         .custom-select { appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231B4D3E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.75rem center; background-repeat: no-repeat; background-size: 1.2em 1.2em; }
 
-        /* Avatar Container */
-        .avatar-container {
-            height: 140px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            margin-bottom: -10px;
-        }
-        .avatar-img {
-            height: 130px; /* ปรับขนาดรูปให้พอดี */
-            width: auto;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
-            animation: float 3s ease-in-out infinite;
-        }
-
+        /* Avatar Animation */
+        .avatar-container { height: 140px; display: flex; justify-content: center; align-items: flex-end; margin-bottom: -10px; }
+        .avatar-img { height: 130px; width: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); animation: float 3s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
@@ -105,7 +51,7 @@
             <i class="fas fa-spa text-3xl text-green-700"></i>
         </div>
         <h1 class="text-xl font-bold text-green-900 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
-        <p class="text-yellow-700 text-xs font-medium">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
+        <p class="text-yellow-700 text-xs font-medium">คำนวณวันปฏิสนธิตามคัมภีร์ปฐมจินดา</p>
     </div>
 
     <div class="card-scene w-full max-w-sm">
@@ -114,9 +60,9 @@
             <div class="card-face card-front p-6 flex flex-col justify-between">
                 <div>
                     <div class="text-center mb-6 mt-4">
-                        <h2 class="text-green-800 font-bold text-lg">ระบุวันเกิดของคุณ</h2>
+                        <h2 class="text-green-800 font-bold text-lg">ระบุวันเดือนปีเกิด</h2>
                         <div class="h-1 w-16 bg-gradient-to-r from-yellow-300 to-yellow-500 mx-auto mt-2 rounded-full"></div>
-                        <p class="text-xs text-gray-400 mt-2">ระบบจะคำนวณตามคัมภีร์แพทยศาสตร์สงเคราะห์</p>
+                        <p class="text-xs text-gray-400 mt-2">ระบบจะคำนวณย้อนหลังหาวันปฏิสนธิ (9-10 เดือน)</p>
                     </div>
                     <div class="space-y-4">
                         <div class="relative">
@@ -147,13 +93,13 @@
                     </div>
                 </div>
                 <button onclick="startAnalysis()" class="w-full bg-gradient-to-r from-green-800 to-green-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all flex justify-center items-center gap-2 mb-2 group hover:shadow-xl">
-                    <span>เริ่มวิเคราะห์ (3D Scan)</span> <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    <span>วิเคราะห์ (คำนวณปฏิสนธิ)</span> <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </button>
             </div>
 
             <div id="resultFace" class="card-face card-back">
                 
-                <div id="resultHeader" class="back-header h-52 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700">
+                <div id="resultHeader" class="back-header h-56 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700">
                     <div class="absolute inset-0 bg-black/10"></div>
                     
                     <div class="avatar-container relative z-10">
@@ -161,44 +107,43 @@
                     </div>
                     
                     <h2 class="text-2xl font-bold drop-shadow-md z-10 mt-1" id="resMain">...</h2>
-                    <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md z-10 border border-white/30" id="resSub">...</span>
+                    <div class="z-10 flex flex-col items-center">
+                        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/30 mb-1" id="resSub">...</span>
+                        <span class="text-[9px] text-white/80" id="patisandhiInfo">...</span>
+                    </div>
                 </div>
 
                 <div class="back-content space-y-4">
                     
                     <div class="grid grid-cols-2 gap-3">
                         <div class="bg-green-50 p-3 rounded-2xl border border-green-200">
-                            <h4 class="font-bold text-green-800 text-xs mb-1 flex items-center">
-                                <i class="fas fa-check-circle mr-1.5 text-green-600"></i> รสที่ถูกโฉลก
-                            </h4>
+                            <h4 class="font-bold text-green-800 text-xs mb-1"><i class="fas fa-check-circle mr-1 text-green-600"></i> รสถูกโฉลก</h4>
                             <p id="resGoodTaste" class="text-xs text-gray-600 leading-relaxed"></p>
                         </div>
                         <div class="bg-red-50 p-3 rounded-2xl border border-red-200">
-                            <h4 class="font-bold text-red-800 text-xs mb-1 flex items-center">
-                                <i class="fas fa-times-circle mr-1.5 text-red-600"></i> รสที่ควรเลี่ยง
-                            </h4>
+                            <h4 class="font-bold text-red-800 text-xs mb-1"><i class="fas fa-times-circle mr-1 text-red-600"></i> รสควรเลี่ยง</h4>
                             <p id="resBadTaste" class="text-xs text-gray-600 leading-relaxed"></p>
                         </div>
                     </div>
 
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                        <h3 class="text-green-800 font-bold text-sm mb-2 flex items-center"><i class="fas fa-stethoscope bg-green-100 p-1.5 rounded-full text-green-600 mr-2 text-xs"></i> ลักษณะอาการ</h3>
+                        <h3 class="text-green-800 font-bold text-sm mb-2"><i class="fas fa-stethoscope bg-green-100 p-1.5 rounded-full text-green-600 mr-2 text-xs"></i> ลักษณะเจ้าเรือนกำเนิด</h3>
                         <p id="resDesc" class="text-gray-600 text-sm leading-relaxed"></p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div class="bg-blue-50 p-3 rounded-2xl border border-blue-100">
-                            <h4 class="font-bold text-blue-800 text-xs mb-1 flex items-center"><i class="fas fa-utensils mr-1.5"></i> เมนูแนะนำ</h4>
+                            <h4 class="font-bold text-blue-800 text-xs mb-1"><i class="fas fa-utensils mr-1"></i> เมนูแนะนำ</h4>
                             <p id="resFood" class="text-xs text-gray-600"></p>
                         </div>
                         <div class="bg-yellow-50 p-3 rounded-2xl border border-yellow-100">
-                            <h4 class="font-bold text-yellow-800 text-xs mb-1 flex items-center"><i class="fas fa-mortar-pestle mr-1.5"></i> สมุนไพรคู่กาย</h4>
+                            <h4 class="font-bold text-yellow-800 text-xs mb-1"><i class="fas fa-mortar-pestle mr-1"></i> สมุนไพรคู่กาย</h4>
                             <p id="resHerb" class="text-xs text-gray-600"></p>
                         </div>
                     </div>
                     
                     <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200">
-                         <h3 class="text-gray-800 font-bold text-sm mb-2 flex items-center"><i class="fas fa-walking bg-gray-200 p-1.5 rounded-full text-gray-600 mr-2 text-xs"></i> กิจกรรมปรับธาตุ</h3>
+                         <h3 class="text-gray-800 font-bold text-sm mb-2"><i class="fas fa-walking bg-gray-200 p-1.5 rounded-full text-gray-600 mr-2 text-xs"></i> กิจกรรมปรับธาตุ</h3>
                         <p id="resActivity" class="text-gray-600 text-sm leading-relaxed"></p>
                     </div>
                 </div>
@@ -213,7 +158,6 @@
                         <i class="fas fa-redo"></i> วิเคราะห์ใหม่อีกครั้ง
                     </button>
                 </div>
-
             </div>
         </div>
     </div>
@@ -223,7 +167,6 @@
     </div>
 
     <script>
-        // ⚠️⚠️⚠️ ใส่ URL Apps Script ของคุณตรงนี้ ⚠️⚠️⚠️
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX7ZJvwflkNzhZ1SPPOJZZcJBvh_Bpbc2acOjh6fEcj58fv9wHu4i9M8J5BoCNmIoDbw/exec'; 
 
         window.onload = function() {
@@ -235,163 +178,105 @@
             yearSelect.value = (currentYearBE - 30 - 543);
         }
 
-        // Database (Updated with Working CDN URLs for 3D Emojis)
-        // ใช้แหล่งรูปภาพจาก GitHub JSDelivr ที่เสถียร
-        const elementData = [
-            { 
-                start: [12, 16], end: [1, 15], 
-                main: "น้ำ (เหมันตฤดู)", sub: "เสมหะพิกัดศอ (ช่วงปลาย)", color: "from-blue-400 to-cyan-600", 
-                // Avatar: Person Pouting (แก้มป่อง เจ้าเนื้อ)
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Pouting.png",
-                goodTaste: "รสเปรี้ยว, รสขมเล็กน้อย", badTaste: "รสหวานจัด, มันจัด, เค็มจัด",
-                desc: "มักไอแห้ง เจ็บคอ ผิวแห้งแตกจากอากาศเย็น (รูปร่างมักเจ้าเนื้อ สมบูรณ์)", 
-                food: "แกงส้มดอกแค, ต้มยำน้ำใส", herb: "มะแว้ง, สมอพิเภก", 
-                activity: "สวมเสื้อผ้าหนาๆ, แช่เท้าอุ่น", ref: "คัมภีร์สมุฏฐานวินิจฉัย"
-            },
-            { 
-                start: [1, 16], end: [2, 15], 
-                main: "น้ำ (เหมันตฤดู)", sub: "คูถเสมหะ (ลำไส้)", color: "from-blue-400 to-cyan-600",
-                // Avatar: Baby (เจ้าเนื้อ น่ารัก)
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Baby.png",
-                goodTaste: "รสเผ็ดร้อนเล็กน้อย, รสเปรี้ยว", badTaste: "รสฝาด, รสหวาน, รสมัน",
-                desc: "ท้องอืด ถ่ายยาก อุจจาระธาตุพิการ (รูปร่างมักเจ้าเนื้อ ผิวพรรณเต่งตึง)", 
-                food: "เม็ดแมงลัก, ส้มโอ, แกงเลียง", herb: "ดีปลี, ชุมเห็ดเทศ", 
-                activity: "นวดหน้าท้อง, ดื่มน้ำอุ่น", ref: "คัมภีร์ธาตุวิภังค์"
-            },
-            { 
-                start: [2, 16], end: [3, 15], 
-                main: "ไฟ (คิมหันตฤดู)", sub: "พัทธปิตตะ (ดีในฝัก)", color: "from-orange-400 to-red-600",
-                // Avatar: Person Running (นักกีฬา สมส่วน)
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Running.png",
-                goodTaste: "รสขม, รสเย็น, รสจืด", badTaste: "รสเผ็ดร้อน, รสเปรี้ยวจัด",
-                desc: "หงุดหงิดง่าย ขมปาก ท้องผูก (รูปร่างสันทัด กล้ามเนื้อกระชับ)", 
-                food: "ต้มจืดมะระขี้นก, สะเดาน้ำปลาหวาน", herb: "บรเพ็ด, ย่านาง", 
-                activity: "วิปัสสนา, ฟังเพลงบรรเลง", ref: "คัมภีร์เวชศึกษา"
-            },
-            { 
-                start: [3, 16], end: [4, 15], 
-                main: "ไฟ (คิมหันตฤดู)", sub: "อพัทธปิตตะ (ดีนอกฝัก)", color: "from-orange-400 to-red-600",
-                // Avatar: Person Lifting Weights (แข็งแรง)
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Lifting%20Weights.png",
-                goodTaste: "รสจืด, รสเย็น, ฝาดสมาน", badTaste: "รสเผ็ดจัด, รสเปรี้ยวหมักดอง",
-                desc: "จุกเสียด แสบร้อนกลางอก อาหารไม่ย่อย", 
-                food: "ผักบุ้งลวก, แกงจืดตำลึง", herb: "ขมิ้นชัน, ว่านหางจระเข้", 
-                activity: "เดินช้าๆ หลังมื้ออาหาร", ref: "คัมภีร์ธาตุวิภังค์"
-            },
-            { 
-                start: [4, 16], end: [5, 15], 
-                main: "ไฟ (คิมหันตฤดู)", sub: "กำเดา (ความร้อน)", color: "from-orange-400 to-red-600",
-                // Avatar: Person Climbing (Active)
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Climbing.png",
-                goodTaste: "รสขม, รสเย็น", badTaste: "รสเค็ม, รสเผ็ดร้อน",
-                desc: "เสี่ยงลมแดด ปวดหัวไมเกรน ร้อนใน (รูปร่างสมส่วน ขี้ร้อน)", 
-                food: "แตงโม, ฟักเขียวต้มไก่", herb: "รากบัว, เกสรทั้ง 5", 
-                activity: "ประคบเย็น, อาบน้ำอุณหภูมิปกติ", ref: "คัมภีร์สมุฏฐานวินิจฉัย"
-            },
-            { 
-                start: [5, 16], end: [6, 15], 
-                main: "ลม (วสันตฤดู)", sub: "หทัยวาตะ (หัวใจ)", color: "from-emerald-400 to-green-600",
-                // Avatar: Person Bowing (ดูอ่อนน้อม ผอมบาง)
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Bowing.png",
-                goodTaste: "รสสุขุม (หอมเย็น), รสหวาน", badTaste: "รสขม, รสฝาด",
-                desc: "ใจสั่น วิตกกังวลง่าย นอนไม่หลับ (รูปร่างโปร่ง ผอมบาง)", 
-                food: "ข้าวมันส้มตำ, แกงเลียง", herb: "ยาหอม, ดอกมะลิ", 
-                activity: "สวดมนต์, กลิ่นบำบัด", ref: "คัมภีร์เวชศึกษา"
-            },
-            { 
-                start: [6, 16], end: [7, 15], 
-                main: "ลม (วสันตฤดู)", sub: "สัตถกวาตะ (ลมคม)", color: "from-emerald-400 to-green-600",
-                 // Avatar: Genie (ดูเป็นลม ลอยๆ)
-                 avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Men%20With%20Bunny%20Ears.png",
-                goodTaste: "รสเผ็ดร้อน, รสมัน", badTaste: "รสเย็น, รสจืด",
-                desc: "ปวดกล้ามเนื้อ เจ็บแปลบ ยอกตามตัว (รูปร่างสูงโปร่ง)", 
-                food: "ผัดฉ่า, แกงป่า, พริกไทยดำ", herb: "เถาวัลย์เปรียง, ไพล", 
-                activity: "โยคะยืดเหยียด, นวดไทย", ref: "คัมภีร์ธาตุวิภังค์"
-            },
-            { 
-                start: [7, 16], end: [8, 15], 
-                main: "ลม (วสันตฤดู)", sub: "สุมนาวาตะ (เส้นเลือด)", color: "from-emerald-400 to-green-600",
-                 // Avatar: Elf (ดูเพรียวๆ)
-                 avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Elf.png",
-                goodTaste: "รสร้อน, รสสุขุม", badTaste: "รสมันจัด, รสหวานจัด",
-                desc: "หน้ามืด วิงเวียน เป็นลมง่าย (รูปร่างผอม เส้นเลือดปูด)", 
-                food: "ต้มข่าไก่ใส่ข่าเยอะๆ, น้ำขิง", herb: "เหง้าขิง, พริกไทย", 
-                activity: "แกว่งแขน, เดินกะลา", ref: "คัมภีร์สมุฏฐานวินิจฉัย"
-            },
-            { 
-                start: [8, 16], end: [9, 15], 
-                main: "น้ำ (เหมันตฤดู)", sub: "ศอเสมหะ (คอ)", color: "from-blue-400 to-cyan-600",
-                // Avatar: Person Gesturing No (เจ้าเนื้อ)
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Gesturing%20No.png",
-                goodTaste: "รสเปรี้ยว, รสขม, รสเผ็ดเล็กน้อย", badTaste: "รสหวาน, รสมัน, รสเค็ม",
-                desc: "ไอ เสียงแหบ เสมหะเหนียว (รูปร่างเจ้าเนื้อ)", 
-                food: "น้ำมะนาว, ต้มส้มปลากระบอก", herb: "มะแว้ง, มะขามป้อม", 
-                activity: "กลั้วคอด้วยน้ำเกลือ", ref: "คัมภีร์เวชศึกษา"
-            },
-            { 
-                start: [9, 16], end: [10, 15], 
-                main: "น้ำ (เหมันตฤดู)", sub: "อุระเสมหะ (อก)", color: "from-blue-400 to-cyan-600",
-                // Avatar: Person Shrugging (ดูนุ่มนิ่ม)
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Shrugging.png",
-                goodTaste: "รสเผ็ดร้อน, รสขม", badTaste: "รสเย็น, รสหวานจัด",
-                desc: "หอบหืด ภูมิแพ้ หายใจไม่สะดวก", 
-                food: "หอมแดง, กระเทียม, ซุปไก่", herb: "หนุมานประสานกาย", 
-                activity: "ฝึกหายใจลึก (Deep Breathing)", ref: "คัมภีร์ธาตุวิภังค์"
-            },
-            { 
-                start: [10, 16], end: [11, 15], 
-                main: "น้ำ (เหมันตฤดู)", sub: "คูถเสมหะ (ช่วงต้น)", color: "from-blue-400 to-cyan-600",
-                // Avatar: Person Tipping Hand (เจ้าเนื้อ)
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Tipping%20Hand.png",
-                goodTaste: "รสฝาด, รสเปรี้ยว, รสเผ็ด", badTaste: "รสมัน, รสหวาน",
-                desc: "ท้องอืด แน่นท้อง ขับถ่ายแปรปรวน", 
-                food: "แกงส้มมะรุม, ยำถั่วพู", herb: "สมอไทย, ธรณีสันฑะฆาต", 
-                activity: "เดินเร็ว, ฤาษีดัดตน", ref: "คัมภีร์สมุฏฐานวินิจฉัย"
-            },
-            { 
-                start: [11, 16], end: [12, 15], 
-                main: "ดิน (รอยต่อ)", sub: "ปถวีธาตุ (ธาตุหนัก)", color: "from-yellow-600 to-brown-600",
-                // Avatar: Construction Worker (แข็งแรง บึกบึน)
-                avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Construction%20Worker.png",
-                goodTaste: "รสฝาด, รสหวาน, รสมัน, รสเค็ม", badTaste: "-",
-                desc: "ตัวหนัก อ่อนเพลีย ไม่กระฉับกระเฉง (รูปร่างใหญ่ โครงสร้างหนา)", 
-                food: "น้ำฝรั่ง, กล้วยน้ำว้า", herb: "ตรีผลา (ปรับสมดุล)", 
-                activity: "เดินรับแดดอ่อนยามเช้า", ref: "คัมภีร์วรโยคสาร"
-            }
-        ];
+        // ✅ LOGIC: การคำนวณวันปฏิสนธิ (Patisandhi)
+        function calculatePatisandhi(day, month, yearAD) {
+            // สร้างวันเกิด
+            const birthDate = new Date(yearAD, month - 1, day);
+            
+            // ลบออก 9 เดือน (ประมาณ 270 วัน) เพื่อหาช่วงปฏิสนธิ
+            // ตามคัมภีร์ปฐมจินดา การปฏิสนธิจะเกิดก่อนคลอดประมาณ 9-10 เดือน
+            const conceptionDate = new Date(birthDate);
+            conceptionDate.setMonth(birthDate.getMonth() - 9);
 
-        function checkDate(d, m, startM, startD, endM, endD) {
-            if (startM < endM) { if (m === startM && d >= startD) return true; if (m === endM && d <= endD) return true; return false; } 
-            else { if (m === startM && d >= startD) return true; if (m === endM && d <= endD) return true; if (m > startM || m < endM) return true; return false; }
+            // แปลงเป็นเดือนไทย (จันทรคติ) โดยประมาณ (Lunar Month Approximation)
+            // เดือน 5 ไทย ประมาณเดือน เมษายน, เดือน 12 ประมาณ พฤศจิกายน
+            // Logic อย่างง่าย: เดือนไทย = เดือนสากล + 1 (กรณีปกติ) แต่อาจคลาดเคลื่อนตามข้างขึ้นแรม
+            let thaiMonth = conceptionDate.getMonth() + 1 + 1; // +1 index, +1 shift to Thai
+            if (thaiMonth > 12) thaiMonth -= 12;
+
+            // จัดรูปแบบวันที่ปฏิสนธิเพื่อแสดงผล
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = conceptionDate.toLocaleDateString('th-TH', options);
+
+            return { thaiMonth, dateStr };
         }
 
-        function getElement(d, m) {
-            for(let rule of elementData) { if (checkDate(d, m, rule.start[0], rule.start[1], rule.end[0], rule.end[1])) return rule; }
-            return elementData[0];
+        // Database: คัมภีร์ปฐมจินดา (ธาตุเจ้าเรือนกำเนิด ตามเดือนปฏิสนธิ)
+        // เดือน 5, 6, 7 (เม.ย.-มิ.ย.) = ธาตุลม
+        // เดือน 8, 9, 10 (ก.ค.-ก.ย.) = ธาตุน้ำ
+        // เดือน 11, 12, 1 (ต.ค.-ธ.ค.) = ธาตุดิน
+        // เดือน 2, 3, 4 (ม.ค.-มี.ค.) = ธาตุไฟ
+        
+        const originData = [
+            // ธาตุลม (ปฏิสนธิเดือน 5,6,7)
+            { months: [5, 6, 7], main: "ธาตุลม (วาโย)", sub: "เจ้าเรือนกำเนิด", color: "from-emerald-400 to-green-600",
+              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Bowing.png",
+              goodTaste: "รสสุขุม, เผ็ดร้อน", badTaste: "รสหวานจัด, เย็นชืด",
+              desc: "เป็นคนคล่องแคล่ว ว่องไว ช่างพูด เจรจาดี แต่อาจขี้หนาวและท้องอืดง่าย (กำเนิดจากวาโยธาตุ)",
+              food: "แกงเลียง, ต้มโคล้ง, ขิงผัด", herb: "ขิง, ข่า, ตะไคร้",
+              activity: "โยคะ, ฤาษีดัดตน", ref: "คัมภีร์ปฐมจินดา" },
+            
+            // ธาตุน้ำ (ปฏิสนธิเดือน 8,9,10)
+            { months: [8, 9, 10], main: "ธาตุน้ำ (อาโป)", sub: "เจ้าเรือนกำเนิด", color: "from-blue-400 to-cyan-600",
+              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Tipping%20Hand.png",
+              goodTaste: "รสเปรี้ยว, ขม", badTaste: "รสมัน, เลี่ยน",
+              desc: "รูปร่างสมบูรณ์ ผิวพรรณสดใส เยือกเย็น แต่อาจมีเสมหะและเป็นหวัดง่าย (กำเนิดจากอาโปธาตุ)",
+              food: "แกงส้ม, ต้มยำ, น้ำพริกผักต้ม", herb: "มะขามป้อม, สมอไทย",
+              activity: "ว่ายน้ำ, แอโรบิกในน้ำ", ref: "คัมภีร์ปฐมจินดา" },
+
+            // ธาตุดิน (ปฏิสนธิเดือน 11,12,1)
+            { months: [11, 12, 1], main: "ธาตุดิน (ปถวี)", sub: "เจ้าเรือนกำเนิด", color: "from-yellow-600 to-brown-600",
+              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Construction%20Worker.png",
+              goodTaste: "รสฝาด, หวาน, เค็ม", badTaste: "รสจืดชืด",
+              desc: "ร่างกายแข็งแรง บึกบึน หนักแน่น มั่นคง แต่อาจท้องผูกง่าย (กำเนิดจากปถวีธาตุ)",
+              food: "ผักพื้นบ้าน, ยำหัวปลี, ผลไม้", herb: "ตรีผลา, สมอไทย",
+              activity: "เดินเร็ว, ยกน้ำหนัก", ref: "คัมภีร์ปฐมจินดา" },
+
+            // ธาตุไฟ (ปฏิสนธิเดือน 2,3,4)
+            { months: [2, 3, 4], main: "ธาตุไฟ (เตโช)", sub: "เจ้าเรือนกำเนิด", color: "from-orange-400 to-red-600",
+              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Running.png",
+              goodTaste: "รสจืด, เย็น, ขม", badTaste: "รสเผ็ดร้อนจัด",
+              desc: "กระฉับกระเฉง ใจร้อน หิวบ่อย ระบบเผาผลาญดี แต่หงุดหงิดง่าย (กำเนิดจากเตโชธาตุ)",
+              food: "แกงจืด, ผักบุ้งไฟแดง, แตงโม", herb: "ใบบัวบก, ย่านาง",
+              activity: "นั่งสมาธิ, ว่ายน้ำ", ref: "คัมภีร์ปฐมจินดา" }
+        ];
+
+        function getElementByPatisandhi(thaiMonth) {
+            for (let rule of originData) {
+                if (rule.months.includes(thaiMonth)) return rule;
+            }
+            return originData[0];
         }
 
         async function startAnalysis() {
             const d = parseInt(document.getElementById('inputDay').value);
             const m = parseInt(document.getElementById('inputMonth').value);
-            const y = parseInt(document.getElementById('inputYear').value);
-            const birthDateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            
-            const result = getElement(d, m);
+            const y = parseInt(document.getElementById('inputYear').value); // ปี พ.ศ.
+            const yAD = y - 543; // แปลงเป็น ค.ศ. เพื่อคำนวณ
 
+            // 1. คำนวณวันปฏิสนธิ
+            const patisandhi = calculatePatisandhi(d, m, yAD);
+            
+            // 2. หาธาตุตามเดือนปฏิสนธิ (คัมภีร์ปฐมจินดา)
+            const result = getElementByPatisandhi(patisandhi.thaiMonth);
+
+            // Update UI
             document.getElementById('resMain').innerText = result.main;
             document.getElementById('resSub').innerText = result.sub;
+            // แสดงข้อมูลวันปฏิสนธิให้คนไข้ทราบ
+            document.getElementById('patisandhiInfo').innerText = `(ประมาณการปฏิสนธิ: ${patisandhi.dateStr} / เดือนไทย ${patisandhi.thaiMonth})`;
+
             document.getElementById('resDesc').innerText = result.desc;
             document.getElementById('resGoodTaste').innerText = result.goodTaste;
             document.getElementById('resBadTaste').innerText = result.badTaste;
             document.getElementById('resFood').innerText = result.food;
             document.getElementById('resHerb').innerText = result.herb;
             document.getElementById('resActivity').innerText = result.activity;
-            document.getElementById('resRef').innerText = result.ref || "คัมภีร์แพทย์แผนไทย";
+            document.getElementById('resRef').innerText = result.ref;
 
             const header = document.getElementById('resultHeader');
-            header.className = `back-header h-52 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700 ${result.color}`;
+            header.className = `back-header h-56 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700 ${result.color}`;
             
-            // ✅ SHOW NEW AVATAR
             const avatarImg = document.getElementById('avatarImg');
             avatarImg.src = result.avatarUrl;
             avatarImg.classList.remove('hidden');
@@ -399,6 +284,8 @@
             document.getElementById('cardObject').classList.add('is-flipped');
             
             try {
+                // บันทึกปี พ.ศ. ลงไปด้วย
+                const birthDateStr = `${yAD}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 fetch(SCRIPT_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
