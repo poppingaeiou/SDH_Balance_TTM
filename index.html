@@ -36,11 +36,11 @@
             pointer-events: none; z-index: -1;
         }
 
-        /* 3D Card Scene */
+        /* 3D Card Scene - Extended Height */
         .card-scene { 
-            width: 100%; max-width: 420px; margin: 0 auto;
-            min-height: 85vh; perspective: 1500px; 
-            padding: 20px 0;
+            width: 100%; max-width: 450px; margin: 0 auto;
+            min-height: 100vh; perspective: 1500px; 
+            padding: 40px 0;
         }
 
         .card-object { 
@@ -58,19 +58,22 @@
                 0 20px 50px rgba(27, 77, 62, 0.15),
                 0 0 0 1px rgba(212, 175, 55, 0.2) inset;
             overflow: hidden;
+            /* เพิ่มความสูงขั้นต่ำ */
+            min-height: 800px; 
+            display: flex; flex-direction: column;
         }
         
-        .card-front { transform: rotateY(0deg); padding: 30px; min-height: 550px; display: flex; flex-direction: column; justify-content: center;}
+        .card-front { transform: rotateY(0deg); padding: 30px; }
         .card-back { 
             position: absolute; top: 0; left: 0; height: 100%; 
-            transform: rotateY(180deg); display: flex; flex-direction: column; 
+            transform: rotateY(180deg); 
         }
         
         .is-flipped { transform: rotateY(180deg); }
 
         /* Logo Animation */
         .logo-container {
-            width: 100px; height: 100px; margin: 0 auto 15px;
+            width: 90px; height: 90px; margin: 0 auto 10px;
             background: white; 
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -113,6 +116,31 @@
             opacity: 0; transition: opacity 0.2s;
         }
         .btn-gold:active { transform: scale(0.98); box-shadow: 0 5px 10px rgba(27, 77, 62, 0.2); }
+
+        /* Today's Forecast Section (New Feature) */
+        .forecast-box {
+            margin-top: auto; /* Push to bottom */
+            background: linear-gradient(to bottom right, #ffffff, #f8fcf8);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(27, 77, 62, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .forecast-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
+        }
+        .forecast-title { font-size: 14px; font-weight: bold; color: var(--green-deep); }
+        .forecast-date { font-size: 12px; color: #888; }
+        
+        .forecast-content { font-size: 12px; color: #555; line-height: 1.6; }
+        .season-badge {
+            background: var(--gold-light); color: #8D6E63;
+            padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: bold;
+            display: inline-block; margin-bottom: 8px;
+        }
 
         /* Results Styling */
         .back-header { 
@@ -163,6 +191,14 @@
         }
         .food-tag i { color: var(--green-leaf); margin-left: 4px; font-size: 10px;}
 
+        .lunar-badge {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 15px; border-radius: 20px;
+            font-size: 12px; color: #FFD700; display: inline-block;
+            backdrop-filter: blur(4px);
+            margin-bottom: 5px;
+        }
+
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
     </style>
@@ -170,7 +206,7 @@
 <body class="flex flex-col items-center justify-center min-h-screen">
     <div class="thai-pattern"></div>
 
-    <div class="text-center mb-6 z-10 animate-fade-in-down mt-10">
+    <div class="text-center mb-4 z-10 animate-fade-in-down mt-6">
         <div class="logo-container">
             <img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" alt="Logo" class="logo-img">
         </div>
@@ -182,20 +218,15 @@
         <div id="cardObject" class="card-object">
             
             <div class="card-face card-front">
-                <div class="text-center mb-8">
-                    <h2 class="text-xl font-bold text-gray-800">ระบุวันเกิดของคุณ</h2>
-                    <div class="h-1 w-20 bg-gradient-to-r from-yellow-400 to-yellow-600 mx-auto mt-3 rounded-full"></div>
-                    <p class="text-xs text-gray-400 mt-4 leading-relaxed">
-                        ระบบจะวิเคราะห์ <b>"ธาตุกำเนิด"</b> โดยคำนวณย้อนหลังจากวันเกิด 9 เดือน<br>
-                        ตามคัมภีร์ปฐมจินดา
-                    </p>
+                <div class="text-center mb-6">
+                    <h2 class="text-lg font-bold text-gray-800">กรอกวันเกิด</h2>
+                    <p class="text-xs text-gray-400">ระบบจะคำนวณจากวันปฏิสนธิ (ย้อนหลัง 9 เดือน)</p>
                 </div>
 
                 <div class="input-group">
                     <span class="input-label">วันที่</span>
                     <select id="inputDay" class="custom-select"></select>
                 </div>
-                
                 <div class="input-group">
                     <span class="input-label">เดือนเกิด</span>
                     <select id="inputMonth" class="custom-select">
@@ -213,27 +244,45 @@
                         <option value="12">ธันวาคม</option>
                     </select>
                 </div>
-
                 <div class="input-group">
                     <span class="input-label">ปี พ.ศ.เกิด</span>
                     <select id="inputYear" class="custom-select"></select>
                 </div>
 
-                <button onclick="startAnalysis()" class="btn-gold mt-4">
+                <button onclick="startAnalysis()" class="btn-gold mt-2">
                     <span>วิเคราะห์ธาตุเจ้าเรือน</span> <i class="fas fa-search ml-2"></i>
                 </button>
+
+                <div class="forecast-box">
+                    <div class="forecast-header">
+                        <div class="forecast-title"><i class="fas fa-sun mr-1"></i> ธาตุสมุฏฐานวันนี้</div>
+                        <div class="forecast-date" id="todayDate">...</div>
+                    </div>
+                    <div class="text-center mb-2">
+                        <span id="todayLunar" class="text-xs font-semibold text-yellow-600">...</span>
+                    </div>
+                    <div class="forecast-content">
+                        <span class="season-badge" id="todaySeason">...</span>
+                        <p id="todayHealth" class="mb-2">...</p>
+                        <div class="bg-white p-2 rounded border border-gray-100 flex items-center">
+                            <i class="fas fa-utensils text-green-600 mr-2 text-lg"></i>
+                            <span id="todayFood" class="text-xs text-gray-600">...</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="resultFace" class="card-face card-back">
                 <div id="resultHeader" class="back-header">
                     <img id="avatarImg" src="" class="avatar-real hidden">
-                    
                     <h2 class="text-2xl font-bold text-white drop-shadow-md" id="resMain">...</h2>
                     <p class="text-white/90 text-xs mt-2 px-4 leading-relaxed font-light" id="resSub">...</p>
+                    <div class="mt-3 flex flex-col items-center">
+                        <span class="lunar-badge"><i class="fas fa-moon mr-1"></i> ปฏิสนธิ: <span id="conceptionLunarDisplay">...</span></span>
+                    </div>
                 </div>
 
                 <div class="back-content">
-                    
                     <div class="section-title"><i class="fas fa-user-circle"></i> ลักษณะนิสัยและจุดเด่น</div>
                     <div class="detail-box" id="resTrait">...</div>
 
@@ -257,14 +306,10 @@
 
                     <div class="section-title"><i class="fas fa-lemon"></i> ผลไม้ที่แนะนำ (กดเพื่อดูรูป)</div>
                     <div id="fruitList" class="mb-4"></div>
-
                 </div>
 
                 <div class="p-4 bg-white border-t z-20">
-                    <p class="text-[9px] text-center text-gray-400 mb-2">
-                        อ้างอิง: คัมภีร์ปฐมจินดา, คัมภีร์สมุฏฐานวินิจฉัย, คัมภีร์เวชศึกษา<br>
-                        และแนวทางเวชปฏิบัติ รพ.สะเดา
-                    </p>
+                    <p class="text-[9px] text-center text-gray-400 mb-2">อ้างอิง: คัมภีร์ปฐมจินดา, อุตุสมุฏฐานวินิจฉัย (รพ.สะเดา)</p>
                     <button onclick="resetCard()" class="w-full py-3 rounded-xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition">
                         <i class="fas fa-redo mr-1"></i> วิเคราะห์ใหม่
                     </button>
@@ -275,6 +320,7 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX7ZJvwflkNzhZ1SPPOJZZcJBvh_Bpbc2acOjh6fEcj58fv9wHu4i9M8J5BoCNmIoDbw/exec'; 
+        const adhikamasaYears = [1947, 1950, 1953, 1956, 1958, 1961, 1964, 1966, 1969, 1972, 1975, 1977, 1980, 1983, 1986, 1988, 1991, 1994, 1997, 1999, 2002, 2004, 2007, 2010, 2012, 2015, 2018, 2020, 2023, 2026, 2029, 2031, 2034, 2037, 2040, 2042, 2045, 2048, 2051, 2053, 2056, 2059, 2062, 2065, 2068];
 
         window.onload = function() {
             const daySelect = document.getElementById('inputDay');
@@ -290,13 +336,14 @@
                 yearSelect.appendChild(opt); 
             }
             yearSelect.value = (currentYearBE - 30 - 543);
+
+            // Trigger Daily Forecast
+            updateDailyForecast();
         }
 
         // ==========================================
-        // 1. Calculation Engine (V.Conception)
+        // 1. Calculation Engine
         // ==========================================
-        const adhikamasaYears = [1947, 1950, 1953, 1956, 1958, 1961, 1964, 1966, 1969, 1972, 1975, 1977, 1980, 1983, 1986, 1988, 1991, 1994, 1997, 1999, 2002, 2004, 2007, 2010, 2012, 2015, 2018, 2020, 2023, 2026, 2029, 2031, 2034, 2037, 2040, 2042, 2045, 2048, 2051, 2053, 2056, 2059, 2062, 2065, 2068];
-
         function calculateRealLunarDate(targetDate) {
             const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); 
             const diffTime = targetDate.getTime() - knownNewMoon.getTime();
@@ -322,85 +369,122 @@
             if (adhikamasaYears.includes(targetDate.getFullYear())) {
                 if (nmMonth >= 7 || nmMonth <= 3) { thaiMonth -= 1; if (thaiMonth <= 0) thaiMonth = 12; }
             }
-            return { phase, lunarDay, thaiMonth };
+            
+            const thaiNums = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
+            const toThaiNum = (num) => num.toString().split('').map(d => thaiNums[d] || d).join('');
+            
+            return { phase, lunarDay, thaiMonth, display: `${phase === "Waxing" ? "ขึ้น" : "แรม"} ${toThaiNum(lunarDay)} ค่ำ เดือน ${toThaiNum(thaiMonth)}` };
         }
 
         // ==========================================
-        // 2. Element Data (Detailed)
+        // 2. Daily Forecast Logic (6 Seasons - Utu Samutthan)
+        // ==========================================
+        function getDailySeason(lunar) {
+            const m = lunar.thaiMonth;
+            const p = lunar.phase;
+            const d = lunar.lunarDay;
+            
+            // Logic 6 Seasons (Approximate for Daily Use)
+            // 1. คิมหันตฤดู (ร้อน) - เดือน 5-6
+            // 2. วสันตฤดู (ฝนแรก) - เดือน 7-8
+            // 3. วสสานฤดู (ฝนชุก) - เดือน 9-10
+            // 4. สารทฤดู (ปลายฝน) - เดือน 11-12
+            // 5. เหมันตฤดู (หนาว) - เดือน 1-2
+            // 6. ศิศิรฤดู (น้ำค้าง) - เดือน 3-4
+            
+            if (m == 5 || m == 6) return { name: "คิมหันตฤดู (ฤดูร้อน)", element: "ธาตุไฟ (เตโช)", health: "ระวังลมแดด ร้อนใน กระหายน้ำ", food: "ทานของขมเย็น เช่น มะระ แตงโม" };
+            if (m == 7 || m == 8) return { name: "วสันตฤดู (ฝนแรก)", element: "ธาตุลมระคนไฟ", health: "ระวังไข้หวัด วิงเวียนศีรษะ", food: "ทานอาหารรสเปรี้ยวจี๊ดจ๊าด แกงส้ม" };
+            if (m == 9 || m == 10) return { name: "วสสานฤดู (ฝนชุก)", element: "ธาตุลม (วาโย)", health: "ระวังท้องอืด แน่นท้อง อาหารไม่ย่อย", food: "ทานสมุนไพรขับลม ขิง ข่า ตะไคร้" };
+            if (m == 11 || m == 12) return { name: "สารทฤดู (ปลายฝนต้นหนาว)", element: "ธาตุน้ำ (อาโป)", health: "ระวังเสมหะ ไอ เจ็บคอ", food: "ทานอาหารรสเผ็ดร้อนเล็กน้อย ต้มยำ" };
+            if (m == 1 || m == 2) return { name: "เหมันตฤดู (ฤดูหนาว)", element: "ธาตุน้ำระคนดิน", health: "ระวังผิวแห้ง ปวดข้อ น้ำมูกไหล", food: "ทานอาหารรสมัน เค็ม ร้อน" };
+            return { name: "ศิศิรฤดู (ฤดูน้ำค้าง)", element: "ธาตุดิน (ปถวี)", health: "ระวังวิงเวียน อ่อนเพลีย", food: "ทานอาหารบำรุงกำลัง รสหวาน มัน" };
+        }
+
+        function updateDailyForecast() {
+            const today = new Date();
+            const lunar = calculateRealLunarDate(today);
+            const season = getDailySeason(lunar);
+            
+            const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+            document.getElementById('todayDate').innerText = `${today.getDate()} ${thaiMonths[today.getMonth()]} ${today.getFullYear()+543}`;
+            document.getElementById('todayLunar').innerText = lunar.display;
+            document.getElementById('todaySeason').innerText = season.name;
+            document.getElementById('todayHealth').innerText = `พิกัด ${season.element} กำเริบ: ${season.health}`;
+            document.getElementById('todayFood').innerText = `แนะนำ: ${season.food}`;
+        }
+
+        // ==========================================
+        // 3. Analysis Data (Detailed)
         // ==========================================
         function getElementData(month) {
-            // เดือน 5,6,7 = ไฟ
             if (month >= 5 && month <= 7) {
                 return {
                     name: "ธาตุไฟ (เตโช)",
-                    sub: "ปฏิสนธิในคิมหันตฤดู (ฤดูร้อน)",
+                    sub: "ปฏิสนธิในคิมหันตฤดู",
                     color: "linear-gradient(135deg, #FF7043, #D84315)",
                     avatar: "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png",
-                    trait: "เป็นคนคล่องแคล่ว ว่องไว กระตือรือร้น ใจร้อน หิวบ่อย กินจุ ผิวพรรณมักละเอียด ผิวแดงหรือเหลือง ระบบเผาผลาญดีมาก แต่อาจผมหงอกหรือหัวล้านเร็ว",
-                    health: "มักเป็นไข้ตัวร้อนได้ง่าย เป็นร้อนใน แผลในปาก ปวดศีรษะข้างเดียว (ไมเกรน) ผิวหนังแพ้แสงแดดง่าย ท้องผูกสลับท้องเสียจากความร้อนในกระเพาะ",
+                    trait: "เป็นคนคล่องแคล่ว ว่องไว กระตือรือร้น ใจร้อน หิวบ่อย กินจุ ผิวพรรณมักละเอียด ผิวแดงหรือเหลือง ระบบเผาผลาญดีมาก",
+                    health: "มักเป็นไข้ตัวร้อนได้ง่าย เป็นร้อนใน แผลในปาก ปวดศีรษะข้างเดียว (ไมเกรน) ผิวหนังแพ้แสงแดดง่าย",
                     recTaste: "รสขม, รสเย็น, รสจืด",
-                    recTasteReason: "เพื่อช่วยลดความร้อนในร่างกาย ดับพิษร้อน และช่วยให้เลือดลมไหลเวียนสะดวก",
+                    recTasteReason: "ช่วยลดความร้อน ดับพิษร้อนในร่างกาย",
                     avoidTaste: "รสเผ็ดร้อนจัด, รสเค็มจัด",
-                    avoidTasteReason: "จะยิ่งไปเพิ่มความร้อนในร่างกาย ทำให้ธาตุไฟกำเริบ เกิดอาการร้อนในหรือไข้ได้ง่าย",
-                    foods: ["แกงจืดตำลึง", "แกงจืดมะระ", "ต้มฟักเขียว", "ผัดผักบุ้ง", "แตงกวาผัดไข่", "แกงเลียง", "แกงส้มผักบุ้ง", "น้ำพริกหนุ่ม (ไม่เผ็ดมาก)"],
+                    avoidTasteReason: "เพิ่มความร้อน ทำให้ธาตุไฟกำเริบ",
+                    foods: ["แกงจืดตำลึง", "แกงจืดมะระ", "ต้มฟักเขียว", "ผัดผักบุ้ง", "แตงกวาผัดไข่", "แกงเลียง", "แกงส้มผักบุ้ง"],
                     fruits: ["แตงโม", "แคนตาลูป", "แก้วมังกร", "ชมพู่", "มังคุด", "ส้มโอ"]
                 };
             }
-            // เดือน 8,9,10 = ลม
             else if (month >= 8 && month <= 10) {
                 return {
                     name: "ธาตุลม (วาโย)",
-                    sub: "ปฏิสนธิในวสันตฤดู (ฤดูฝน)",
+                    sub: "ปฏิสนธิในวสันตฤดู",
                     color: "linear-gradient(135deg, #66BB6A, #2E7D32)",
                     avatar: "https://img2.pic.in.th/261c90e765ec6b116.png",
-                    trait: "ช่างพูดช่างเจรจา คล่องแคล่ว แต่ขี้หนาว ผิวแห้งง่าย รูปร่างโปร่ง ผอมบาง นอนหลับยาก ตื่นง่าย ขี้กังวล ความคิดแล่นเร็ว",
-                    health: "ท้องอืด ท้องเฟ้อ แน่นหน้าอก วิงเวียนศีรษะ หน้ามืดง่าย ปวดตามข้อและกระดูก เสียงในหู ลมจุกเสียด",
+                    trait: "ช่างพูดช่างเจรจา คล่องแคล่ว ขี้หนาว ผิวแห้งง่าย รูปร่างโปร่ง ผอมบาง นอนหลับยาก ตื่นง่าย ขี้กังวล",
+                    health: "ท้องอืด ท้องเฟ้อ แน่นหน้าอก วิงเวียนศีรษะ หน้ามืดง่าย ปวดตามข้อและกระดูก",
                     recTaste: "รสเผ็ดร้อน, รสสุขุม",
-                    recTasteReason: "เพื่อช่วยขับลม กระจายเลือดลมให้ไหลเวียนดี แก้ท้องอืดท้องเฟ้อ และให้ความอบอุ่นแก่ร่างกาย",
+                    recTasteReason: "ช่วยขับลม กระจายเลือดลม แก้ท้องอืด",
                     avoidTaste: "รสหวานจัด, รสมันจัด, รสเย็น",
-                    avoidTasteReason: "จะทำให้เสมหะเหนียวข้น เลือดลมเดินไม่สะดวก เกิดอาการจุกเสียดแน่นท้องได้ง่าย",
-                    foods: ["ต้มยำกุ้ง", "ต้มข่าไก่", "แกงป่า", "ผัดกะเพรา", "ขิงผัดไก่", "หมูผัดพริกขิง", "แกงไตปลา", "น้ำพริกขิง"],
+                    avoidTasteReason: "ทำให้เสมหะเหนียว เลือดลมเดินไม่สะดวก",
+                    foods: ["ต้มยำกุ้ง", "ต้มข่าไก่", "แกงป่า", "ผัดกะเพรา", "ขิงผัดไก่", "หมูผัดพริกขิง", "แกงไตปลา"],
                     fruits: ["ส้ม", "เงาะ", "สละ", "ลองกอง", "ลำไย", "ขิง (น้ำขิง)"]
                 };
             }
-            // เดือน 11,12,1 = น้ำ
             else if (month == 11 || month == 12 || month == 1) {
                 return {
                     name: "ธาตุน้ำ (อาโป)",
-                    sub: "ปฏิสนธิในเหมันตฤดู (ฤดูหนาว)",
+                    sub: "ปฏิสนธิในเหมันตฤดู",
                     color: "linear-gradient(135deg, #42A5F5, #1565C0)",
                     avatar: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png",
-                    trait: "รูปร่างสมบูรณ์ ผิวพรรณสดใส เต่งตึง ตาหวาน เสียงไพเราะ เคลื่อนไหวช้า นุ่มนวล อารมณ์เย็น ความจำดี แต่อาจเฉื่อยชาบ้าง",
+                    trait: "รูปร่างสมบูรณ์ ผิวพรรณสดใส เต่งตึง ตาหวาน เสียงไพเราะ เคลื่อนไหวช้า นุ่มนวล อารมณ์เย็น ความจำดี",
                     health: "เป็นหวัดง่าย ภูมิแพ้อากาศ มีเสมหะมาก ท้องเสียบ่อย บวมน้ำง่าย ระบบน้ำเหลืองไม่ดี",
-                    recTaste: "รสเปรี้ยว, รสขม, รสร้อน (เล็กน้อย)",
-                    recTasteReason: "รสเปรี้ยวช่วยกัดเสมหะ รสขมช่วยบำรุงโลหิต รสร้อนช่วยให้ความอบอุ่นและขับน้ำส่วนเกิน",
+                    recTaste: "รสเปรี้ยว, รสขม, รสร้อน",
+                    recTasteReason: "กัดเสมหะ บำรุงโลหิต และขับน้ำส่วนเกิน",
                     avoidTaste: "รสมันจัด, รสหวานจัด, รสเค็มจัด",
-                    avoidTasteReason: "ทำให้น้ำเหลืองเสีย เพิ่มเสมหะ และทำให้ตัวบวมน้ำง่ายขึ้น",
-                    foods: ["แกงส้มดอกแค", "ต้มยำปลา", "ยำตะไคร้", "ห่อหมก", "แกงเหลือง", "น้ำพริกมะขาม", "ส้มตำ", "ต้มส้มปลากระบอก"],
-                    fruits: ["สับปะรด", "ส้มโอ", "มะเฟือง", "มะขามป้อม", "ตะลิงปลิง", "มะยม"]
+                    avoidTasteReason: "ทำให้น้ำเหลืองเสีย เพิ่มเสมหะ",
+                    foods: ["แกงส้มดอกแค", "ต้มยำปลา", "ยำตะไคร้", "ห่อหมก", "แกงเหลือง", "น้ำพริกมะขาม", "ส้มตำ"],
+                    fruits: ["สับปะรด", "ส้มโอ", "มะเฟือง", "มะขามป้อม", "ตะลิงปลิง"]
                 };
             }
-            // เดือน 2,3,4 = ดิน
             else {
                 return {
                     name: "ธาตุดิน (ปถวี)",
-                    sub: "ปฏิสนธิในศิศิรฤดู (ฤดูหนาวช่วงปลาย)",
+                    sub: "ปฏิสนธิในศิศิรฤดู",
                     color: "linear-gradient(135deg, #8D6E63, #5D4037)",
                     avatar: "https://img2.pic.in.th/1c8b450894dd6fe8e.png",
-                    trait: "ร่างกายแข็งแรง บึกบึน โครงสร้างใหญ่ หนักแน่น มั่นคง อดทนสูง จิตใจเยือกเย็น สุขุม รอบคอบ แต่มักทำอะไรช้า",
-                    health: "ท้องผูกง่าย อาหารไม่ย่อย โรคอ้วน นิ่ว เนื้องอก ซีสต์ และโรคที่เกี่ยวกับโครงสร้างกระดูก",
+                    trait: "ร่างกายแข็งแรง บึกบึน โครงสร้างใหญ่ หนักแน่น มั่นคง อดทนสูง จิตใจเยือกเย็น สุขุม รอบคอบ",
+                    health: "ท้องผูกง่าย อาหารไม่ย่อย โรคอ้วน นิ่ว เนื้องอก ซีสต์",
                     recTaste: "รสฝาด, รสหวาน, รสมัน, รสเค็ม",
-                    recTasteReason: "เพื่อบำรุงธาตุดินให้สมบูรณ์ (แต่ต้องกินในปริมาณพอดี) รสฝาดช่วยสมานแผลภายใน",
+                    recTasteReason: "บำรุงธาตุดินให้สมบูรณ์ สมานแผล",
                     avoidTaste: "รสหวานจัดเกินไป, รสมันจัดเกินไป",
-                    avoidTasteReason: "แม้จะถูกกับธาตุ แต่ถ้ามากเกินไปจะทำให้ธาตุดินกำเริบ กลายเป็นโรคอ้วนหรือไขมันอุดตันได้ง่าย",
-                    foods: ["พะโล้", "มัสมั่น", "ราดหน้า", "ผัดซีอิ๊ว", "ยำถั่วพู", "สะตอผัดกุ้ง", "เต้าหู้ทรงเครื่อง", "แกงเลียง (ช่วยย่อย)"],
-                    fruits: ["กล้วยน้ำว้า", "เงาะ", "มังคุด", "ฝรั่ง", "มะละกอ", "ฟักทอง (ขนม)"]
+                    avoidTasteReason: "ทำให้ธาตุดินกำเริบ เป็นโรคอ้วนง่าย",
+                    foods: ["พะโล้", "มัสมั่น", "ราดหน้า", "ผัดซีอิ๊ว", "ยำถั่วพู", "สะตอผัดกุ้ง", "เต้าหู้ทรงเครื่อง"],
+                    fruits: ["กล้วยน้ำว้า", "เงาะ", "มังคุด", "ฝรั่ง", "มะละกอ"]
                 };
             }
         }
 
         // ==========================================
-        // 3. Main Logic & Render
+        // 4. Main Controller
         // ==========================================
         function createFoodTags(items, containerId) {
             const container = document.getElementById(containerId);
@@ -408,7 +492,6 @@
             items.forEach(item => {
                 const tag = document.createElement("a");
                 tag.className = "food-tag";
-                // Link to Google Image Search
                 tag.href = `https://www.google.com/search?tbm=isch&q=${item} อาหาร`; 
                 tag.target = "_blank";
                 tag.innerHTML = `${item} <i class="fas fa-external-link-alt"></i>`;
@@ -421,46 +504,35 @@
             const m = parseInt(document.getElementById('inputMonth').value);
             const yAD = parseInt(document.getElementById('inputYear').value);
 
-            // 1. Calculate Conception Date
+            // Calculate Conception
             let birthDate = new Date(yAD, m - 1, d);
             let conceptionDate = new Date(birthDate);
             conceptionDate.setMonth(birthDate.getMonth() - 9);
             
-            let cDay = conceptionDate.getDate();
-            let cMonth = conceptionDate.getMonth() + 1;
-            let cYear = conceptionDate.getFullYear();
-
-            // 2. Get Lunar for Conception
             const lunarInfo = calculateRealLunarDate(conceptionDate);
-            
-            // 3. Get Element Data
             const data = getElementData(lunarInfo.thaiMonth);
 
-            // 4. Update UI
+            // UI Update
             document.getElementById('resMain').innerText = data.name;
-            document.getElementById('resSub').innerText = data.sub; // ไม่โชว์วันที่
+            document.getElementById('resSub').innerText = data.sub; 
+            document.getElementById('conceptionLunarDisplay').innerText = lunarInfo.display;
             
             document.getElementById('avatarImg').src = data.avatar;
             document.getElementById('avatarImg').classList.remove('hidden');
             document.getElementById('resultHeader').style.background = data.color;
 
-            // Details
             document.getElementById('resTrait').innerText = data.trait;
             document.getElementById('resHealth').innerText = data.health;
-            
             document.getElementById('resTasteGood').innerText = data.recTaste;
             document.getElementById('resTasteGoodReason').innerText = data.recTasteReason;
-            
             document.getElementById('resTasteBad').innerText = data.avoidTaste;
             document.getElementById('resTasteBadReason').innerText = data.avoidTasteReason;
 
-            // Generate Clickable Tags
             createFoodTags(data.foods, 'foodList');
             createFoodTags(data.fruits, 'fruitList');
 
             document.getElementById('cardObject').classList.add('is-flipped');
             
-            // Save Data (Optional)
             try {
                 const birthDateStr = `${yAD}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 fetch(SCRIPT_URL, {
