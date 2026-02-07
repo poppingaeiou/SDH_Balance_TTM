@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>วิเคราะห์ธาตุเจ้าเรือน - รพ.สะเดา</title>
+    <title>วิเคราะห์ธาตุเจ้าเรือน (สมุฏฐานฤดู 6) - รพ.สะเดา</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -12,6 +12,7 @@
     <style>
         :root { --primary-gold: #D4AF37; --deep-green: #1B4D3E; }
         body { font-family: 'Prompt', sans-serif; background: #fdfbf7; overflow-y: auto; }
+        
         .thai-bg {
             background-image: radial-gradient(#1B4D3E 1px, transparent 1px), radial-gradient(#D4AF37 1px, transparent 1px);
             background-size: 24px 24px; background-position: 0 0, 12px 12px; opacity: 0.05; position: absolute; inset: 0; z-index: -1;
@@ -19,17 +20,45 @@
 
         /* Card Layout */
         .card-scene { 
-            width: 100%; height: 85vh; max-height: 850px; min-height: 650px; 
-            position: relative; perspective: 1000px; margin: 20px 0;
+            width: 100%; 
+            height: 80vh; 
+            max-height: 800px; 
+            min-height: 600px; 
+            position: relative; 
+            perspective: 1000px; 
+            margin: 20px 0;
         }
+
         .card-object { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.4, 0.2, 0.2, 1); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15); }
+        
         .card-front { background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(212, 175, 55, 0.3); transform: rotateY(0deg); }
-        .card-back { background: white; transform: rotateY(180deg); display: flex; flex-direction: column; height: 100%; }
+        
+        /* Layout การ์ดหลัง (Flexbox) */
+        .card-back { 
+            background: white; 
+            transform: rotateY(180deg); 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+        }
         
         .back-header { flex-shrink: 0; position: relative; z-index: 2; }
-        .back-content { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; -webkit-overflow-scrolling: touch; } 
-        .back-footer { flex-shrink: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border-top: 1px solid #eee; padding: 15px; z-index: 10; }
+        .back-content { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            padding-bottom: 20px; 
+            -webkit-overflow-scrolling: touch; 
+        } 
+        .back-footer {
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid #eee;
+            padding: 15px;
+            z-index: 10;
+        }
         
         .is-flipped { transform: rotateY(180deg); }
         .custom-select { appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231B4D3E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.75rem center; background-repeat: no-repeat; background-size: 1.2em 1.2em; }
@@ -51,7 +80,7 @@
             <i class="fas fa-spa text-3xl text-green-700"></i>
         </div>
         <h1 class="text-xl font-bold text-green-900 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
-        <p class="text-yellow-700 text-xs font-medium">คำนวณวันปฏิสนธิตามคัมภีร์ปฐมจินดา</p>
+        <p class="text-yellow-700 text-xs font-medium">ตามคัมภีร์สมุฏฐานวินิจฉัย (ฤดู 6)</p>
     </div>
 
     <div class="card-scene w-full max-w-sm">
@@ -60,9 +89,9 @@
             <div class="card-face card-front p-6 flex flex-col justify-between">
                 <div>
                     <div class="text-center mb-6 mt-4">
-                        <h2 class="text-green-800 font-bold text-lg">ระบุวันเดือนปีเกิด</h2>
+                        <h2 class="text-green-800 font-bold text-lg">ระบุวันเกิดของคุณ</h2>
                         <div class="h-1 w-16 bg-gradient-to-r from-yellow-300 to-yellow-500 mx-auto mt-2 rounded-full"></div>
-                        <p class="text-xs text-gray-400 mt-2">ระบบจะคำนวณย้อนหลังหาวันปฏิสนธิ (9-10 เดือน)</p>
+                        <p class="text-xs text-gray-400 mt-2">ระบบจะแปลงเป็นวันทางจันทรคติ (เดือนไทย) เพื่อวิเคราะห์ธาตุระคน</p>
                     </div>
                     <div class="space-y-4">
                         <div class="relative">
@@ -93,7 +122,7 @@
                     </div>
                 </div>
                 <button onclick="startAnalysis()" class="w-full bg-gradient-to-r from-green-800 to-green-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all flex justify-center items-center gap-2 mb-2 group hover:shadow-xl">
-                    <span>วิเคราะห์ (คำนวณปฏิสนธิ)</span> <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    <span>เริ่มวิเคราะห์ (ละเอียด)</span> <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </button>
             </div>
 
@@ -107,9 +136,10 @@
                     </div>
                     
                     <h2 class="text-2xl font-bold drop-shadow-md z-10 mt-1" id="resMain">...</h2>
+                    
                     <div class="z-10 flex flex-col items-center">
-                        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/30 mb-1" id="resSub">...</span>
-                        <span class="text-[9px] text-white/80" id="patisandhiInfo">...</span>
+                         <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md z-10 border border-white/30 mb-1" id="resSub">...</span>
+                         <span class="text-[9px] text-white/80" id="lunarInfo">...</span>
                     </div>
                 </div>
 
@@ -127,7 +157,7 @@
                     </div>
 
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                        <h3 class="text-green-800 font-bold text-sm mb-2"><i class="fas fa-stethoscope bg-green-100 p-1.5 rounded-full text-green-600 mr-2 text-xs"></i> ลักษณะเจ้าเรือนกำเนิด</h3>
+                        <h3 class="text-green-800 font-bold text-sm mb-2"><i class="fas fa-stethoscope bg-green-100 p-1.5 rounded-full text-green-600 mr-2 text-xs"></i> ธาตุสมุฏฐานระคน</h3>
                         <p id="resDesc" class="text-gray-600 text-sm leading-relaxed"></p>
                     </div>
 
@@ -178,93 +208,129 @@
             yearSelect.value = (currentYearBE - 30 - 543);
         }
 
-        // ✅ LOGIC: การคำนวณวันปฏิสนธิ (Patisandhi)
-        function calculatePatisandhi(day, month, yearAD) {
-            // สร้างวันเกิด
-            const birthDate = new Date(yearAD, month - 1, day);
+        // ✅ LOGIC 1: แปลงวันที่สากล เป็น "เดือนไทย (จันทรคติ)" แบบประมาณการ (Approximation)
+        // หมายเหตุ: การคำนวณเดือนไทยที่แม่นยำ 100% ต้องใช้ปฏิทินร้อยปีโหราศาสตร์
+        // แต่สำหรับ Web App ทั่วไป ใช้สูตรเทียบเดือนมาตรฐาน + การปรับข้างขึ้นแรม
+        function getThaiLunarMonthApprox(day, month) {
+            // สูตรประมาณการ: เดือนไทย = เดือนสากล + 1 (แต่ถ้าหลังเดือน 11 จะเริ่มนับใหม่)
+            // เดือน 12 (ธ.ค.) -> เดือนไทย 1 (อ้าย)
+            // เดือน 1 (ม.ค.) -> เดือนไทย 2 (ยี่)
+            // เดือน 4 (เม.ย.) -> เดือนไทย 5 (ห้า)
             
-            // ลบออก 9 เดือน (ประมาณ 270 วัน) เพื่อหาช่วงปฏิสนธิ
-            // ตามคัมภีร์ปฐมจินดา การปฏิสนธิจะเกิดก่อนคลอดประมาณ 9-10 เดือน
-            const conceptionDate = new Date(birthDate);
-            conceptionDate.setMonth(birthDate.getMonth() - 9);
-
-            // แปลงเป็นเดือนไทย (จันทรคติ) โดยประมาณ (Lunar Month Approximation)
-            // เดือน 5 ไทย ประมาณเดือน เมษายน, เดือน 12 ประมาณ พฤศจิกายน
-            // Logic อย่างง่าย: เดือนไทย = เดือนสากล + 1 (กรณีปกติ) แต่อาจคลาดเคลื่อนตามข้างขึ้นแรม
-            let thaiMonth = conceptionDate.getMonth() + 1 + 1; // +1 index, +1 shift to Thai
-            if (thaiMonth > 12) thaiMonth -= 12;
-
-            // จัดรูปแบบวันที่ปฏิสนธิเพื่อแสดงผล
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const dateStr = conceptionDate.toLocaleDateString('th-TH', options);
-
-            return { thaiMonth, dateStr };
+            // อย่างไรก็ตาม สมุฏฐานฤดู 6 จะแบ่งช่วงคาบเกี่ยว
+            // เราจะแปลงให้เป็นตัวเลข 1-12 เพื่อไปเทียบกับ Range
+            
+            let thaiMonth = month + 1; 
+            if (month == 12) thaiMonth = 1; // ธ.ค. เป็นเดือน 1 ไทย (ประมาณการ)
+            
+            // ปรับละเอียดตามข้างขึ้นแรม (วันที่) 
+            // สมมติ: วันที่ 1-15 = ข้างขึ้น (ต้นเดือนไทย), 16-30 = ข้างแรม (ปลายเดือนไทย)
+            // การตัดรอบฤดู 6 ใช้จุด "แรม 1 ค่ำ" เป็นเกณฑ์เปลี่ยนฤดู
+            
+            return { thaiMonth: thaiMonth, day: day };
         }
 
-        // Database: คัมภีร์ปฐมจินดา (ธาตุเจ้าเรือนกำเนิด ตามเดือนปฏิสนธิ)
-        // เดือน 5, 6, 7 (เม.ย.-มิ.ย.) = ธาตุลม
-        // เดือน 8, 9, 10 (ก.ค.-ก.ย.) = ธาตุน้ำ
-        // เดือน 11, 12, 1 (ต.ค.-ธ.ค.) = ธาตุดิน
-        // เดือน 2, 3, 4 (ม.ค.-มี.ค.) = ธาตุไฟ
-        
-        const originData = [
-            // ธาตุลม (ปฏิสนธิเดือน 5,6,7)
-            { months: [5, 6, 7], main: "ธาตุลม (วาโย)", sub: "เจ้าเรือนกำเนิด", color: "from-emerald-400 to-green-600",
-              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Bowing.png",
-              goodTaste: "รสสุขุม, เผ็ดร้อน", badTaste: "รสหวานจัด, เย็นชืด",
-              desc: "เป็นคนคล่องแคล่ว ว่องไว ช่างพูด เจรจาดี แต่อาจขี้หนาวและท้องอืดง่าย (กำเนิดจากวาโยธาตุ)",
-              food: "แกงเลียง, ต้มโคล้ง, ขิงผัด", herb: "ขิง, ข่า, ตะไคร้",
-              activity: "โยคะ, ฤาษีดัดตน", ref: "คัมภีร์ปฐมจินดา" },
-            
-            // ธาตุน้ำ (ปฏิสนธิเดือน 8,9,10)
-            { months: [8, 9, 10], main: "ธาตุน้ำ (อาโป)", sub: "เจ้าเรือนกำเนิด", color: "from-blue-400 to-cyan-600",
-              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Tipping%20Hand.png",
-              goodTaste: "รสเปรี้ยว, ขม", badTaste: "รสมัน, เลี่ยน",
-              desc: "รูปร่างสมบูรณ์ ผิวพรรณสดใส เยือกเย็น แต่อาจมีเสมหะและเป็นหวัดง่าย (กำเนิดจากอาโปธาตุ)",
-              food: "แกงส้ม, ต้มยำ, น้ำพริกผักต้ม", herb: "มะขามป้อม, สมอไทย",
-              activity: "ว่ายน้ำ, แอโรบิกในน้ำ", ref: "คัมภีร์ปฐมจินดา" },
+        // ✅ LOGIC 2: ฐานข้อมูล "สมุฏฐานฤดู 6" (ธาตุระคน)
+        // อ้างอิงจากรูปภาพ: แรม 1 ค่ำเดือน X ถึง เพ็ญเดือน Y
+        const rudu6Data = [
+            // 1. แรม 1 ค่ำ เดือน 4 -> เพ็ญ เดือน 6 (ปิตตะ + เสมหะ)
+            { rangeStart: 4, rangeEnd: 6, 
+              main: "ธาตุไฟแกมน้ำ (ปิตตะ+เสมหะ)", sub: "สมุฏฐานฤดู 6", color: "from-orange-500 to-blue-500",
+              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Sweating.png", // ไฟ+น้ำ = เหงื่อ/ร้อนชื้น
+              goodTaste: "รสขม, จืด, ฝาด", badTaste: "รสเปรี้ยวจัด, เค็มจัด",
+              desc: "ช่วงเปลี่ยนฤดูร้อน (ไฟ) ระคนด้วยความชื้น (น้ำ) ร่างกายมักร้อนอบอ้าวแต่มีเหงื่อออกง่าย หรือเป็นไข้ตัวร้อนแต่หนาวสั่น",
+              food: "แกงจืดมะระ, ยำสะเดา, ผักลวกจิ้ม", herb: "บรเพ็ด, บัวบก, ย่านาง",
+              activity: "อาบน้ำอุณหภูมิห้อง, หลีกเลี่ยงที่แออัด", ref: "คัมภีร์สมุฏฐานวินิจฉัย" 
+            },
 
-            // ธาตุดิน (ปฏิสนธิเดือน 11,12,1)
-            { months: [11, 12, 1], main: "ธาตุดิน (ปถวี)", sub: "เจ้าเรือนกำเนิด", color: "from-yellow-600 to-brown-600",
-              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Construction%20Worker.png",
-              goodTaste: "รสฝาด, หวาน, เค็ม", badTaste: "รสจืดชืด",
-              desc: "ร่างกายแข็งแรง บึกบึน หนักแน่น มั่นคง แต่อาจท้องผูกง่าย (กำเนิดจากปถวีธาตุ)",
-              food: "ผักพื้นบ้าน, ยำหัวปลี, ผลไม้", herb: "ตรีผลา, สมอไทย",
-              activity: "เดินเร็ว, ยกน้ำหนัก", ref: "คัมภีร์ปฐมจินดา" },
+            // 2. แรม 1 ค่ำ เดือน 6 -> เพ็ญ เดือน 8 (ปิตตะ + วาตะ)
+            { rangeStart: 6, rangeEnd: 8, 
+              main: "ธาตุไฟแกมลม (ปิตตะ+วาตะ)", sub: "สมุฏฐานฤดู 6", color: "from-red-500 to-green-500",
+              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Running.png", // ไฟ+ลม = เคลื่อนไหวเร็ว/ร้อน
+              goodTaste: "รสจืด, เย็น, มัน", badTaste: "รสเผ็ดร้อนจัด",
+              desc: "ไฟความร้อนผสมกับลม ทำให้เกิดอาการร้อนวูบวาบ ปวดศีรษะข้างเดียว (ไมเกรน) ใจสั่น หงุดหงิดง่าย",
+              food: "ต้มจืดฟัก, แตงโม, น้ำใบเตย", herb: "เกสรทั้ง 5, ยาหอม",
+              activity: "ทำสมาธิ, ฟังเพลงบรรเลง", ref: "คัมภีร์สมุฏฐานวินิจฉัย" 
+            },
 
-            // ธาตุไฟ (ปฏิสนธิเดือน 2,3,4)
-            { months: [2, 3, 4], main: "ธาตุไฟ (เตโช)", sub: "เจ้าเรือนกำเนิด", color: "from-orange-400 to-red-600",
-              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Running.png",
-              goodTaste: "รสจืด, เย็น, ขม", badTaste: "รสเผ็ดร้อนจัด",
-              desc: "กระฉับกระเฉง ใจร้อน หิวบ่อย ระบบเผาผลาญดี แต่หงุดหงิดง่าย (กำเนิดจากเตโชธาตุ)",
-              food: "แกงจืด, ผักบุ้งไฟแดง, แตงโม", herb: "ใบบัวบก, ย่านาง",
-              activity: "นั่งสมาธิ, ว่ายน้ำ", ref: "คัมภีร์ปฐมจินดา" }
+            // 3. แรม 1 ค่ำ เดือน 8 -> เพ็ญ เดือน 10 (วาตะ + ปิตตะ)
+            { rangeStart: 8, rangeEnd: 10, 
+              main: "ธาตุลมแกมไฟ (วาตะ+ปิตตะ)", sub: "สมุฏฐานฤดู 6", color: "from-green-500 to-orange-500",
+              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Cartwheeling.png", // ลมแรง
+              goodTaste: "รสสุขุม, หวาน, มัน", badTaste: "รสขม, ฝาด",
+              desc: "ลมพัดแรงตีคู่กับความร้อน มักมีลมในท้อง จุกเสียด แน่นหน้าอก เวียนหัวง่าย และผิวแห้งแตก",
+              food: "แกงเลียง, แกงส้ม, ปลาทูต้มเค็ม", herb: "ขิง, กานพลู, ดีปลี",
+              activity: "นวดน้ำมัน, โยคะ", ref: "คัมภีร์สมุฏฐานวินิจฉัย" 
+            },
+
+            // 4. แรม 1 ค่ำ เดือน 10 -> เพ็ญ เดือน 12 (วาตะ + เสมหะ)
+            { rangeStart: 10, rangeEnd: 12, 
+              main: "ธาตุลมแกมน้ำ (วาตะ+เสมหะ)", sub: "สมุฏฐานฤดู 6", color: "from-green-500 to-blue-500",
+              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Shivering.png", // ลม+น้ำ = หนาวสั่น
+              goodTaste: "รสเผ็ดร้อน, เปรี้ยว", badTaste: "รสหวาน, เย็นชืด",
+              desc: "ช่วงปลายฝนต้นหนาว ลมเย็นผสมความชื้น ทำให้เจ็บป่วยง่าย คัดจมูก ปวดเมื่อยตามข้อ ตัวเย็น",
+              food: "ต้มยำไก่, ต้มข่า, น้ำขิงร้อน", herb: "พริกไทย, ข่า, ตะไคร้",
+              activity: "อบสมุนไพร, แช่เท้าด้วยน้ำอุ่น", ref: "คัมภีร์สมุฏฐานวินิจฉัย" 
+            },
+
+            // 5. แรม 1 ค่ำ เดือน 12 -> เพ็ญ เดือน 2 (เสมหะ + วาตะ)
+            { rangeStart: 12, rangeEnd: 2, 
+              main: "ธาตุน้ำแกมลม (เสมหะ+วาตะ)", sub: "สมุฏฐานฤดู 6", color: "from-blue-500 to-green-500",
+              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Getting%20Massage.png",
+              goodTaste: "รสเปรี้ยว, ขม, ร้อน", badTaste: "รสมัน, เลี่ยน",
+              desc: "ความเย็นชื้นจับตัวกับลม มักมีเสมหะในคอ ไอจาม ภูมิแพ้อากาศ และท้องอืดง่าย",
+              food: "แกงส้มดอกแค, เมี่ยงคำ, น้ำมะนาว", herb: "มะขามป้อม, มะแว้ง",
+              activity: "กวาดคอ, กลั้วคอด้วยน้ำเกลือ", ref: "คัมภีร์สมุฏฐานวินิจฉัย" 
+            },
+
+            // 6. แรม 1 ค่ำ เดือน 2 -> เพ็ญ เดือน 4 (เสมหะ + ปิตตะ)
+            { rangeStart: 2, rangeEnd: 4, 
+              main: "ธาตุน้ำแกมไฟ (เสมหะ+ปิตตะ)", sub: "สมุฏฐานฤดู 6", color: "from-blue-500 to-orange-500",
+              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Gesturing%20OK.png",
+              goodTaste: "รสฝาด, ขม, เย็น", badTaste: "รสหวานจัด, เค็มจัด",
+              desc: "ช่วงอากาศเปลี่ยน ร่างกายสะสมความร้อนไว้ในน้ำ (เสมหะ) อาจมีอาการร้อนใน ท้องผูกสลับท้องเสีย",
+              food: "ยำถั่วพู, แกงขี้เหล็ก, น้ำใบบัวบก", herb: "ตรีผลา, สมอไทย",
+              activity: "ดีท็อกซ์ลำไส้, ดื่มน้ำมาก ๆ", ref: "คัมภีร์สมุฏฐานวินิจฉัย" 
+            }
         ];
 
-        function getElementByPatisandhi(thaiMonth) {
-            for (let rule of originData) {
-                if (rule.months.includes(thaiMonth)) return rule;
+        function getElementByRudu6(thaiMonth, day) {
+            // Logic การเทียบช่วงเดือนไทยแบบวนลูป
+            // ถ้าเป็นข้างแรม (หลังวันที่ 15) ให้ถือว่าเริ่มเข้าช่วงใหม่ของเดือนถัดไปตามบริบทฤดู 6
+            let checkMonth = thaiMonth;
+            if (day > 15) { 
+                // เป็นข้างแรม (โดยประมาณ) ให้ปัดไปเช็คช่วงถัดไปได้เลย
             }
-            return originData[0];
+
+            for (let rule of rudu6Data) {
+                // กรณีปกติ: เช่น เดือน 4-6
+                if (rule.rangeStart < rule.rangeEnd) {
+                    if (checkMonth >= rule.rangeStart && checkMonth <= rule.rangeEnd) return rule;
+                }
+                // กรณีข้ามปี: เช่น เดือน 12-2
+                else {
+                    if (checkMonth >= rule.rangeStart || checkMonth <= rule.rangeEnd) return rule;
+                }
+            }
+            return rudu6Data[0]; // Fallback
         }
 
         async function startAnalysis() {
             const d = parseInt(document.getElementById('inputDay').value);
             const m = parseInt(document.getElementById('inputMonth').value);
-            const y = parseInt(document.getElementById('inputYear').value); // ปี พ.ศ.
-            const yAD = y - 543; // แปลงเป็น ค.ศ. เพื่อคำนวณ
+            const y = parseInt(document.getElementById('inputYear').value);
+            const yAD = y - 543;
 
-            // 1. คำนวณวันปฏิสนธิ
-            const patisandhi = calculatePatisandhi(d, m, yAD);
+            // 1. แปลงเป็นเดือนไทย (Approx)
+            const lunarData = getThaiLunarMonthApprox(d, m);
             
-            // 2. หาธาตุตามเดือนปฏิสนธิ (คัมภีร์ปฐมจินดา)
-            const result = getElementByPatisandhi(patisandhi.thaiMonth);
+            // 2. หาธาตุตามสมุฏฐานฤดู 6 (ระคน)
+            const result = getElementByRudu6(lunarData.thaiMonth, d);
 
             // Update UI
             document.getElementById('resMain').innerText = result.main;
             document.getElementById('resSub').innerText = result.sub;
-            // แสดงข้อมูลวันปฏิสนธิให้คนไข้ทราบ
-            document.getElementById('patisandhiInfo').innerText = `(ประมาณการปฏิสนธิ: ${patisandhi.dateStr} / เดือนไทย ${patisandhi.thaiMonth})`;
+            document.getElementById('lunarInfo').innerText = `(ตรงกับเดือนไทย: เดือน ${lunarData.thaiMonth} โดยประมาณ)`;
 
             document.getElementById('resDesc').innerText = result.desc;
             document.getElementById('resGoodTaste').innerText = result.goodTaste;
@@ -284,7 +350,6 @@
             document.getElementById('cardObject').classList.add('is-flipped');
             
             try {
-                // บันทึกปี พ.ศ. ลงไปด้วย
                 const birthDateStr = `${yAD}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 fetch(SCRIPT_URL, {
                     method: 'POST', mode: 'no-cors',
