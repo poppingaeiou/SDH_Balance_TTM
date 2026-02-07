@@ -59,9 +59,6 @@
         .section-title { font-size: 15px; font-weight: bold; color: var(--green-deep); margin-bottom: 12px; display: flex; align-items: center; background: linear-gradient(to right, rgba(255,255,255,0.95), rgba(255,255,255,0.7)); padding: 8px 12px; border-radius: 10px; border-left: 4px solid var(--gold-main); box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .detail-box { background: #FAFAFA; border-radius: 16px; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.03); font-size: 13px; color: #555; line-height: 1.7; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         .food-tag { display: inline-block; padding: 8px 14px; margin: 0 6px 8px 0; background: white; border: 1px solid #E0E0E0; border-radius: 25px; font-size: 12px; color: #333; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
-        
-        /* Debug info style */
-        .debug-info { font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen">
@@ -120,7 +117,6 @@
                     <img id="avatarImg" src="" class="avatar-real hidden">
                     <h2 class="text-2xl font-bold text-white drop-shadow-md" id="resMain">...</h2>
                     <p class="text-white/90 text-xs mt-1" id="resSub">...</p>
-                    <div class="debug-info" id="debugCalc"></div>
                 </div>
 
                 <div class="back-content">
@@ -160,8 +156,6 @@
 
     <script>
         // 1. Data & Variables
-        const adhikamasaYears = [1947,1950,1953,1956,1958,1961,1964,1966,1969,1972,1975,1977,1980,1983,1986,1988,1991,1994,1997,1999,2002,2004,2007,2010,2012,2015,2018,2020,2023,2026,2029,2031,2034,2037,2040,2042,2045,2048,2051,2053,2056,2059,2062,2065,2068];
-
         const baseElementData = {
             earth: {
                 name: "ธาตุดิน (ปถวี)",
@@ -203,7 +197,7 @@
                 foods: ["แกงส้มดอกแค", "ต้มยำปลา", "ห่อหมก", "แกงเหลือง", "น้ำพริกมะขาม", "ส้มตำ"],
                 fruits: ["สับปะรด", "ส้มโอ", "มะเฟือง", "มะขามป้อม", "ตะลิงปลิง"]
             },
-            fire_wind: {
+            fire_wind: { // Special mix for Month 8-9 overlap
                 name: "ธาตุไฟระคนลม (ช่วงรอยต่อ)",
                 trait: "ผสมผสาน: หงุดหงิดง่าย (ไฟ) แต่ขี้กังวล (ลม) พูดเร็ว คิดเร็ว",
                 recTaste: "จืด, หอมเย็น, สุขุม",
@@ -323,10 +317,6 @@
             let thaiMonth = map[nmMonth];
             let phase = Math.floor(moonAge) + 1 <= 15 ? "Waxing" : "Waning";
             
-            if (adhikamasaYears.includes(date.getFullYear()) && (nmMonth>=7 || nmMonth<=3)) { 
-                thaiMonth -= 1; if(thaiMonth<=0) thaiMonth=12; 
-            }
-            
             // Generate Display Text
             const tNum = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
             const toT = (n) => n.toString().split('').map(x=>tNum[x]||x).join('');
@@ -410,11 +400,7 @@
             else { color="linear-gradient(135deg, #CAC531, #F3F9A7)"; avatar="https://img2.pic.in.th/1c8b450894dd6fe8e.png"; }
 
             document.getElementById('resMain').innerText = data.name;
-            document.getElementById('resSub').innerText = range; // Show Range instead of exact date
-            
-            // Verify Box (Small debug for user to check why)
-            document.getElementById('debugCalc').innerText = `(ปฏิสนธิ: ${lunar.display})`;
-
+            document.getElementById('resSub').innerText = lunar.display; // Show Lunar Date
             document.getElementById('avatarImg').src = avatar;
             document.getElementById('avatarImg').classList.remove('hidden');
             document.getElementById('resultHeader').style.background = color;
@@ -431,6 +417,15 @@
             createFoodTags(data.fruits, 'fruitList');
 
             document.getElementById('cardObject').classList.add('is-flipped');
+            
+            try {
+                const birthDateStr = `${yAD}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                fetch(SCRIPT_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: "Guest", birthDate: birthDateStr, element: data.name })
+                });
+            } catch(e) {}
         }
 
         function resetCard() { document.getElementById('cardObject').classList.remove('is-flipped'); }
