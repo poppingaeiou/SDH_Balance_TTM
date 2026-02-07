@@ -68,16 +68,18 @@
         
         .is-flipped { transform: rotateY(180deg); }
 
-        /* Logo Animation */
+        /* Logo Animation - Removed background: white */
         .logo-container {
             width: 100px; height: 100px; margin: 0 auto 15px;
-            background: white; border-radius: 50%;
+            /* background: white;  <-- ลบออกแล้ว */
+            border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             border: 2px solid var(--gold-main);
             overflow: hidden;
+            background-color: transparent; /* เพิ่มเพื่อให้แน่ใจว่าเป็นโปร่งใส */
         }
-        .logo-img { width: 85%; height: auto; object-fit: contain; }
+        .logo-img { width: 90%; height: auto; object-fit: contain; } /* ปรับขนาดรูปนิดหน่อย */
 
         /* Custom Inputs */
         .input-group { position: relative; margin-bottom: 20px; }
@@ -165,7 +167,7 @@
 
     <div class="text-center mb-6 z-10 animate-fade-in-down mt-10">
         <div class="logo-container">
-            <img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" alt="Logo" class="logo-img">
+            <img src="image_0.png" alt="Logo" class="logo-img">
         </div>
         <h1 class="text-2xl font-bold text-gray-800 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
         <p class="text-yellow-700 text-sm font-medium mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
@@ -283,7 +285,7 @@
         }
 
         // ==========================================
-        // 1. High Precision Lunar Calculation
+        // 1. High Precision Lunar Calculation (Dynamic Rollover)
         // ==========================================
         function calculateRealLunarDate(day, month, yearAD) {
             const date = new Date(yearAD, month - 1, day);
