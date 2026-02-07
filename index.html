@@ -21,7 +21,6 @@
         body { 
             font-family: 'Prompt', sans-serif; 
             background-color: #FDFBF7;
-            /* พื้นหลังลายไทยจางๆ */
             background-image: 
                 radial-gradient(var(--gold-main) 0.5px, transparent 0.5px), 
                 radial-gradient(var(--green-deep) 0.5px, transparent 0.5px);
@@ -37,11 +36,11 @@
             pointer-events: none; z-index: -1;
         }
 
-        /* 3D Card Scene - เพิ่ม Padding Top แก้ปัญหาข้อความชิดขอบ */
+        /* 3D Card Scene */
         .card-scene { 
             width: 100%; max-width: 450px; margin: 0 auto;
             min-height: 100vh; perspective: 1500px; 
-            padding: 60px 20px 40px 20px; /* Top padding increased */
+            padding: 40px 20px 40px 20px; 
         }
 
         .card-object { 
@@ -53,7 +52,6 @@
         .card-face { 
             width: 100%; border-radius: 30px; 
             backface-visibility: hidden; 
-            /* Default Background */
             background: white;
             box-shadow: 
                 0 20px 50px rgba(27, 77, 62, 0.15),
@@ -61,7 +59,7 @@
             overflow: hidden;
             min-height: 800px; 
             display: flex; flex-direction: column;
-            transition: background 1s ease; /* Smooth transition for weather bg */
+            transition: background 1s ease;
         }
         
         .card-front { 
@@ -79,25 +77,19 @@
         
         .is-flipped { transform: rotateY(180deg); }
 
-        /* --- WEATHER EFFECTS (Animation) --- */
+        /* Weather Effects */
         .weather-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1; pointer-events: none; overflow: hidden;
             border-radius: 30px;
         }
-
-        /* Winter Theme (Blue Gradient Background) */
         .theme-winter { background: linear-gradient(to bottom, #E3F2FD 0%, #FFFFFF 80%) !important; }
-        /* Summer Theme (Orange Gradient) */
         .theme-summer { background: linear-gradient(to bottom, #FFF3E0 0%, #FFFFFF 80%) !important; }
-        /* Rain Theme (Grey Gradient) */
         .theme-rain { background: linear-gradient(to bottom, #ECEFF1 0%, #FFFFFF 80%) !important; }
 
-        /* Snow Effect */
         .snowflake {
             position: absolute; width: 6px; height: 6px; background: white; border-radius: 50%;
-            animation: snow-fall linear infinite;
-            filter: blur(1px);
+            animation: snow-fall linear infinite; filter: blur(1px);
             box-shadow: 0 0 5px rgba(255,255,255,0.8);
         }
         @keyframes snow-fall { 
@@ -105,16 +97,12 @@
             20% { opacity: 1; }
             100% { transform: translateY(800px) translateX(30px); opacity: 0; } 
         }
-
-        /* Rain Effect */
         .rain {
             background: linear-gradient(to bottom, rgba(0,0,255,0) 0%, rgba(100,149,237,0.6) 100%);
             height: 40px; position: absolute; width: 2px;
             animation: rain-fall 0.7s linear infinite;
         }
         @keyframes rain-fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(800px); } }
-
-        /* Sun Effect */
         .sun-glare {
             position: absolute; top: -80px; right: -80px; width: 300px; height: 300px;
             background: radial-gradient(circle, rgba(255,160,0,0.3) 0%, rgba(255,255,0,0) 70%);
@@ -122,14 +110,14 @@
         }
         @keyframes sun-pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
 
-        /* Content Wrapper (Z-Index fix) */
+        /* Content Wrapper */
         .front-content {
-            position: relative; z-index: 10; /* อยู่หน้าสภาพอากาศ */
+            position: relative; z-index: 10;
             padding: 30px;
             display: flex; flex-direction: column; height: 100%;
         }
 
-        /* Logo Animation */
+        /* Logo */
         .logo-container {
             width: 100px; height: 100px; margin: 0 auto 15px;
             background: white; 
@@ -141,8 +129,8 @@
         }
         .logo-img { width: 90%; height: auto; object-fit: contain; }
 
-        /* Custom Inputs */
-        .input-group { position: relative; margin-bottom: 20px; }
+        /* Input Styles */
+        .input-group { position: relative; margin-bottom: 15px; }
         .input-label { 
             position: absolute; top: -10px; left: 15px; 
             background: white; padding: 0 8px; 
@@ -151,7 +139,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .custom-select { 
-            width: 100%; padding: 16px; border: 1.5px solid rgba(27, 77, 62, 0.2); 
+            width: 100%; padding: 14px; border: 1.5px solid rgba(27, 77, 62, 0.2); 
             border-radius: 16px; font-family: 'Prompt'; font-size: 16px; color: #333;
             appearance: none; background-color: rgba(255,255,255,0.9);
             transition: all 0.3s;
@@ -160,10 +148,9 @@
         }
         .custom-select:focus { border-color: var(--gold-main); box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2); outline: none; background-color: white; }
 
-        /* Button */
         .btn-gold {
             background: linear-gradient(135deg, var(--green-deep) 0%, #2E7D32 100%);
-            color: white; border: none; padding: 18px; width: 100%;
+            color: white; border: none; padding: 16px; width: 100%;
             border-radius: 16px; font-size: 18px; font-weight: bold;
             box-shadow: 0 10px 20px rgba(27, 77, 62, 0.3);
             cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
@@ -174,35 +161,45 @@
         /* Forecast Box */
         .forecast-box {
             margin-top: auto; 
-            background: rgba(255, 255, 255, 0.9); /* More opaque for readability */
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-radius: 20px; padding: 20px;
+            border-radius: 20px; padding: 18px;
             border: 1px solid rgba(255,255,255,0.8);
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
         .forecast-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px;
+            margin-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px;
         }
-        .forecast-title { font-size: 14px; font-weight: bold; color: var(--green-deep); }
+        .forecast-title { font-size: 13px; font-weight: bold; color: var(--green-deep); }
         .forecast-date { font-size: 11px; color: #666; font-weight: 500; }
         
         .utu-badge {
             background: var(--green-deep); color: white;
-            padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold;
-            display: inline-block; margin-bottom: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold;
+            display: inline-block; margin-bottom: 6px; box-shadow: 0 3px 5px rgba(0,0,0,0.1);
         }
-        .warning-text { font-size: 13px; color: #333; line-height: 1.6; margin-bottom: 10px; }
+        
+        /* New: Vulnerable Group Style */
+        .vulnerable-box {
+            background: #FFEBEE; border: 1px dashed #EF5350;
+            border-radius: 8px; padding: 8px; margin-bottom: 8px;
+            font-size: 11px; color: #C62828; display: flex; align-items: center;
+        }
+        .vulnerable-box i { font-size: 14px; margin-right: 6px; }
+
+        .warning-text { font-size: 12px; color: #444; line-height: 1.5; margin-bottom: 8px; }
         .food-advice { 
-            font-size: 12px; color: #444; background: #F1F8E9; 
-            padding: 10px; border-radius: 12px; border: 1px dashed #81C784;
+            font-size: 11px; color: #555; background: #F1F8E9; 
+            padding: 8px; border-radius: 8px; border: 1px dashed #81C784;
             display: flex; align-items: flex-start;
         }
 
-        /* Results Styling */
+        /* Results Styling (Compact Header) */
         .back-header { 
             background: linear-gradient(135deg, var(--green-deep), #0f3025);
-            padding: 20px 20px 40px; text-align: center; color: white;
+            padding: 20px 20px 30px; /* Reduced bottom padding */
+            text-align: center; color: white;
             border-radius: 0 0 40% 40% / 0 0 30px 30px;
             position: relative; flex-shrink: 0;
         }
@@ -248,19 +245,6 @@
         }
         .food-tag i { color: var(--green-leaf); margin-left: 4px; font-size: 10px;}
 
-        .lunar-badge {
-            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2);
-            padding: 5px 15px; border-radius: 20px;
-            font-size: 12px; color: #FFD700; display: inline-block;
-            backdrop-filter: blur(4px);
-            margin-bottom: 5px;
-        }
-        
-        .conception-text {
-            font-size: 11px; color: rgba(255,255,255,0.8);
-            display: inline-block; padding: 2px 8px;
-        }
-
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
     </style>
@@ -283,12 +267,6 @@
                         </div>
                         <h1 class="text-xl font-bold text-gray-800 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
                         <p class="text-yellow-700 text-xs font-medium mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
-                    </div>
-
-                    <div class="text-center mb-4">
-                        <span class="text-xs text-gray-600 bg-white/80 px-3 py-1 rounded-full shadow-sm backdrop-blur-sm border border-white">
-                            <i class="fas fa-info-circle mr-1"></i> กรอกวันเกิด (ระบบคำนวณปฏิสนธิอัตโนมัติ)
-                        </span>
                     </div>
 
                     <div class="input-group">
@@ -328,6 +306,12 @@
                         </div>
                         <div>
                             <span class="utu-badge" id="todaySeason">...</span>
+                            
+                            <div class="vulnerable-box">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span><b>กลุ่มเสี่ยงวันนี้:</b> <span id="todayVulnerable">...</span></span>
+                            </div>
+
                             <p class="warning-text" id="todayHealth">...</p>
                             <div class="food-advice">
                                 <i class="fas fa-utensils text-green-600 mr-2 mt-1"></i> 
@@ -336,18 +320,16 @@
                         </div>
                     </div>
 
-                </div> </div>
+                </div> 
+            </div>
 
             <div id="resultFace" class="card-face card-back">
                 <div id="resultHeader" class="back-header">
                     <img id="avatarImg" src="" class="avatar-real hidden">
                     <h2 class="text-2xl font-bold text-white drop-shadow-md" id="resMain">...</h2>
                     <p class="text-white/90 text-xs mt-2 px-4 leading-relaxed font-light" id="resSub">...</p>
-                    <div class="mt-3 flex flex-col items-center space-y-1">
-                        <span class="lunar-badge"><i class="fas fa-dna mr-1"></i> ปฏิสนธิ: <span id="conceptionLunarDisplay">...</span></span>
-                        <span class="conception-text">(จากวันเกิด: <span id="birthDateDisplay">...</span>)</span>
+                    
                     </div>
-                </div>
 
                 <div class="back-content">
                     <div class="section-title"><i class="fas fa-user-circle"></i> ลักษณะนิสัยและจุดเด่น</div>
@@ -403,7 +385,6 @@
             }
             yearSelect.value = (currentYearBE - 30 - 543);
             
-            // Trigger Weather & Forecast
             updateDailyForecast();
         }
 
@@ -443,7 +424,7 @@
         }
 
         // ==========================================
-        // 2. Daily Forecast & Dynamic Theme
+        // 2. Daily Forecast Logic & FX
         // ==========================================
         function getDailySeason(lunar) {
             const m = lunar.thaiMonth;
@@ -451,6 +432,7 @@
             if (m == 5 || m == 6) return { 
                 name: "คิมหันตฤดู (ร้อน)", 
                 element: "ธาตุไฟ", 
+                vulnerable: "ผู้มีธาตุเจ้าเรือนไฟ (เตโช)",
                 health: "อากาศร้อนจัด ความร้อนภายนอกกระทบร่างกาย เสี่ยงต่อลมแดดและขาดน้ำ", 
                 food: "ควรทานอาหารรสขม เย็น จืด เพื่อลดความร้อน",
                 theme: "summer", fx: "sun"
@@ -458,6 +440,7 @@
             if (m == 7 || m == 8) return { 
                 name: "วสันตฤดู (ฝนแรก)", 
                 element: "ธาตุลมระคนไฟ", 
+                vulnerable: "ผู้มีธาตุลม (วาโย) และไฟ (เตโช)",
                 health: "อากาศเปลี่ยนแปลง เดี๋ยวร้อนเดี๋ยวฝน ระวังเป็นหวัด วิงเวียนศีรษะ", 
                 food: "อาหารรสเปรี้ยว เค็ม เผ็ดเล็กน้อย ช่วยฟอกเลือด",
                 theme: "rain", fx: "rain"
@@ -465,13 +448,15 @@
             if (m == 9 || m == 10) return { 
                 name: "วสสานฤดู (ฝนชุก)", 
                 element: "ธาตุลม", 
-                health: "ความชื้นสูง เตโชธาตุพิการ(ไฟย่อยไม่ดี) ท้องอืด แน่นท้อง อาหารไม่ย่อย", 
+                vulnerable: "ผู้มีธาตุลม (วาโย)",
+                health: "ความชื้นสูง ไฟธาตุย่อยอาหารทำงานไม่ดี ท้องอืด แน่นท้อง อาหารไม่ย่อย", 
                 food: "สมุนไพรขับลม ขิง ข่า ตะไคร้ รสเผ็ดร้อน",
                 theme: "rain", fx: "rain"
             };
             if (m == 11 || m == 12) return { 
                 name: "สารทฤดู (ปลายฝนต้นหนาว)", 
                 element: "ธาตุน้ำ", 
+                vulnerable: "ผู้มีธาตุน้ำ (อาโป)",
                 health: "อากาศเริ่มเย็นลง ระวังเสมหะกำเริบ เจ็บคอ ไอ และปวดเมื่อย", 
                 food: "อาหารรสขม รสร้อน ปรับสมดุลน้ำในร่างกาย",
                 theme: "winter", fx: "snow"
@@ -479,6 +464,7 @@
             if (m == 1 || m == 2) return { 
                 name: "เหมันตฤดู (หนาว)", 
                 element: "ธาตุน้ำระคนดิน", 
+                vulnerable: "ผู้มีธาตุน้ำ (อาโป) และดิน (ปถวี)",
                 health: "อากาศหนาวแห้ง โลหิตจับตัว ระวังผิวแห้ง ปวดข้อ น้ำมูกไหล", 
                 food: "อาหารรสมัน เค็ม ร้อน ให้ความอบอุ่น",
                 theme: "winter", fx: "snow"
@@ -486,6 +472,7 @@
             return { 
                 name: "ศิศิรฤดู (น้ำค้าง)", 
                 element: "ธาตุดิน", 
+                vulnerable: "ผู้มีธาตุดิน (ปถวี)",
                 health: "ลมหนาวและน้ำค้างแรง ร่างกายสะสมความเย็น ระวังวิงเวียน อ่อนเพลีย", 
                 food: "อาหารบำรุงกำลัง รสหวาน มัน เค็ม",
                 theme: "winter", fx: "snow"
@@ -527,25 +514,22 @@
             const lunar = calculateRealLunarDate(today);
             const season = getDailySeason(lunar);
             
-            // 1. Text Update
             const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             document.getElementById('todayDate').innerText = `${today.getDate()} ${thaiMonths[today.getMonth()]} ${today.getFullYear()+543}`;
             document.getElementById('todaySeason').innerText = `${season.name}`;
+            document.getElementById('todayVulnerable').innerText = season.vulnerable; // Set Vulnerable Group
             document.getElementById('todayHealth').innerText = season.health;
             document.getElementById('todayFood').innerText = `แนะนำ: ${season.food}`;
             
-            // 2. Theme & FX Update
             const cardFront = document.getElementById('cardFront');
-            // Reset Classes
             cardFront.classList.remove('theme-winter', 'theme-summer', 'theme-rain');
-            // Add New Class
             if (season.theme) cardFront.classList.add(`theme-${season.theme}`);
             
             createWeatherFX(season.fx);
         }
 
         // ==========================================
-        // 3. Analysis Logic (Same as V.Conception)
+        // 3. Analysis Logic
         // ==========================================
         function getElementData(month) {
             if (month >= 5 && month <= 7) {
@@ -641,11 +625,7 @@
 
             document.getElementById('resMain').innerText = data.name;
             document.getElementById('resSub').innerText = data.sub; 
-            document.getElementById('conceptionLunarDisplay').innerText = lunarInfo.display;
             
-            const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-            document.getElementById('birthDateDisplay').innerText = `${d} ${thaiMonths[m-1]} ${yAD+543}`;
-
             document.getElementById('avatarImg').src = data.avatar;
             document.getElementById('avatarImg').classList.remove('hidden');
             document.getElementById('resultHeader').style.background = data.color;
