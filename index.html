@@ -40,7 +40,7 @@
         .card-scene { 
             width: 100%; max-width: 450px; margin: 0 auto;
             min-height: 100vh; perspective: 1500px; 
-            padding: 40px 20px; /* เว้นขอบบนล่างให้การ์ดลอยเด่น */
+            padding: 40px 20px; 
         }
 
         .card-object { 
@@ -54,10 +54,10 @@
             backface-visibility: hidden; 
             background: white;
             box-shadow: 
-                0 20px 60px rgba(27, 77, 62, 0.2), /* เพิ่มเงาให้ดูลึกขึ้น */
+                0 20px 50px rgba(27, 77, 62, 0.15),
                 0 0 0 1px rgba(212, 175, 55, 0.2) inset;
             overflow: hidden;
-            min-height: 850px; 
+            min-height: 800px; 
             display: flex; flex-direction: column;
             transition: background 1s ease;
         }
@@ -67,6 +67,8 @@
             position: relative;
             height: 100%;
             display: flex; flex-direction: column;
+            /* Default background before theme loads */
+            background: linear-gradient(to bottom, #ffffff, #f0f0f0);
         }
         
         .card-back { 
@@ -77,79 +79,96 @@
         
         .is-flipped { transform: rotateY(180deg); }
 
-        /* Weather Container */
+        /* --- WEATHER EFFECTS (Adjusted for Visibility) --- */
         .weather-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1; pointer-events: none; overflow: hidden;
             border-radius: 30px;
         }
-        .theme-winter { background: linear-gradient(to bottom, #E3F2FD 0%, #FFFFFF 80%) !important; }
-        .theme-summer { background: linear-gradient(to bottom, #FFF3E0 0%, #FFFFFF 80%) !important; }
-        .theme-rain { background: linear-gradient(to bottom, #ECEFF1 0%, #FFFFFF 80%) !important; }
 
+        /* Themes: Adjusted Colors for Contrast */
+        .theme-winter { 
+            /* สีฟ้าเข้มขึ้นเพื่อให้เห็นหิมะสีขาว */
+            background: linear-gradient(to bottom, #64B5F6 0%, #E3F2FD 100%) !important; 
+        }
+        .theme-summer { 
+            background: linear-gradient(to bottom, #FFCC80 0%, #FFF3E0 100%) !important; 
+        }
+        .theme-rain { 
+            background: linear-gradient(to bottom, #B0BEC5 0%, #ECEFF1 100%) !important; 
+        }
+
+        /* Snow Effect - Enhanced */
         .snowflake {
-            position: absolute; width: 6px; height: 6px; background: white; border-radius: 50%;
-            animation: snow-fall linear infinite; filter: blur(1px);
-            box-shadow: 0 0 5px rgba(255,255,255,0.8);
+            position: absolute; width: 5px; height: 5px; 
+            background: #fff; /* สีขาว */
+            border-radius: 50%;
+            animation: snow-fall linear infinite; 
+            box-shadow: 0 0 4px rgba(255,255,255,0.8); /* เรืองแสงนิดๆ */
         }
         @keyframes snow-fall { 
             0% { transform: translateY(-10px) translateX(0); opacity: 0; } 
-            100% { transform: translateY(900px) translateX(30px); opacity: 0; } 
+            20% { opacity: 1; }
+            100% { transform: translateY(900px) translateX(20px); opacity: 0; } 
         }
+
+        /* Rain Effect */
         .rain {
-            background: linear-gradient(to bottom, rgba(0,0,255,0) 0%, rgba(100,149,237,0.6) 100%);
+            background: linear-gradient(to bottom, rgba(0,0,255,0) 0%, rgba(255,255,255,0.8) 100%);
             height: 40px; position: absolute; width: 2px;
             animation: rain-fall 0.7s linear infinite;
         }
         @keyframes rain-fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(900px); } }
+
+        /* Sun Effect */
         .sun-glare {
             position: absolute; top: -80px; right: -80px; width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(255,160,0,0.3) 0%, rgba(255,255,0,0) 70%);
+            background: radial-gradient(circle, rgba(255,255,200,0.6) 0%, rgba(255,255,255,0) 70%);
             animation: sun-pulse 5s ease-in-out infinite;
         }
         @keyframes sun-pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
 
-        /* Content Wrapper (Increased Padding Top) */
+        /* Content Wrapper */
         .front-content {
             position: relative; z-index: 10;
-            padding: 50px 30px 30px; /* เพิ่มขอบบนเป็น 50px */
+            padding: 50px 30px 30px; 
             display: flex; flex-direction: column; height: 100%;
         }
 
         /* Logo */
         .logo-container {
-            width: 100px; height: 100px; margin: 0 auto 20px; /* เพิ่มระยะห่างด้านล่าง */
+            width: 100px; height: 100px; margin: 0 auto 20px;
             background: white; 
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             border: 3px solid var(--gold-main);
             overflow: hidden;
         }
         .logo-img { width: 90%; height: auto; object-fit: contain; }
 
-        /* Input Styles */
+        /* Inputs - Make slightly transparent to blend with weather */
         .input-group { position: relative; margin-bottom: 20px; }
         .input-label { 
             position: absolute; top: -10px; left: 15px; 
-            background: white; padding: 0 8px; 
+            background: rgba(255,255,255,0.9); padding: 0 8px; 
             color: var(--green-deep); font-size: 13px; font-weight: bold;
-            border-radius: 4px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .custom-select { 
-            width: 100%; padding: 16px; border: 1.5px solid rgba(27, 77, 62, 0.2); 
+            width: 100%; padding: 14px; border: 1.5px solid rgba(255,255,255,0.6); 
             border-radius: 16px; font-family: 'Prompt'; font-size: 16px; color: #333;
-            appearance: none; background-color: rgba(255,255,255,0.9);
+            appearance: none; background-color: rgba(255,255,255,0.75); /* โปร่งแสง */
+            backdrop-filter: blur(5px);
             transition: all 0.3s;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231B4D3E' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
             background-position: right 1rem center; background-repeat: no-repeat; background-size: 1.2em;
         }
-        .custom-select:focus { border-color: var(--gold-main); box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2); outline: none; background-color: white; }
+        .custom-select:focus { border-color: var(--gold-main); box-shadow: 0 0 0 4px rgba(255,255,255,0.5); outline: none; background-color: white; }
 
         .btn-gold {
             background: linear-gradient(135deg, var(--green-deep) 0%, #2E7D32 100%);
-            color: white; border: none; padding: 18px; width: 100%;
+            color: white; border: none; padding: 16px; width: 100%;
             border-radius: 16px; font-size: 18px; font-weight: bold;
             box-shadow: 0 10px 20px rgba(27, 77, 62, 0.3);
             cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
@@ -160,11 +179,11 @@
         /* Forecast Box */
         .forecast-box {
             margin-top: auto; 
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.85); /* โปร่งแสงให้เห็นพื้นหลัง */
+            backdrop-filter: blur(15px);
             border-radius: 20px; padding: 20px;
-            border: 1px solid rgba(255,255,255,0.8);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.9);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .forecast-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -180,23 +199,23 @@
         }
         
         .vulnerable-box {
-            background: #FFEBEE; border: 1px dashed #EF5350;
+            background: rgba(255,235,238,0.9); border: 1px dashed #EF5350;
             border-radius: 10px; padding: 10px; margin-bottom: 10px;
             font-size: 12px; color: #C62828; display: flex; align-items: center;
         }
         .vulnerable-box i { font-size: 16px; margin-right: 8px; }
 
-        .warning-text { font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 10px; }
+        .warning-text { font-size: 13px; color: #333; line-height: 1.6; margin-bottom: 10px; }
         .food-advice { 
-            font-size: 12px; color: #555; background: #F1F8E9; 
+            font-size: 12px; color: #555; background: rgba(241,248,233,0.9); 
             padding: 10px; border-radius: 10px; border: 1px dashed #81C784;
             display: flex; align-items: flex-start;
         }
 
-        /* Results Styling (Increased Top Padding) */
+        /* Results Styling */
         .back-header { 
             background: linear-gradient(135deg, var(--green-deep), #0f3025);
-            padding: 50px 20px 40px; /* เพิ่มขอบบนเป็น 50px */
+            padding: 50px 20px 40px; 
             text-align: center; color: white;
             border-radius: 0 0 40% 40% / 0 0 30px 30px;
             position: relative; flex-shrink: 0;
@@ -351,7 +370,7 @@
                     <p class="text-white/90 text-xs mt-2 px-4 leading-relaxed font-light" id="resSub">...</p>
                     <div class="mt-3 flex flex-col items-center space-y-1">
                         <span class="lunar-badge"><i class="fas fa-dna mr-1"></i> ปฏิสนธิ: <span id="conceptionLunarDisplay">...</span></span>
-                        </div>
+                    </div>
                 </div>
 
                 <div class="back-content">
