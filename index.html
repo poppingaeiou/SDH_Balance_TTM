@@ -160,9 +160,12 @@
             margin-bottom: 5px;
         }
         
-        .conception-text {
-            font-size: 10px; color: rgba(255,255,255,0.7);
-            margin-top: 2px;
+        .conception-badge {
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.1);
+            padding: 4px 12px; border-radius: 15px;
+            font-size: 11px; color: #FFF8E1; display: inline-block;
+            backdrop-filter: blur(4px);
+            margin-top: 4px;
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -236,18 +239,22 @@
                     <div class="mt-3 flex flex-col items-center">
                         <span class="lunar-badge"><i class="fas fa-moon mr-1"></i> <span id="lunarInfo">...</span></span>
                         
-                        <div class="bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm mt-1">
-                            <p class="conception-text">
-                                <i class="fas fa-baby-carriage mr-1"></i> ปฏิสนธิ: <span id="conceptionInfo">...</span>
-                            </p>
-                        </div>
+                        <span class="conception-badge">
+                            <i class="fas fa-dna mr-1"></i> ปฏิสนธิ: <span id="conceptionDate">...</span>
+                        </span>
                     </div>
                 </div>
 
                 <div class="back-content">
+                    
                     <div class="info-card">
                         <div class="info-title"><i class="fas fa-heartbeat"></i> ปัญหาสุขภาพเฉพาะช่วงนี้</div>
                         <p id="resDesc" class="text-sm text-gray-600 leading-relaxed"></p>
+                    </div>
+
+                    <div class="info-card" style="background: #F0F4C3; border-color: #E6EE9C;">
+                        <div class="info-title" style="color: #558B2F;"><i class="fas fa-seedling"></i> ธาตุเจ้าเรือนกำเนิด</div>
+                        <p id="originDesc" class="text-sm text-gray-700 leading-relaxed font-medium">...</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 mb-3">
@@ -286,7 +293,6 @@
             
             const yearSelect = document.getElementById('inputYear');
             const currentYearBE = new Date().getFullYear() + 543;
-            // Setup ปี พ.ศ. (Value = ปี ค.ศ. จริง)
             for(let i=0; i<100; i++) { 
                 let yBE = currentYearBE - i;
                 let yAD = yBE - 543;
@@ -299,7 +305,7 @@
         }
 
         // ==========================================
-        // 1. Thai Lunar Calculation V.4
+        // 1. Thai Lunar Calculation V.4 (Smart Pivot)
         // ==========================================
         const adhikamasaYears = [
             1947, 1950, 1953, 1956, 1958, 1961, 1964, 1966, 1969, 1972, 1975, 1977, 1980, 1983, 1986, 1988, 
@@ -317,13 +323,12 @@
             let moonAge = diffDays % synodicMonth;
             if (moonAge < 0) moonAge += synodicMonth;
             
-            moonAge += 1.3; 
+            moonAge += 1.3; // Calibration
             if (moonAge > synodicMonth) moonAge -= synodicMonth;
 
             let phase = "";
             let lunarDay = 0;
             let roundedAge = Math.floor(moonAge) + 1;
-            
             if (roundedAge > 30) roundedAge = 1;
 
             if (roundedAge <= 15) {
@@ -360,30 +365,40 @@
         }
 
         // ==========================================
-        // 2. Conception Calculator (New)
+        // 2. Conception Analysis (Pathom Chinda)
         // ==========================================
-        function calculateConception(d, m, yAD) {
-            // 1. Gregorian Calculation (-9 months)
+        function getOriginElementAnalysis(d, m, yAD) {
+            // 1. Calculate Conception Date (-9 Months)
             let birthDate = new Date(yAD, m - 1, d);
             let conceptionDate = new Date(birthDate);
             conceptionDate.setMonth(birthDate.getMonth() - 9);
             
             let cDay = conceptionDate.getDate();
-            let cMonth = conceptionDate.getMonth() + 1; // 1-12
+            let cMonth = conceptionDate.getMonth() + 1;
             let cYear = conceptionDate.getFullYear();
             
-            // 2. Calculate Lunar for Conception Date
-            let lunarC = calculateRealLunarDate(cDay, cMonth, cYear);
+            // 2. Get Lunar Info of Conception
+            let cLunar = calculateRealLunarDate(cDay, cMonth, cYear);
+            let tm = cLunar.thaiMonth;
             
-            // 3. Format Date
+            // 3. Map to Element (Pathom Chinda)
+            let elemName = "";
+            if (tm >= 5 && tm <= 7) elemName = "ธาตุไฟ (เตโช) - ปฏิสนธิในคิมหันตฤดู";
+            else if (tm >= 8 && tm <= 10) elemName = "ธาตุลม (วาโย) - ปฏิสนธิในวสันตฤดู";
+            else if (tm == 11 || tm == 12 || tm == 1) elemName = "ธาตุน้ำ (อาโป) - ปฏิสนธิในเหมันตฤดู";
+            else elemName = "ธาตุดิน (ปถวี) - ปฏิสนธิในศิศิรฤดู";
+            
             const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             let dateStr = `${cDay} ${thaiMonths[cMonth-1]} ${cYear + 543}`;
-            
-            return `${dateStr} (${lunarC.display})`;
+
+            return {
+                dateStr: `${dateStr} (${cLunar.display})`,
+                desc: `${elemName}`
+            };
         }
 
         // ==========================================
-        // 3. Database
+        // 3. Main Database (Sadao)
         // ==========================================
         const sadaoData = [
             // --- ธาตุดิน ---
@@ -414,13 +429,13 @@
             { startM: 10, startP: "Waning", endM: 11, endP: "Waxing", main: "ธาตุน้ำ (อาโป)", sub: "ช่วง: แรม ๑ ค่ำ เดือน ๑๐ ถึง ขึ้น ๑๕ ค่ำ เดือน ๑๑", color: "linear-gradient(135deg, #42A5F5, #1565C0)", avatarUrl: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png", 
               desc: "อาการปวดในข้อ ปวดเข่า ปวดกระดูก ริดสีดวง ฝี สิว", avoid: "รสหวานจัด มันจัด เค็มจัด การนั่งนานๆ", trait: "รูปร่างอวบ ผิวขาว ตาโต พูดช้าเสียงไพเราะ เคลื่อนไหวช้า ผมสวยดกดำ", food: "อาหารรสเบื่อเมา (แก้ปวด) รสขม เช่น ใบยอ มะรุม" },
             { startM: 11, startP: "Waning", endM: 12, endP: "Waxing", main: "ธาตุน้ำ (อาโป)", sub: "ช่วง: แรม ๑ ค่ำ เดือน ๑๑ ถึง ขึ้น ๑๕ ค่ำ เดือน ๑๒", color: "linear-gradient(135deg, #64B5F6, #1976D2)", avatarUrl: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png", 
-              desc: "ภูมิแพ้ หวัด น้ำมูก กรน หายใจติดขัด แน่นหน้าอก", avoid: "อากาศเย็นจัด ฝุ่นละออง อาหารฤทธิ์เย็น", trait: "เคลื่อนไหวช้า ชอบนอน ใจเย็น", food: "อาหารรสเผ็ดร้อน รสเปรี้ยว ช่วยขับเสมหะ เช่น ต้มยำ หอมแดง กระเทียม" },
+              desc: "ภูมิแพ้ หวัด น้ำมูก กรน หายใจติดขัด แน่นหน้าอก", avoid: "อากาศเย็นจัด ฝุ่นละออง อาหารฤทธิ์เย็น", trait: "เคลื่อนไหวช้า ชอบนอน ใจเย็น", food: "อาหารรสเผ็ดร้อน รสเปรี้ยว ช่วยขับเสมหะ เช่น ต้มยำ หอมแดง" },
             { startM: 12, startP: "Waning", endM: 1, endP: "Waxing", main: "ธาตุน้ำ (อาโป)", sub: "ช่วง: แรม ๑ ค่ำ เดือน ๑๒ ถึง ขึ้น ๑๕ ค่ำ เดือน ๑", color: "linear-gradient(135deg, #90CAF9, #2196F3)", avatarUrl: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png", 
               desc: "ผดผื่น สิว ลมพิษ คันง่าย ภูมิแพ้ผิวหนัง", avoid: "การนอนกลางวันมากเกินไป อาหารหมักดอง", trait: "ผิวพรรณละเอียดสวย แต่อาจแพ้ง่าย", food: "อาหารรสขม รสจืด เพื่อฟอกเลือด เช่น สะเดา ฟ้าทะลายโจร" }
         ];
 
         // ==========================================
-        // 4. Logic Matching
+        // 4. Main Logic
         // ==========================================
         function getCombinedAnalysis(lunarInfo) {
             let tm = lunarInfo.thaiMonth;
@@ -431,7 +446,7 @@
                     let isAfterStart = (tm > rule.startM) || (tm === rule.startM && tp === rule.startP);
                     let isBeforeEnd = (tm < rule.endM) || (tm === rule.endM && tp === "Waxing");
                     return isAfterStart && isBeforeEnd;
-                } else { // ข้ามปี
+                } else { 
                     let isAfterStart = (tm === rule.startM && tp === rule.startP) || (tm > rule.startM);
                     let isBeforeEnd = (tm === rule.endM && tp === "Waxing") || (tm < rule.endM);
                     return isAfterStart || isBeforeEnd;
@@ -450,37 +465,35 @@
                     food: matches[0].food + " รวมถึง " + matches[1].food
                 };
             }
-
             return matches.length > 0 ? matches[0] : sadaoData[0];
         }
 
-        // ==========================================
-        // 5. Main Function
-        // ==========================================
         async function startAnalysis() {
             const d = parseInt(document.getElementById('inputDay').value);
             const m = parseInt(document.getElementById('inputMonth').value);
             const yAD = parseInt(document.getElementById('inputYear').value);
 
-            // 1. คำนวณจันทรคติ (วันเกิด)
+            // 1. Calculate Birth Lunar
             const lunarInfo = calculateRealLunarDate(d, m, yAD);
             const result = getCombinedAnalysis(lunarInfo);
             
-            // 2. คำนวณวันปฏิสนธิ (ย้อนหลัง 9 เดือน)
-            const conceptionStr = calculateConception(d, m, yAD);
+            // 2. Calculate Conception Lunar
+            const conceptionData = getOriginElementAnalysis(d, m, yAD);
 
-            // 3. แสดงผล
+            // 3. UI Update
             document.getElementById('resMain').innerText = result.main;
             document.getElementById('resSub').innerText = result.sub;
             document.getElementById('lunarInfo').innerText = lunarInfo.display;
-            document.getElementById('conceptionInfo').innerText = conceptionStr; // แสดงผลวันปฏิสนธิ
+            
+            // Show Conception Data
+            document.getElementById('conceptionDate').innerText = conceptionData.dateStr;
+            document.getElementById('originDesc').innerText = conceptionData.desc;
             
             document.getElementById('resDesc').innerText = result.desc;
             document.getElementById('resTrait').innerText = result.trait;
             document.getElementById('resAvoid').innerText = result.avoid;
             document.getElementById('resFood').innerText = result.food;
 
-            // 4. รูปภาพ & ธีม
             document.getElementById('resultHeader').style.background = result.color;
             const avatarImg = document.getElementById('avatarImg');
             avatarImg.src = result.avatarUrl;
@@ -494,10 +507,8 @@
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        userId: "Guest", 
-                        birthDate: birthDateStr, 
-                        element: result.main, 
-                        subElement: result.sub + ` (${lunarInfo.display})`
+                        userId: "Guest", birthDate: birthDateStr, 
+                        element: result.main, subElement: result.sub
                     })
                 });
             } catch(e) {}
