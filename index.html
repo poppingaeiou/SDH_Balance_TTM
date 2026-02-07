@@ -16,12 +16,11 @@
         }
         body {
             font-family: 'Prompt', sans-serif;
-            background: #fdfbf7; /* สีครีมอ่อนๆ สบายตา */
+            background: #fdfbf7;
             overflow-x: hidden;
-            perspective: 1000px; /* รองรับ 3D */
+            perspective: 1000px;
         }
         
-        /* ลวดลายพื้นหลังไทยประยุกต์ */
         .thai-bg {
             background-image: radial-gradient(#1B4D3E 1px, transparent 1px), radial-gradient(#D4AF37 1px, transparent 1px);
             background-size: 20px 20px;
@@ -32,10 +31,10 @@
             z-index: -1;
         }
 
-        /* 3D Card Animation Styles */
+        /* --- ปรับแก้ความสูงตรงนี้ครับ (จาก 400 เป็น 550) --- */
         .card-scene {
             width: 100%;
-            height: 400px; /* พื้นที่สำหรับ 3D */
+            height: 550px; /* เพิ่มความสูงเพื่อแก้ปัญหาตกขอบ */
             position: relative;
             perspective: 1000px;
         }
@@ -45,47 +44,46 @@
             height: 100%;
             position: absolute;
             transform-style: preserve-3d;
-            transition: transform 1.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transition: transform 1.2s cubic-bezier(0.4, 0.2, 0.2, 1);
         }
 
         .card-face {
             position: absolute;
             width: 100%;
             height: 100%;
-            backface-visibility: hidden; /* ซ่อนด้านหลังเมื่อหมุน */
-            border-radius: 20px;
+            backface-visibility: hidden;
+            border-radius: 24px;
             overflow: hidden;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
         }
 
-        /* ด้านหน้า (ฟอร์ม) */
         .card-front {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             transform: rotateY(0deg);
         }
 
-        /* ด้านหลัง (ผลลัพธ์) */
         .card-back {
             background: white;
             transform: rotateY(180deg);
-            overflow-y: auto; /* ให้เลื่อนดูรายละเอียดได้ */
+            overflow-y: auto; /* ให้ Scroll ได้ถ้าเนื้อหายาว */
         }
+        /* ซ่อน Scrollbar แต่ยังเลื่อนได้ */
+        .card-back::-webkit-scrollbar { width: 4px; }
+        .card-back::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 
-        /* Class สำหรับสั่งพลิกการ์ด */
         .is-flipped {
             transform: rotateY(180deg);
         }
 
-        /* Select Box สวยๆ */
         .custom-select {
             appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231B4D3E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
             background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
+            background-size: 1.2em 1.2em;
         }
 
-        /* Effect แสงวิ้งๆ */
         .shine-effect {
             position: relative;
             overflow: hidden;
@@ -97,51 +95,47 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.13) 77%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 77%, rgba(255,255,255,0) 100%);
             transform: rotate(45deg);
             animation: shine 3s infinite;
         }
         @keyframes shine { 0% { transform: translateX(-100%) rotate(45deg); } 100% { transform: translateX(100%) rotate(45deg); } }
 
-        /* Floating 3D Icon */
-        .floating-icon {
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-10px) rotate(5deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+        .floating-icon { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-8px) rotate(5deg); } 100% { transform: translateY(0px) rotate(0deg); } }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
     
     <div class="thai-bg"></div>
 
-    <div class="text-center mb-6 z-10 animate-fade-in-down">
-        <div class="inline-block p-4 rounded-full bg-white shadow-lg border-2 border-yellow-400 mb-2 relative">
-            <i class="fas fa-spa text-4xl text-green-700"></i>
-            <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
+    <div class="text-center mb-4 z-10 animate-fade-in-down">
+        <div class="inline-block p-3 rounded-full bg-white shadow-md border border-green-100 mb-2 relative">
+            <i class="fas fa-spa text-3xl text-green-700"></i>
         </div>
-        <h1 class="text-2xl font-bold text-green-900 drop-shadow-sm">วิเคราะห์ธาตุเจ้าเรือน</h1>
-        <p class="text-yellow-700 text-sm font-light">แพทย์แผนไทย รพ.สะเดา</p>
+        <h1 class="text-xl font-bold text-green-900">วิเคราะห์ธาตุเจ้าเรือน</h1>
+        <p class="text-yellow-700 text-xs">แพทย์แผนไทย รพ.สะเดา</p>
     </div>
 
-    <div class="card-scene w-full max-w-md">
-        <div id="cardObject" class="card-object shadow-2xl rounded-2xl">
+    <div class="card-scene w-full max-w-sm"> <div id="cardObject" class="card-object">
             
             <div class="card-face card-front p-6 flex flex-col justify-between">
                 <div>
-                    <h2 class="text-lg font-bold text-green-800 mb-4 border-b pb-2 border-yellow-200">
-                        <i class="fas fa-calendar-check mr-2"></i>ระบุวันเกิด
-                    </h2>
+                    <div class="text-center mb-6">
+                        <h2 class="text-green-800 font-bold text-lg">ระบุวันเกิดของคุณ</h2>
+                        <div class="h-1 w-16 bg-yellow-400 mx-auto mt-2 rounded-full"></div>
+                    </div>
                     
                     <div class="space-y-4">
-                        <div>
-                            <label class="text-xs text-gray-500 ml-1">วันที่</label>
-                            <select id="inputDay" class="custom-select w-full p-3 bg-green-50 border border-green-200 rounded-xl text-green-800 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        <div class="relative">
+                            <label class="absolute -top-2 left-3 bg-white px-1 text-xs text-green-600 font-bold">วันที่</label>
+                            <select id="inputDay" class="custom-select w-full p-3 bg-green-50/50 border border-green-200 rounded-xl text-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 font-medium">
                                 </select>
                         </div>
 
-                        <div>
-                            <label class="text-xs text-gray-500 ml-1">เดือน</label>
-                            <select id="inputMonth" class="custom-select w-full p-3 bg-green-50 border border-green-200 rounded-xl text-green-800 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        <div class="relative">
+                            <label class="absolute -top-2 left-3 bg-white px-1 text-xs text-green-600 font-bold">เดือนเกิด</label>
+                            <select id="inputMonth" class="custom-select w-full p-3 bg-green-50/50 border border-green-200 rounded-xl text-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 font-medium">
                                 <option value="1">มกราคม</option>
                                 <option value="2">กุมภาพันธ์</option>
                                 <option value="3">มีนาคม</option>
@@ -157,51 +151,67 @@
                             </select>
                         </div>
 
-                        <div>
-                            <label class="text-xs text-gray-500 ml-1">ปี พ.ศ.เกิด</label>
-                            <select id="inputYear" class="custom-select w-full p-3 bg-green-50 border border-green-200 rounded-xl text-green-800 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        <div class="relative">
+                            <label class="absolute -top-2 left-3 bg-white px-1 text-xs text-green-600 font-bold">ปี พ.ศ.</label>
+                            <select id="inputYear" class="custom-select w-full p-3 bg-green-50/50 border border-green-200 rounded-xl text-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 font-medium">
                                 </select>
                         </div>
                     </div>
                 </div>
 
-                <button onclick="startAnalysis()" class="shine-effect w-full bg-gradient-to-r from-green-700 to-green-600 text-white font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all mt-4">
-                    เริ่มวิเคราะห์ (3D Scan) <i class="fas fa-magic ml-2"></i>
+                <button onclick="startAnalysis()" class="shine-effect w-full bg-gradient-to-r from-green-700 to-green-600 text-white font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all flex justify-center items-center gap-2 mb-2">
+                    <span>วิเคราะห์ธาตุ (3D Scan)</span> <i class="fas fa-fingerprint"></i>
                 </button>
             </div>
 
-            <div id="resultFace" class="card-face card-back relative">
-                <div id="resultHeader" class="h-32 bg-gradient-to-br from-orange-400 to-red-500 p-4 text-white flex flex-col items-center justify-center rounded-b-[2rem] shadow-md relative overflow-hidden">
+            <div id="resultFace" class="card-face card-back">
+                <div id="resultHeader" class="h-32 bg-gray-200 p-4 text-white flex flex-col items-center justify-center relative overflow-hidden transition-all duration-700">
                     <div class="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                     
-                    <div class="floating-icon text-5xl drop-shadow-lg mb-1" id="resIcon">🔥</div>
-                    <h2 class="text-2xl font-bold drop-shadow-md" id="resMain">ธาตุไฟ</h2>
-                    <span class="text-xs bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm" id="resSub">กำเดา</span>
+                    <div class="floating-icon text-5xl drop-shadow-lg mb-1" id="resIcon">?</div>
+                    <h2 class="text-3xl font-bold drop-shadow-md" id="resMain">...</h2>
+                    <span class="text-xs bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm mt-1" id="resSub">...</span>
                 </div>
 
-                <div class="p-6 space-y-4 pb-20"> <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                        <h3 class="text-green-800 font-bold text-sm mb-2"><i class="fas fa-user-md mr-2"></i>ลักษณะอาการ</h3>
+                <div class="p-5 pb-20 space-y-4">
+                    
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-green-800 font-bold text-sm mb-2 flex items-center gap-2">
+                            <i class="fas fa-stethoscope text-green-600"></i> อาการและจุดอ่อน
+                        </h3>
                         <p id="resDesc" class="text-gray-600 text-sm leading-relaxed"></p>
+                    </div>
+
+                    <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                        <h3 class="text-red-800 font-bold text-sm mb-2 flex items-center gap-2">
+                            <i class="fas fa-ban text-red-500"></i> ควรหลีกเลี่ยง
+                        </h3>
+                        <p id="resAvoid" class="text-gray-600 text-sm leading-relaxed"></p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div class="bg-green-50 p-3 rounded-xl border border-green-100">
-                            <div class="text-green-600 text-xl mb-1"><i class="fas fa-leaf"></i></div>
-                            <h4 class="font-bold text-green-800 text-xs">อาหารแนะนำ</h4>
-                            <p id="resFood" class="text-xs text-gray-500 mt-1"></p>
+                            <h4 class="font-bold text-green-800 text-xs mb-1"><i class="fas fa-utensils mr-1"></i> อาหารแนะนำ</h4>
+                            <p id="resFood" class="text-xs text-gray-500"></p>
                         </div>
                         <div class="bg-yellow-50 p-3 rounded-xl border border-yellow-100">
-                            <div class="text-yellow-600 text-xl mb-1"><i class="fas fa-mortar-pestle"></i></div>
-                            <h4 class="font-bold text-yellow-800 text-xs">สมุนไพร</h4>
-                            <p id="resHerb" class="text-xs text-gray-500 mt-1"></p>
+                            <h4 class="font-bold text-yellow-800 text-xs mb-1"><i class="fas fa-mortar-pestle mr-1"></i> สมุนไพร</h4>
+                            <p id="resHerb" class="text-xs text-gray-500"></p>
                         </div>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <h3 class="text-blue-800 font-bold text-sm mb-2 flex items-center gap-2">
+                            <i class="fas fa-walking text-blue-500"></i> กิจกรรมปรับธาตุ
+                        </h3>
+                        <p id="resActivity" class="text-gray-600 text-sm leading-relaxed"></p>
                     </div>
 
                 </div>
 
-                <div class="absolute bottom-0 left-0 w-full p-4 bg-white/90 backdrop-blur border-t">
-                    <button onclick="resetCard()" class="w-full py-3 text-gray-500 font-bold hover:text-green-700 transition flex items-center justify-center gap-2">
-                        <i class="fas fa-redo"></i> วิเคราะห์ใหม่
+                <div class="absolute bottom-0 left-0 w-full p-3 bg-white/90 backdrop-blur border-t z-10">
+                    <button onclick="resetCard()" class="w-full py-2 bg-gray-100 rounded-lg text-gray-500 text-sm font-bold hover:bg-gray-200 transition">
+                        <i class="fas fa-redo mr-1"></i> วิเคราะห์ใหม่
                     </button>
                 </div>
             </div>
@@ -209,97 +219,161 @@
         </div>
     </div>
 
-    <div class="mt-8 text-center text-xs text-gray-400">
-        Powered by Google Cloud & Sadao Hospital Innovation
+    <div class="mt-6 text-center text-xs text-gray-400">
+        © 2024 กลุ่มงานแพทย์แผนไทย รพ.สะเดา
     </div>
 
     <script>
-        // 🛠️ URL Script ของคุณ (อันเดิม)
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX7ZJvwflkNzhZ1SPPOJZZcJBvh_Bpbc2acOjh6fEcj58fv9wHu4i9M8J5BoCNmIoDbw/exec';
 
-        // Initialize Dropdowns
+        // Initialize Data
         window.onload = function() {
-            // 1. สร้างวันที่ 1-31
             const daySelect = document.getElementById('inputDay');
             for(let i=1; i<=31; i++) {
                 let opt = document.createElement('option');
                 opt.value = i; opt.innerHTML = i;
                 daySelect.appendChild(opt);
             }
-
-            // 2. สร้างปี พ.ศ. (ย้อนหลัง 100 ปี)
             const yearSelect = document.getElementById('inputYear');
             const currentYearBE = new Date().getFullYear() + 543;
             for(let i=0; i<100; i++) {
                 let y = currentYearBE - i;
                 let opt = document.createElement('option');
-                opt.value = y - 543; // Value เป็น ค.ศ. เพื่อคำนวณง่าย
-                opt.innerHTML = y;   // แสดงผลเป็น พ.ศ.
+                opt.value = y - 543; 
+                opt.innerHTML = y;
                 yearSelect.appendChild(opt);
             }
-            // ตั้งค่า Default เป็นคนอายุประมาณ 30 ปี
             yearSelect.value = (currentYearBE - 30 - 543);
         }
 
-        // 🧠 Logic ธาตุ (ชุดเดิมที่อัปเกรดแล้ว)
+        // 🧠 ข้อมูล Logic ธาตุ (เพิ่ม Avoid และ Activity)
         const elementData = [
-            { start: [1, 1], end: [2, 15], main: "น้ำ (เหมันต์)", sub: "คูถเสมหะ", icon: "💧", desc: "ระวังระบบขับถ่าย ท้องเสียหรือท้องผูกง่าย", food: "กล้วยน้ำว้า, มะละกอ", herb: "ชุมเห็ดเทศ", color: "from-blue-400 to-cyan-500" }, // *แก้ช่วงเดือน 1 ให้ครอบคลุม
-            { start: [2, 16], end: [3, 15], main: "ไฟ (คิมหันต์)", sub: "พัทธปิตตะ", icon: "🔥", desc: "หงุดหงิดง่าย อาหารไม่ย่อย น้ำดีพิการ", food: "มะระขี้นก, สะเดา", herb: "บรเพ็ด", color: "from-orange-400 to-red-500" },
-            { start: [3, 16], end: [4, 15], main: "ไฟ (คิมหันต์)", sub: "อพัทธปิตตะ", icon: "🔥", desc: "จุกเสียด แน่นท้อง กรดไหลย้อน", food: "ตำลึง, บวบ, ผักบุ้ง", herb: "ขมิ้นชัน", color: "from-orange-400 to-red-500" },
-            { start: [4, 16], end: [5, 15], main: "ไฟ (คิมหันต์)", sub: "กำเดา", icon: "🔥", desc: "เป็นไข้ง่าย แพ้แดด ปวดหัวไมเกรน", food: "แตงโม, ฟักเขียว", herb: "ใบบัวบก, รางจืด", color: "from-orange-400 to-red-500" },
-            { start: [5, 16], end: [6, 15], main: "ลม (วสันต์)", sub: "หทัยวาตะ", icon: "🌬️", desc: "ใจสั่น วิตกกังวล นอนไม่หลับ", food: "ขิง, กะเพรา, โหระพา", herb: "ดอกมะลิ, เกสรทั้ง 5", color: "from-green-400 to-emerald-600" },
-            { start: [6, 16], end: [7, 15], main: "ลม (วสันต์)", sub: "สัตถกวาตะ", icon: "🌬️", desc: "ปวดเมื่อยเหมือนเข็มแทง เจ็บแปลบ", food: "พริกไทย, ดีปลี", herb: "ไพล, เถาวัลย์เปรียง", color: "from-green-400 to-emerald-600" },
-            { start: [7, 16], end: [8, 15], main: "ลม (วสันต์)", sub: "สุมนาวาตะ", icon: "🌬️", desc: "หน้ามืด วิงเวียน ไหลเวียนเลือดไม่ดี", food: "ตะไคร้, ข่า", herb: "พริกไทยดำ, ขิงแก่", color: "from-green-400 to-emerald-600" },
-            { start: [8, 16], end: [9, 15], main: "น้ำ (เหมันต์)", sub: "ศอเสมหะ", icon: "💧", desc: "เจ็บคอบ่อย ไอ มีเสมหะ", food: "มะนาว, มะขามป้อม", herb: "มะแว้ง", color: "from-blue-400 to-cyan-500" },
-            { start: [9, 16], end: [10, 15], main: "น้ำ (เหมันต์)", sub: "อุระเสมหะ", icon: "💧", desc: "หอบหืด ภูมิแพ้อากาศ แน่นหน้าอก", food: "หอมแดง, กระเทียม", herb: "หนุมานประสานกาย", color: "from-blue-400 to-cyan-500" },
-            { start: [10, 16], end: [11, 15], main: "น้ำ (เหมันต์)", sub: "คูถเสมหะ", icon: "💧", desc: "ท้องผูกสลับท้องเสีย ถ่ายไม่สุด", food: "เม็ดแมงลัก, ส้มโอ", herb: "สมอไทย", color: "from-blue-400 to-cyan-500" },
-            { start: [11, 16], end: [12, 15], main: "ดิน (รอยต่อ)", sub: "ธาตุหนัก", icon: "⛰️", desc: "ร่างกายหนัก อืดอาด ต้องการสมดุล", food: "ผักพื้นบ้านหลากสี", herb: "ตรีผลา", color: "from-yellow-600 to-brown-500" }, // *เพิ่ม
-             // ... เพิ่มช่วงอื่นๆ ตามต้องการ
+            { 
+                start: [1, 1], end: [2, 15], 
+                main: "น้ำ (เหมันต์)", sub: "คูถเสมหะ", icon: "💧", color: "from-blue-400 to-cyan-500",
+                desc: "มักมีปัญหาเรื่องระบบขับถ่าย ท้องผูกสลับท้องเสีย เป็นหวัดง่าย", 
+                avoid: "ของมัน ของทอด นมเนย น้ำเย็นจัด การนอนดึก",
+                food: "แกงส้ม, ต้มยำ, มะละกอ, สับปะรด", 
+                herb: "ขิง, ดีปลี, ชุมเห็ดเทศ",
+                activity: "ออกกำลังกายให้เหงื่อออก (Cardio), อบสมุนไพร"
+            },
+            { 
+                start: [2, 16], end: [3, 15], 
+                main: "ไฟ (คิมหันต์)", sub: "พัทธปิตตะ", icon: "🔥", color: "from-orange-400 to-red-500",
+                desc: "หงุดหงิดง่าย ร้อนใน ท้องผูก อุจจาระแข็ง", 
+                avoid: "อาหารรสจัด/เผ็ดร้อน แอลกอฮอล์ ความเครียด",
+                food: "แกงจืดตำลึง, มะระผัดไข่, แตงกวา", 
+                herb: "ฟ้าทะลายโจร, บรเพ็ด, ย่านาง",
+                activity: "ว่ายน้ำ, นั่งสมาธิ, ฟังเพลงเบาๆ"
+            },
+            { 
+                start: [3, 16], end: [4, 15], 
+                main: "ไฟ (คิมหันต์)", sub: "อพัทธปิตตะ", icon: "🔥", color: "from-orange-400 to-red-500",
+                desc: "จุกเสียด แน่นท้อง กรดไหลย้อน ปวดท้องหลังอาหาร", 
+                avoid: "กินอาหารไม่ตรงเวลา ของหมักดอง กาแฟ",
+                food: "ผักลวก, ปลานึ่ง, ข้าวต้ม, กระเจี๊ยบเขียว", 
+                herb: "ขมิ้นชัน, ว่านหางจระเข้",
+                activity: "โยคะเบาๆ, เดินหลังอาหาร"
+            },
+            { 
+                start: [4, 16], end: [5, 15], 
+                main: "ไฟ (คิมหันต์)", sub: "กำเดา", icon: "🔥", color: "from-orange-400 to-red-500",
+                desc: "เป็นไข้ง่าย แพ้แดด ปวดหัวไมเกรน เลือดกำเดาไหล", 
+                avoid: "การตากแดดจัด อดนอน อาหารรสเค็มจัด",
+                food: "แกงเลียง, ฟักเขียว, แตงโม", 
+                herb: "ใบบัวบก, เก๊กฮวย, รางจืด",
+                activity: "ทำสปาเย็น, พักผ่อนสายตา"
+            },
+            { 
+                start: [5, 16], end: [6, 15], 
+                main: "ลม (วสันต์)", sub: "หทัยวาตะ", icon: "🌬️", color: "from-green-400 to-emerald-600",
+                desc: "ใจสั่น วิตกกังวล นอนไม่หลับ อ่อนเพลียง่าย", 
+                avoid: "ความกังวล ข้าวเย็นชืด น้ำอัดลม",
+                food: "ข้าวหอมมะลิอุ่นๆ, แกงขี้เหล็ก, ดอกขจร", 
+                herb: "ยาหอม, ดอกมะลิ, บัวหลวง",
+                activity: "สวดมนต์, กลิ่นบำบัด (Aroma), นวดผ่อนคลาย"
+            },
+            { 
+                start: [6, 16], end: [7, 15], 
+                main: "ลม (วสันต์)", sub: "สัตถกวาตะ", icon: "🌬️", color: "from-green-400 to-emerald-600",
+                desc: "ปวดกล้ามเนื้อเหมือนเข็มแทง เจ็บแปลบตามตัว เส้นตึง", 
+                avoid: "การยกของหนัก ท่าทางซ้ำๆ นานๆ ลมแอร์เป่าตัว",
+                food: "ผัดฉ่า, แกงป่า, พริกไทยดำ", 
+                herb: "ไพล, เถาวัลย์เปรียง, น้ำมันเลียงผา",
+                activity: "ยืดเหยียด (Stretching), นวดประคบสมุนไพร"
+            },
+            { 
+                start: [7, 16], end: [8, 15], 
+                main: "ลม (วสันต์)", sub: "สุมนาวาตะ", icon: "🌬️", color: "from-green-400 to-emerald-600",
+                desc: "หน้ามืด วิงเวียน ไหลเวียนเลือดไม่ดี มือเท้าชา", 
+                avoid: "การลุกนั่งเร็วๆ อาหารไขมันสูง",
+                food: "ต้มข่าไก่, ขิงผัดขิง, น้ำตะไคร้", 
+                herb: "ขิงแก่, พริกไทย, กระชาย",
+                activity: "แกว่งแขน, เดินเร็ว, นวดกระตุ้นฝ่าเท้า"
+            },
+            { 
+                start: [8, 16], end: [9, 15], 
+                main: "น้ำ (เหมันต์)", sub: "ศอเสมหะ", icon: "💧", color: "from-blue-400 to-cyan-500",
+                desc: "เจ็บคอบ่อย ไอแห้ง/มีเสมหะ เสียงแหบ", 
+                avoid: "น้ำแข็ง อากาศเย็นจัด ฝุ่นควัน",
+                food: "ต้มยำไก่บ้าน, น้ำมะนาว, มะดัน", 
+                herb: "มะแว้ง, มะขามป้อม, ฟ้าทะลายโจร",
+                activity: "จิบน้ำอุ่นบ่อยๆ, กลั้วคอด้วยน้ำเกลือ"
+            },
+            { 
+                start: [9, 16], end: [10, 15], 
+                main: "น้ำ (เหมันต์)", sub: "อุระเสมหะ", icon: "💧", color: "from-blue-400 to-cyan-500",
+                desc: "หอบหืด ภูมิแพ้อากาศ แน่นหน้าอก หายใจไม่สะดวก", 
+                avoid: "ที่ชื้นแฉะ ขนสัตว์ เกสรดอกไม้",
+                food: "หอมหัวใหญ่, กระเทียม, ซุปไก่ร้อนๆ", 
+                herb: "หนุมานประสานกาย, ขิง",
+                activity: "ฝึกการหายใจ (Deep Breathing), ทำให้ร่างกายอบอุ่น"
+            },
+            { 
+                start: [10, 16], end: [11, 15], 
+                main: "น้ำ (เหมันต์)", sub: "คูถเสมหะ", icon: "💧", color: "from-blue-400 to-cyan-500",
+                desc: "ท้องอืด ท้องเฟ้อ ขับถ่ายไม่สุด อุจจาระธาตุพิการ", 
+                avoid: "กะทิ ขนมหวานจัด แป้งขัดขาว",
+                food: "เม็ดแมงลัก, ส้มโอ, แกงส้มมะรุม", 
+                herb: "สมอไทย, ตรีผลา, กะเพราแดง",
+                activity: "นวดท้อง, ดื่มน้ำหลังตื่นนอนทันที"
+            }
         ];
 
-        // ฟังก์ชันช่วยหาธาตุ
         function getElement(d, m) {
             for(let rule of elementData) {
-                // Logic ง่ายๆ สำหรับ MVP: เช็คแค่เดือนเริ่ม/จบ (เพื่อความรวดเร็ว)
-                // ถ้าอยากได้เป๊ะต้องใช้ Logic วันที่แบบเต็ม
                  if (m === rule.start[0]) return rule; 
             }
-            return elementData[0]; // Fallback
+            return elementData[0];
         }
 
         async function startAnalysis() {
-            // 1. ดึงค่าจาก Dropdown
             const d = parseInt(document.getElementById('inputDay').value);
             const m = parseInt(document.getElementById('inputMonth').value);
             const y = parseInt(document.getElementById('inputYear').value);
-
-            // Create Date Object for saving
             const birthDateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-
-            // 2. คำนวณ
             const result = getElement(d, m);
 
-            // 3. Update UI (ด้านหลังการ์ด)
+            // Update UI
             document.getElementById('resMain').innerText = result.main;
             document.getElementById('resSub').innerText = result.sub;
             document.getElementById('resIcon').innerText = result.icon;
             document.getElementById('resDesc').innerText = result.desc;
+            document.getElementById('resAvoid').innerText = result.avoid; // New
             document.getElementById('resFood').innerText = result.food;
             document.getElementById('resHerb').innerText = result.herb;
+            document.getElementById('resActivity').innerText = result.activity; // New
             
-            // เปลี่ยนสี Header ตามธาตุ
             const header = document.getElementById('resultHeader');
-            header.className = `h-32 bg-gradient-to-br ${result.color} p-4 text-white flex flex-col items-center justify-center rounded-b-[2rem] shadow-md relative overflow-hidden transition-all duration-1000`;
+            header.className = `h-32 bg-gradient-to-br ${result.color} p-4 text-white flex flex-col items-center justify-center relative overflow-hidden transition-all duration-1000`;
 
-            // 4. Trigger 3D Animation (Flip)
+            // Animation & Save
             const card = document.getElementById('cardObject');
-            card.classList.add('is-flipped'); // พลิกการ์ด!
-
-            // 5. Save Data (เงียบๆ)
+            card.classList.add('is-flipped');
+            
             try {
                 fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
+                    method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: "Guest", birthDate: birthDateStr, element: result.main, subElement: result.sub })
                 });
