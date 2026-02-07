@@ -255,7 +255,7 @@
                 </div>
 
                 <div class="p-4 bg-white border-t z-20">
-                    <p class="text-[10px] text-center text-gray-400 mb-2">อ้างอิง: ข้อมูลวิเคราะห์สมุฏฐาน รพ.สะเดา & คัมภีร์สมุฏฐานวินิจฉัย</p>
+                    <p class="text-[10px] text-center text-gray-400 mb-2">อ้างอิง: ข้อมูลวิเคราะห์สมุฏฐาน รพ.สะเดา</p>
                     <button onclick="resetCard()" class="w-full py-3 rounded-xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition">
                         <i class="fas fa-redo mr-1"></i> วิเคราะห์ใหม่
                     </button>
@@ -286,7 +286,7 @@
         }
 
         // ==========================================
-        // 1. High Precision Lunar Calculation (V3 - Final Tuned)
+        // 1. High Precision Lunar Calculation (V3)
         // ==========================================
         function calculateRealLunarDate(day, month, yearAD) {
             const date = new Date(yearAD, month - 1, day);
@@ -298,8 +298,6 @@
             let moonAge = diffDays % synodicMonth;
             if (moonAge < 0) moonAge += synodicMonth;
             
-            // Calibration Offset V3: +1.3 days
-            // ทำให้ 25 ก.ย. 2538 (0.36) -> 1.66 -> ขึ้น 2 ค่ำ (ถูกต้อง)
             moonAge += 1.3; 
             if (moonAge > synodicMonth) moonAge -= synodicMonth;
 
@@ -322,7 +320,7 @@
                 thaiMonth += 1; if(thaiMonth > 12) thaiMonth = 1;
             }
 
-            // ⚠️ Dynamic Rollover: ถ้าเป็นข้างขึ้นในช่วงครึ่งเดือนหลังสากล = ข้ามเดือน
+            // ⚠️ Dynamic Rollover
             if (phase === "Waxing" && day > 15) {
                 thaiMonth += 1;
                 if (thaiMonth > 12) thaiMonth = 1;
@@ -338,71 +336,129 @@
         }
 
         // ==========================================
-        // 2. Comprehensive Database (Sadao + Wording Update + New Images)
+        // 2. Comprehensive Database (Pure Sadao Data)
         // ==========================================
         const sadaoData = [
-            // --- 1. ศิศิรฤดู ---
-            { startM: 2, startP: "Waning", endM: 4, endP: "Waxing", 
+            // --- ธาตุดิน (เดือน 1-4) ---
+            { startM: 1, startP: "Waning", endM: 2, endP: "Waxing", 
               main: "ธาตุดิน (ปถวี)", 
-              sub: "พิกัดแห่งเสมหะสมุฏฐาน และปิตตะสมุฏฐานระคนกัน",
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๑ ถึง ขึ้น ๑๕ ค่ำ เดือน ๒",
               color: "linear-gradient(135deg, #8D6E63, #5D4037)",
-              avatarUrl: "https://img2.pic.in.th/1c8b450894dd6fe8e.png", // New Earth Image
-              desc: "ธาตุไฟเริ่มแทรก อาจถ่ายเหลวได้ง่าย ลำไส้แปรปรวน สตรีอาจมีปัญหาประจำเดือน",
+              avatarUrl: "https://img2.pic.in.th/1c8b450894dd6fe8e.png", 
+              desc: "มีอาการท้องผูก ขับถ่ายลำบาก ปวดท้อง ลมติดในเส้นง่าย",
+              avoid: "อาหารมันที่ย่อยยาก ของทอด กะทิข้น",
+              trait: "รูปร่างสูงใหญ่ แข็งแรง กระดูกใหญ่ ผมดกดำ พูดจาฉะฉาน หนักแน่น สุขุมรอบคอบ",
+              food: "ควรกินให้ครบ 5 หมู่ เน้นรสฝาด หวาน มัน เค็ม เช่น ผักกูด มังคุด ฟักทอง ถั่วต่างๆ เงาะ น้ำนม" },
+              
+            { startM: 2, startP: "Waning", endM: 3, endP: "Waxing", 
+              main: "ธาตุดิน (ปถวี)", 
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๒ ถึง ขึ้น ๑๕ ค่ำ เดือน ๓",
+              color: "linear-gradient(135deg, #A1887F, #6D4C41)",
+              avatarUrl: "https://img2.pic.in.th/1c8b450894dd6fe8e.png",
+              desc: "มีอาการหายใจไม่สุด หายใจไม่เต็มอิ่ม เหนื่อยง่ายกว่าปกติ",
+              avoid: "การทำงานหนักเกินกำลัง พักผ่อนน้อย",
+              trait: "รูปร่างสันทัด แข็งแรง แต่อาจมีปัญหาระบบทางเดินหายใจแฝง",
+              food: "อาหารรสสุขุม ร้อนเล็กน้อย ช่วยกระจายลม เช่น น้ำขิง แกงเลียง" },
+
+            { startM: 3, startP: "Waning", endM: 4, endP: "Waxing", 
+              main: "ธาตุดิน (ปถวี)", 
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๓ ถึง ขึ้น ๑๕ ค่ำ เดือน ๔",
+              color: "linear-gradient(135deg, #D7CCC8, #8D6E63)",
+              avatarUrl: "https://img2.pic.in.th/1c8b450894dd6fe8e.png",
+              desc: "ถ่ายเหลวได้ง่าย (รับประทานอาหารแสลง) ลำไส้แปรปรวน สตรีอาจมีปัญหาประจำเดือน",
               avoid: "อาหารแสลง อาหารรสจัด อาหารหมักดอง",
               trait: "จิตใจหนักแน่นมั่นคง ดื้อรั้นเล็กน้อย",
               food: "อาหารรสฝาดสมาน เช่น กล้วยน้ำว้าดิบ น้ำฝรั่ง ยำหัวปลี" },
 
-            // --- 2. คิมหันตฤดู ---
-            { startM: 4, startP: "Waning", endM: 6, endP: "Waxing", 
+            // --- ธาตุไฟ (เดือน 4-9) ---
+            { startM: 4, startP: "Waning", endM: 5, endP: "Waxing", 
               main: "ธาตุไฟ (เตโช)", 
-              sub: "พิกัดแห่งปิตตะสมุฏฐาน และเสมหะสมุฏฐานระคนกัน",
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๔ ถึง ขึ้น ๑๕ ค่ำ เดือน ๕",
               color: "linear-gradient(135deg, #FF7043, #D84315)",
-              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png", // New Fire Image
+              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png", 
               desc: "เป็นลม หน้ามืด ไข้แดด ร้อนใน หลับยาก เพราะความร้อนสะสมสูง",
               avoid: "อาหารรสเผ็ดร้อนจัด แดดจัด อารมณ์โมโห แอลกอฮอล์",
               trait: "รูปร่างสมส่วน ผิวขาวเหลือง พูดชัด หิวบ่อย กินจุ ขี้หงุดหงิด โกรธง่ายหายเร็ว",
               food: "อาหารรสจืด เย็น ขม เพื่อดับพิษร้อน เช่น แตงโม ต้มจืดฟัก น้ำเก๊กฮวย" },
 
-            // --- 3. วสันตฤดู ---
-            { startM: 6, startP: "Waning", endM: 8, endP: "Waxing", 
+            { startM: 6, startP: "Waning", endM: 7, endP: "Waxing", 
               main: "ธาตุไฟ (เตโช)", 
-              sub: "พิกัดแห่งปิตตะสมุฏฐาน และวาตะสมุฏฐานระคนกัน",
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๖ ถึง ขึ้น ๑๕ ค่ำ เดือน ๗",
               color: "linear-gradient(135deg, #FFAB91, #E64A19)",
-              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png", // New Fire Image
-              desc: "อากาศเปลี่ยน ความดันโลหิตอาจแปรปรวน อารมณ์ขึ้นลงง่าย นอนหลับยาก",
+              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png",
+              desc: "ความดันโลหิตแปรปรวน อารมณ์ขึ้นลงง่าย นอนหลับยาก ตื่นง่าย",
               avoid: "ความเครียด อาหารรสจัดเกินไป",
               trait: "คล่องแคล่ว ว่องไว ผมหงอกก่อนวัย",
               food: "อาหารรสขมเย็น ช่วยลดความร้อน เช่น มะระ บรเพ็ด ใบบัวบก" },
 
-            // --- 4. วสสานฤดู ---
-            { startM: 8, startP: "Waning", endM: 10, endP: "Waxing", 
+            { startM: 8, startP: "Waning", endM: 9, endP: "Waxing", 
+              main: "ธาตุไฟ (เตโช)", 
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๘ ถึง ขึ้น ๑๕ ค่ำ เดือน ๙",
+              color: "linear-gradient(135deg, #FFCCBC, #FF5722)",
+              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png",
+              desc: "ปวดศีรษะ ปวดกระบอกตา หูอื้อ วิงเวียนศีรษะ (ไมเกรน)",
+              avoid: "ใช้สายตาเยอะ แสงแดดจ้า อาหารเผ็ดร้อน",
+              trait: "คิดเร็วทำเร็ว หงุดหงิดง่าย",
+              food: "อาหารรสหอมเย็น จืด เช่น แกงจืดตำลึง ยาหอม น้ำดอกไม้" },
+
+            // --- ธาตุลม (เดือน 7-10) ---
+            { startM: 7, startP: "Waning", endM: 8, endP: "Waxing", 
               main: "ธาตุลม (วาโย)", 
-              sub: "พิกัดแห่งวาตะสมุฏฐาน และปิตตะสมุฏฐานระคนกัน",
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๗ ถึง ขึ้น ๑๕ ค่ำ เดือน ๘",
+              color: "linear-gradient(135deg, #66BB6A, #2E7D32)", 
+              avatarUrl: "https://img2.pic.in.th/261c90e765ec6b116.png", 
+              desc: "ไอ ระคายเคืองคอ เจ็บคอ จุกคอ ลมตีขึ้นเบื้องบน",
+              avoid: "การอดนอน ของทอด น้ำเย็นจัด ยกของหนัก",
+              trait: "ร่างกายผอม ผิวแห้ง ผมบาง พูดเยอะ ขี้กลัว วิตกกังวล",
+              food: "อาหารรสเผ็ดร้อนเล็กน้อย ชุ่มคอ เช่น น้ำมะนาวผสมน้ำผึ้ง ต้มยำไก่" },
+
+            { startM: 8, startP: "Waning", endM: 9, endP: "Waxing", 
+              main: "ธาตุลม (วาโย)", 
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๘ ถึง ขึ้น ๑๕ ค่ำ เดือน ๙",
               color: "linear-gradient(135deg, #81C784, #388E3C)",
-              avatarUrl: "https://img2.pic.in.th/261c90e765ec6b116.png", // New Wind Image
-              desc: "ท้องอืด แน่นท้อง อาหารไม่ย่อย เรอเหม็นเปรี้ยว ลมในกระเพาะเยอะ",
+              avatarUrl: "https://img2.pic.in.th/261c90e765ec6b116.png",
+              desc: "ท้องอืด แน่นท้อง อาหารไม่ย่อย เรอเหม็นเปรี้ยว",
               avoid: "เคี้ยวอาหารไม่ละเอียด ทานเร็วเกินไป ความเครียด",
               trait: "เคลื่อนไหวเร็ว อารมณ์แปรปรวน",
               food: "สมุนไพรขับลม เช่น ขิง ข่า ตะไคร้ กะเพรา" },
 
-            // --- 5. สารทฤดู ---
-            { startM: 10, startP: "Waning", endM: 12, endP: "Waxing", 
+            { startM: 9, startP: "Waning", endM: 10, endP: "Waxing", 
+              main: "ธาตุลม (วาโย)", 
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๙ ถึง ขึ้น ๑๕ ค่ำ เดือน ๑๐",
+              color: "linear-gradient(135deg, #A5D6A7, #4CAF50)",
+              avatarUrl: "https://img2.pic.in.th/261c90e765ec6b116.png",
+              desc: "กรดไหลย้อน ท้องเฟ้อ ท้องบิด แสบร้อนกลางอก อาหารไม่ย่อย",
+              avoid: "การอดอาหาร ทานรสจัด กาแฟ อัดลม",
+              trait: "คิดมาก วิตกกังวลลงกระเพาะ นอนหลับยาก",
+              food: "อาหารย่อยง่าย รสไม่จัด เช่น ขมิ้นชัน กล้วยน้ำว้า" },
+
+            // --- ธาตุน้ำ (เดือน 10-1) ---
+            { startM: 10, startP: "Waning", endM: 11, endP: "Waxing", 
               main: "ธาตุน้ำ (อาโป)", 
-              sub: "พิกัดแห่งวาตะสมุฏฐาน และเสมหะสมุฏฐานระคนกัน",
-              color: "linear-gradient(135deg, #42A5F5, #1565C0)",
-              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png", // New Water Image
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๑๐ ถึง ขึ้น ๑๕ ค่ำ เดือน ๑๑",
+              color: "linear-gradient(135deg, #42A5F5, #1565C0)", 
+              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png", 
               desc: "อาการปวดในข้อ ปวดเข่า ปวดกระดูก ริดสีดวง ฝี สิว",
               avoid: "รสหวานจัด มันจัด เค็มจัด การนั่งนานๆ",
               trait: "รูปร่างอวบ ผิวขาว ตาโต พูดช้าเสียงไพเราะ เคลื่อนไหวช้า ผมสวยดกดำ",
               food: "อาหารรสเบื่อเมา (แก้ปวด) รสขม เช่น ใบยอ มะรุม" },
 
-            // --- 6. เหมันตฤดู ---
-            { startM: 12, startP: "Waning", endM: 2, endP: "Waxing", 
+            { startM: 11, startP: "Waning", endM: 12, endP: "Waxing", 
               main: "ธาตุน้ำ (อาโป)", 
-              sub: "พิกัดแห่งเสมหะสมุฏฐาน และวาตะสมุฏฐานระคนกัน", // Updated text
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๑๑ ถึง ขึ้น ๑๕ ค่ำ เดือน ๑๒",
+              color: "linear-gradient(135deg, #64B5F6, #1976D2)",
+              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png",
+              desc: "ภูมิแพ้ หวัด น้ำมูก กรน หายใจติดขัด แน่นหน้าอก",
+              avoid: "อากาศเย็นจัด ฝุ่นละออง อาหารฤทธิ์เย็น",
+              trait: "เคลื่อนไหวช้า ชอบนอน ใจเย็น",
+              food: "อาหารรสเผ็ดร้อน รสเปรี้ยว ช่วยขับเสมหะ เช่น ต้มยำ หอมแดง กระเทียม" },
+
+            { startM: 12, startP: "Waning", endM: 1, endP: "Waxing", 
+              main: "ธาตุน้ำ (อาโป)", 
+              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๑๒ ถึง ขึ้น ๑๕ ค่ำ เดือน ๑",
               color: "linear-gradient(135deg, #90CAF9, #2196F3)",
-              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png", // New Water Image
-              desc: "ผดผื่น สิว ลมพิษ คันง่าย ภูมิแพ้ผิวหนัง หรือท้องผูกง่ายจากความเย็น",
+              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png",
+              desc: "ผดผื่น สิว ลมพิษ คันง่าย ภูมิแพ้ผิวหนัง",
               avoid: "การนอนกลางวันมากเกินไป อาหารหมักดอง",
               trait: "ผิวพรรณละเอียดสวย แต่อาจแพ้ง่าย",
               food: "อาหารรสขม รสจืด เพื่อฟอกเลือด เช่น สะเดา ฟ้าทะลายโจร" }
