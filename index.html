@@ -133,9 +133,7 @@
         .food-advice { font-size: 12px; color: #555; background: rgba(241,248,233,0.95); padding: 10px; border-radius: 10px; border: 1px dashed #81C784; display: flex; align-items: flex-start; }
 
         /* Results Styling */
-        /* Updated: Gradient Header */
         .back-header { 
-            /* Gradient set by JS */
             padding: 50px 20px 40px; text-align: center; color: white; 
             border-radius: 0 0 40% 40% / 0 0 30px 30px; 
             position: relative; flex-shrink: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
@@ -232,8 +230,7 @@
                     <img id="avatarImg" src="" class="avatar-real hidden">
                     <h2 class="text-2xl font-bold text-white drop-shadow-md" id="resMain">...</h2>
                     <p class="text-white/90 text-xs mt-2 px-4 leading-relaxed font-light" id="resSub">...</p>
-                    
-                    </div>
+                </div>
 
                 <div class="back-content">
                     <div class="section-title"><i class="fas fa-user-circle"></i> <span data-i18n="res_trait">ลักษณะนิสัยและจุดเด่น</span></div>
@@ -366,7 +363,7 @@
         }
 
         // ==========================================
-        // Logic (Calibrated for Correct Thai Month)
+        // Logic (Calibrated)
         // ==========================================
         function calculateRealLunarDate(targetDate) {
             const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); 
@@ -386,257 +383,224 @@
             let daysToNewMoon = moonAge;
             let lastNewMoonDate = new Date(targetDate);
             lastNewMoonDate.setDate(targetDate.getDate() - Math.floor(daysToNewMoon));
-            
-            // --- FIX: Correct Month Mapping ---
             let nmMonth = lastNewMoonDate.getMonth() + 1; 
-            // 12=Dec=1(Ai), 1=Jan=2(Yee), 2=Feb=3...
+            
+            // Correct Mapping: 12=1(Ai), 1=2(Yee), 2=3...
             const standardMap = { 12:1, 1:2, 2:3, 3:4, 4:5, 5:6, 6:7, 7:8, 8:9, 9:10, 10:11, 11:12 };
             let thaiMonth = standardMap[nmMonth];
 
             if (adhikamasaYears.includes(targetDate.getFullYear())) {
                 if (nmMonth >= 7 || nmMonth <= 3) { thaiMonth -= 1; if (thaiMonth <= 0) thaiMonth = 12; }
             }
-            
-            const thaiNums = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
-            const toThaiNum = (num) => num.toString().split('').map(d => thaiNums[d] || d).join('');
-            
-            let display = "";
-            if (currentLang === 'th') {
-                display = `${phase === "Waxing" ? "ขึ้น" : "แรม"} ${toThaiNum(lunarDay)} ค่ำ เดือน ${toThaiNum(thaiMonth)}`;
-            } else {
-                display = `${phase === "Waxing" ? "Waxing" : "Waning"} Moon, Day ${lunarDay}, Month ${thaiMonth}`;
-            }
-            return { phase, lunarDay, thaiMonth, display };
+            return { phase, lunarDay, thaiMonth };
         }
 
-        // --- CONTENT DATA ---
+        // --- PDF DATA STRUCTURE (New Sadao Mapping) ---
+        // Format: Array of Rules. Each rule checks (month, phase).
+        const sadaoData = [
+            // EARTH (Waning 1 Month 1 -> Waxing 15 Month 4)
+            {
+                check: (m, p) => (m==1 && p=='Waning') || (m==2) || (m==3) || (m==4 && p=='Waxing'),
+                key: "earth"
+            },
+            // FIRE (Waning 1 Month 4 -> Waxing 15 Month 5) + (Waning 1 Month 6 -> Waxing 15 Month 7) + (Waning 1 Month 8 -> Waxing 15 Month 9 - Overlap)
+            {
+                check: (m, p) => (m==4 && p=='Waning') || (m==5 && p=='Waxing'),
+                key: "fire"
+            },
+            {
+                check: (m, p) => (m==6 && p=='Waning') || (m==7 && p=='Waxing'),
+                key: "fire"
+            },
+            // Overlap Case 8-9 (Fire + Wind) -> Using "Fire" as primary but merged description if possible, or just standard mapping.
+            // Based on PDF: 8-9 appears in BOTH Fire and Wind.
+            // Let's create a specific key for this overlap "fire_wind"
+            {
+                check: (m, p) => (m==8 && p=='Waning') || (m==9 && p=='Waxing'),
+                key: "fire_wind" 
+            },
+            // WIND (Waning 1 Month 7 -> Waxing 15 Month 8) + (Waning 1 Month 9 -> Waxing 15 Month 10)
+            {
+                check: (m, p) => (m==7 && p=='Waning') || (m==8 && p=='Waxing'),
+                key: "wind"
+            },
+            {
+                check: (m, p) => (m==9 && p=='Waning') || (m==10 && p=='Waxing'),
+                key: "wind"
+            },
+            // WATER (Waning 1 Month 10 -> Waxing 15 Month 1)
+            {
+                check: (m, p) => (m==10 && p=='Waning') || (m==11) || (m==12) || (m==1 && p=='Waxing'),
+                key: "water"
+            }
+        ];
+
+        // Content Data (Enhanced with PDF specifics)
         const contentData = {
+            earth: {
+                th: {
+                    name: "ธาตุดิน (ปถวี)", sub: "ช่วงเดือน 1-4 (ตามจันทรคติ)",
+                    trait: "ร่างกายแข็งแรง บึกบึน โครงสร้างใหญ่ หนักแน่น มั่นคง อดทนสูง จิตใจเยือกเย็น สุขุม",
+                    health: "ท้องผูกง่าย (ลมติดในเส้น) อาหารไม่ย่อย หายใจไม่เต็มอิ่ม (เดือน 2-3) โรคอ้วน นิ่ว เนื้องอก",
+                    recTaste: "รสฝาด, รสหวาน, รสมัน, รสเค็ม", recReason: "บำรุงธาตุดินให้สมบูรณ์ (แต่ต้องทานพอดี)",
+                    badTaste: "รสหวานจัดเกินไป, รสมันจัดเกินไป", badReason: "ทำให้ธาตุดินกำเริบจนเป็นก้อนแข็ง (เนื้องอก/อ้วน)",
+                    foods: ["พะโล้", "มัสมั่น", "ราดหน้า", "ยำถั่วพู", "สะตอผัดกุ้ง", "เต้าหู้ทรงเครื่อง", "แกงเลียง", "ผักกูด"],
+                    fruits: ["กล้วยน้ำว้า", "เงาะ", "มังคุด", "ฝรั่ง", "มะละกอ", "ฟักทอง", "เผือก"]
+                },
+                en: { name: "Earth Element", sub: "Lunar Month 1-4", trait: "Strong, Stable, Calm", health: "Constipation, Indigestion", recTaste: "Sweet, Oily, Salty", recReason: "Nourishes body", badTaste: "Too Sweet/Oily", badReason: "Causes obesity", foods: ["Stewed Pork", "Massaman"], fruits: ["Banana", "Papaya"] }
+            },
             fire: {
                 th: {
-                    name: "ธาตุไฟ (เตโช)", sub: "ปฏิสนธิในคิมหันตฤดู (ฤดูร้อน)",
+                    name: "ธาตุไฟ (เตโช)", sub: "ช่วงเดือน 4-5, 6-7 (ตามจันทรคติ)",
                     trait: "คล่องแคล่ว ว่องไว กระตือรือร้น ใจร้อน หิวบ่อย กินจุ ผิวพรรณละเอียด ระบบเผาผลาญดี",
-                    health: "เป็นไข้ตัวร้อนง่าย ร้อนใน แผลในปาก ปวดศีรษะไมเกรน ผิวแพ้แสงแดด",
+                    health: "เป็นลม หน้ามืด (เดือน 4-5) ความดันโลหิตแปรปรวน (เดือน 6-7) ร้อนใน แผลในปาก",
                     recTaste: "รสขม, รสเย็น, รสจืด", recReason: "ช่วยลดความร้อน ดับพิษร้อนในร่างกาย",
                     badTaste: "รสเผ็ดร้อนจัด, รสเค็มจัด", badReason: "เพิ่มความร้อน ทำให้ธาตุไฟกำเริบ",
-                    foods: ["แกงจืดตำลึง", "แกงจืดมะระ", "ต้มฟักเขียว", "ผัดผักบุ้ง", "แตงกวาผัดไข่", "แกงเลียง", "แกงส้มผักบุ้ง"],
+                    foods: ["แกงจืดตำลึง", "แกงจืดมะระ", "ต้มฟักเขียว", "ผัดผักบุ้ง", "แตงกวาผัดไข่", "แกงส้ม"],
                     fruits: ["แตงโม", "แคนตาลูป", "แก้วมังกร", "ชมพู่", "มังคุด", "ส้มโอ"]
                 },
-                en: {
-                    name: "Fire Element (Tejo)", sub: "Conception in Summer (Khimhanta)",
-                    trait: "Active, energetic, impatient, fast metabolism, gets hungry easily, sensitive skin.",
-                    health: "Prone to fever, aphthous ulcers, migraines, and sun sensitivity.",
-                    recTaste: "Bitter, Cooling, Bland", recReason: "To reduce internal heat and detoxify.",
-                    badTaste: "Very Spicy, Very Salty", badReason: "Increases internal heat and aggravates Fire element.",
-                    foods: ["Ivy Gourd Soup", "Bitter Melon Soup", "Winter Melon Soup", "Stir-fried Morning Glory", "Stir-fried Cucumber with Egg", "Spicy Mixed Vegetable Soup (Kaeng Liang)", "Sour Soup with Morning Glory"],
-                    fruits: ["Watermelon", "Cantaloupe", "Dragon Fruit", "Rose Apple", "Mangosteen", "Pomelo"]
-                }
+                en: { name: "Fire Element", sub: "Lunar Month 4-7", trait: "Active, Impatient, Hungry", health: "Fainting, Blood Pressure", recTaste: "Bitter, Cooling", recReason: "Reduces heat", badTaste: "Spicy", badReason: "Increases heat", foods: ["Bitter Melon Soup"], fruits: ["Watermelon"] }
+            },
+            fire_wind: { // Special Overlap Month 8-9
+                th: {
+                    name: "ธาตุไฟระคนลม", sub: "ช่วงเดือน 8-9 (ตามจันทรคติ)",
+                    trait: "คิดเร็วทำเร็ว หงุดหงิดง่าย (ไฟ) แต่ก็ขี้กังวลและเคลื่อนไหวเร็ว (ลม)",
+                    health: "ปวดศีรษะ ปวดกระบอกตา หูอื้อ (ไมเกรน) และอาจมีอาการท้องอืดร่วมด้วย",
+                    recTaste: "รสหอมเย็น, รสจืด", recReason: "แก้วิงเวียนและดับพิษร้อน",
+                    badTaste: "รสเผ็ดจัด, แสงแดดจ้า", badReason: "กระตุ้นอาการปวดหัวและลมในเส้น",
+                    foods: ["แกงจืดตำลึง", "ยาหอม", "น้ำดอกไม้", "แกงส้ม"],
+                    fruits: ["แตงโม", "ส้มโอ", "แก้วมังกร"]
+                },
+                en: { name: "Fire & Wind Mix", sub: "Lunar Month 8-9", trait: "Quick thinker, Anxious", health: "Migraine, Dizziness, Bloating", recTaste: "Aromatic, Bland", recReason: "Calms senses", badTaste: "Very Spicy", badReason: "Triggers migraine", foods: ["Clear Soup"], fruits: ["Pomelo"] }
             },
             wind: {
                 th: {
-                    name: "ธาตุลม (วาโย)", sub: "ปฏิสนธิในวสันตฤดู (ฤดูฝน)",
-                    trait: "ช่างพูด เจรจาเก่ง คล่องแคล่ว ขี้หนาว ผิวแห้งง่าย รูปร่างโปร่ง นอนหลับยาก คิดเร็ว",
-                    health: "ท้องอืด ท้องเฟ้อ แน่นหน้าอก วิงเวียนศีรษะ หน้ามืดง่าย ปวดตามข้อ",
+                    name: "ธาตุลม (วาโย)", sub: "ช่วงเดือน 7-8, 9-10 (ตามจันทรคติ)",
+                    trait: "ช่างพูด เจรจาเก่ง รูปร่างโปร่ง ผิวแห้งง่าย นอนหลับยาก คิดเร็ว",
+                    health: "ไอ ระคายคอ (เดือน 7-8) กรดไหลย้อน ท้องเฟ้อ (เดือน 9-10) วิงเวียน",
                     recTaste: "รสเผ็ดร้อน, รสสุขุม", recReason: "ช่วยขับลม กระจายเลือดลม แก้ท้องอืด",
-                    badTaste: "รสหวานจัด, รสมันจัด, รสเย็น", badReason: "ทำให้เสมหะเหนียว เลือดลมเดินไม่สะดวก",
-                    foods: ["ต้มยำกุ้ง", "ต้มข่าไก่", "แกงป่า", "ผัดกะเพรา", "ไก่ผัดขิง", "หมูผัดพริกขิง", "แกงไตปลา"],
+                    badTaste: "รสหวานจัด, รสมันจัด, รสเย็น", badReason: "ทำให้เสมหะเหนียวข้น เลือดลมเดินไม่สะดวก",
+                    foods: ["ต้มยำกุ้ง", "ต้มข่าไก่", "แกงป่า", "ผัดกะเพรา", "ไก่ผัดขิง", "น้ำพริกขิง"],
                     fruits: ["ส้ม", "เงาะ", "สละ", "ลองกอง", "ลำไย", "น้ำขิง"]
                 },
-                en: {
-                    name: "Wind Element (Vayo)", sub: "Conception in Rainy Season (Vasanta)",
-                    trait: "Talkative, agile, dislikes cold, dry skin, slender body, light sleeper, quick thinker.",
-                    health: "Bloating, flatulence, dizziness, fainting, joint pain.",
-                    recTaste: "Spicy, Aromatic", recReason: "To expel wind and improve circulation.",
-                    badTaste: "Very Sweet, Oily, Cooling", badReason: "Creates mucus and blocks circulation.",
-                    foods: ["Tom Yum Kung", "Tom Kha Gai", "Jungle Curry", "Pad Kaprao", "Stir-fried Chicken with Ginger", "Stir-fried Pork with Red Curry Paste", "Fish Kidney Curry"],
-                    fruits: ["Orange", "Rambutan", "Salak", "Longkong", "Longan", "Ginger Tea"]
-                }
+                en: { name: "Wind Element", sub: "Lunar Month 7-8, 9-10", trait: "Talkative, Slender, Dry Skin", health: "Cough, Acid Reflux", recTaste: "Spicy", recReason: "Expels wind", badTaste: "Sweet, Oily", badReason: "Blocks flow", foods: ["Tom Yum"], fruits: ["Ginger Tea"] }
             },
             water: {
                 th: {
-                    name: "ธาตุน้ำ (อาโป)", sub: "ปฏิสนธิในเหมันตฤดู (ฤดูหนาว)",
-                    trait: "รูปร่างสมบูรณ์ ผิวสดใส เต่งตึง ตาหวาน เสียงไพเราะ เคลื่อนไหวช้า นุ่มนวล ความจำดี",
-                    health: "เป็นหวัดง่าย ภูมิแพ้ มีเสมหะมาก ท้องเสียบ่อย บวมน้ำง่าย",
-                    recTaste: "รสเปรี้ยว, รสขม, รสร้อน", recReason: "กัดเสมหะ บำรุงโลหิต และขับน้ำส่วนเกิน",
-                    badTaste: "รสมันจัด, รสหวานจัด, รสเค็มจัด", badReason: "ทำให้น้ำเหลืองเสีย เพิ่มเสมหะ",
-                    foods: ["แกงส้มดอกแค", "ต้มยำปลา", "ยำตะไคร้", "ห่อหมก", "แกงเหลือง", "น้ำพริกมะขาม", "ส้มตำ"],
+                    name: "ธาตุน้ำ (อาโป)", sub: "ช่วงเดือน 10-1 (ตามจันทรคติ)",
+                    trait: "รูปร่างสมบูรณ์ ผิวสดใส ตาหวาน เสียงไพเราะ เคลื่อนไหวช้า นุ่มนวล",
+                    health: "ปวดข้อ เข่า (เดือน 10-11) ภูมิแพ้ หวัด (เดือน 11-12) ผดผื่นคัน (เดือน 12-1)",
+                    recTaste: "รสเปรี้ยว, รสขม, รสร้อน", recReason: "ช่วยกัดเสมหะ บำรุงโลหิต และขับน้ำส่วนเกิน",
+                    badTaste: "รสมันจัด, รสหวานจัด, รสเค็มจัด", badReason: "ทำให้น้ำเหลืองเสีย เพิ่มเสมหะ และตัวบวมง่าย",
+                    foods: ["แกงส้มดอกแค", "ต้มยำปลา", "ห่อหมก", "แกงเหลือง", "น้ำพริกมะขาม", "ส้มตำ", "ใบยอ"],
                     fruits: ["สับปะรด", "ส้มโอ", "มะเฟือง", "มะขามป้อม", "ตะลิงปลิง"]
                 },
-                en: {
-                    name: "Water Element (Apo)", sub: "Conception in Winter (Hemanta)",
-                    trait: "Full figure, glowing skin, beautiful eyes, soft voice, slow movement, good memory.",
-                    health: "Prone to colds, allergies, excess mucus, diarrhea, water retention.",
-                    recTaste: "Sour, Bitter, Hot", recReason: "To cut mucus, nourish blood, and expel excess water.",
-                    badTaste: "Very Oily, Very Sweet, Very Salty", badReason: "Corrupts lymph fluid and increases mucus.",
-                    foods: ["Sour Curry with Sesbania", "Fish Tom Yum", "Lemongrass Salad", "Steamed Fish Curry (Hor Mok)", "Yellow Curry", "Tamarind Chili Dip", "Som Tum"],
-                    fruits: ["Pineapple", "Pomelo", "Star Fruit", "Indian Gooseberry", "Bilimbi"]
-                }
-            },
-            earth: {
-                th: {
-                    name: "ธาตุดิน (ปถวี)", sub: "ปฏิสนธิในศิศิรฤดู (ฤดูน้ำค้าง)",
-                    trait: "ร่างกายแข็งแรง บึกบึน โครงสร้างใหญ่ หนักแน่น มั่นคง อดทนสูง จิตใจเยือกเย็น",
-                    health: "ท้องผูกง่าย อาหารไม่ย่อย โรคอ้วน นิ่ว เนื้องอก ซีสต์",
-                    recTaste: "รสฝาด, รสหวาน, รสมัน, รสเค็ม", recReason: "บำรุงธาตุดินให้สมบูรณ์ สมานแผล",
-                    badTaste: "รสหวานจัดเกินไป, รสมันจัดเกินไป", badReason: "ทำให้ธาตุดินกำเริบ เป็นโรคอ้วนง่าย",
-                    foods: ["พะโล้", "มัสมั่น", "ราดหน้า", "ผัดซีอิ๊ว", "ยำถั่วพู", "สะตอผัดกุ้ง", "เต้าหู้ทรงเครื่อง"],
-                    fruits: ["กล้วยน้ำว้า", "เงาะ", "มังคุด", "ฝรั่ง", "มะละกอ"]
-                },
-                en: {
-                    name: "Earth Element (Pathavi)", sub: "Conception in Late Winter (Sisira)",
-                    trait: "Strong build, large frame, stable, patient, calm mind, slow but steady.",
-                    health: "Constipation, indigestion, obesity, gallstones, cysts.",
-                    recTaste: "Astringent, Sweet, Oily, Salty", recReason: "To nourish the Earth element and heal.",
-                    badTaste: "Excessively Sweet, Excessively Oily", badReason: "Aggravates Earth element, leading to obesity.",
-                    foods: ["Stewed Pork (Pa-Lo)", "Massaman Curry", "Rad Na Noodles", "Pad See Ew", "Winged Bean Salad", "Stir-fried Sator Beans with Shrimp", "Braised Tofu"],
-                    fruits: ["Banana", "Rambutan", "Mangosteen", "Guava", "Papaya"]
-                }
+                en: { name: "Water Element", sub: "Lunar Month 10-1", trait: "Full figure, Slow, Gentle", health: "Joint pain, Allergies, Rashes", recTaste: "Sour, Bitter, Hot", recReason: "Reduces mucus", badTaste: "Oily, Sweet", badReason: "Increases mucus", foods: ["Sour Curry"], fruits: ["Pineapple"] }
             }
         };
 
         const seasonData = {
-            summer: {
-                th: { name: "คิมหันตฤดู (ร้อน)", element: "ธาตุไฟ", vul: "ผู้มีธาตุไฟ", health: "อากาศร้อนจัด เสี่ยงลมแดด ขาดน้ำ", food: "อาหารรสขม เย็น จืด" },
-                en: { name: "Summer (Khimhanta)", element: "Fire", vul: "Fire Element People", health: "Extreme heat, risk of heatstroke & dehydration.", food: "Bitter, Cooling, Bland foods" }
-            },
-            rain_start: {
-                th: { name: "วสันตฤดู (ฝนแรก)", element: "ธาตุลมระคนไฟ", vul: "ผู้มีธาตุลม/ไฟ", health: "อากาศเปลี่ยน ระวังหวัด วิงเวียน", food: "อาหารรสเปรี้ยว เค็ม เผ็ดเล็กน้อย" },
-                en: { name: "First Rain (Vasanta)", element: "Wind & Fire", vul: "Wind/Fire People", health: "Weather changes, risk of cold & dizziness.", food: "Sour, Salty, Mildly Spicy foods" }
-            },
-            rain_heavy: {
-                th: { name: "วสสานฤดู (ฝนชุก)", element: "ธาตุลม", vul: "ผู้มีธาตุลม", health: "ความชื้นสูง ท้องอืด อาหารไม่ย่อย", food: "สมุนไพรขับลม ขิง ข่า ตะไคร้" },
-                en: { name: "Heavy Rain (Vassana)", element: "Wind", vul: "Wind Element People", health: "High humidity, bloating, indigestion.", food: "Carminative herbs, Ginger, Galangal" }
-            },
-            winter_start: {
-                th: { name: "สารทฤดู (ปลายฝนต้นหนาว)", element: "ธาตุน้ำ", vul: "ผู้มีธาตุน้ำ", health: "อากาศเย็นลง ระวังเสมหะ เจ็บคอ", food: "อาหารรสขม รสร้อน" },
-                en: { name: "Late Rain (Sarada)", element: "Water", vul: "Water Element People", health: "Cooling down, risk of phlegm & sore throat.", food: "Bitter, Hot foods" }
-            },
-            winter: {
-                th: { name: "เหมันตฤดู (หนาว)", element: "ธาตุน้ำระคนดิน", vul: "ผู้มีธาตุน้ำ/ดิน", health: "หนาวแห้ง ผิวแห้ง ปวดข้อ น้ำมูกไหล", food: "อาหารรสมัน เค็ม ร้อน" },
-                en: { name: "Winter (Hemanta)", element: "Water & Earth", vul: "Water/Earth People", health: "Dry cold, dry skin, joint pain, runny nose.", food: "Oily, Salty, Hot foods" }
-            },
-            winter_late: {
-                th: { name: "ศิศิรฤดู (น้ำค้าง)", element: "ธาตุดิน", vul: "ผู้มีธาตุดิน", health: "ลมหนาวแรง สะสมความเย็น วิงเวียน", food: "อาหารบำรุงกำลัง รสหวาน มัน" },
-                en: { name: "Dew Season (Sisira)", element: "Earth", vul: "Earth Element People", health: "Strong cold wind, fatigue, dizziness.", food: "Nourishing, Sweet, Oily foods" }
-            }
+            summer: { th: { name: "คิมหันตฤดู (ร้อน)", vul: "ผู้มีธาตุไฟ", health: "เสี่ยงลมแดด ร้อนใน", food: "อาหารรสขม เย็น จืด" }, en: { name: "Summer", vul: "Fire Element", health: "Heatstroke risk", food: "Bitter/Cooling foods" } },
+            rain: { th: { name: "วสันตฤดู (ฝน)", vul: "ผู้มีธาตุลม/ไฟ", health: "ระวังไข้หวัด วิงเวียน", food: "อาหารรสเปรี้ยว เผ็ดร้อน" }, en: { name: "Rainy Season", vul: "Wind/Fire Element", health: "Colds, Dizziness", food: "Sour/Spicy foods" } },
+            winter: { th: { name: "เหมันตฤดู (หนาว)", vul: "ผู้มีธาตุน้ำ/ดิน", health: "ผิวแห้ง ปวดข้อ น้ำมูก", food: "อาหารรสมัน เค็ม ร้อน" }, en: { name: "Winter", vul: "Water/Earth Element", health: "Dry skin, Joint pain", food: "Oily/Salty/Hot foods" } }
         };
 
-        function getDailySeason(lunar) {
-            const m = lunar.thaiMonth;
-            let key = "";
-            let theme = "", fx = "";
+        const i18n = {
+            th: { app_title:"วิเคราะห์ธาตุเจ้าเรือน", app_subtitle:"กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา", calc_info:"ระบบคำนวณวันปฏิสนธิอัตโนมัติ", lbl_day:"วันที่เกิด", lbl_month:"เดือนเกิด", lbl_year:"ปีเกิด", btn_analyze:"วิเคราะห์ธาตุ", forecast_title:"อุตุสมุฏฐานวันนี้", vul_label:"กลุ่มเสี่ยง:", res_trait:"ลักษณะนิสัย", res_health:"ปัญหาสุขภาพ", res_good:"อาหารแนะนำ", res_bad:"อาหารควรเลี่ยง", res_menu:"เมนูแนะนำ", res_fruit:"ผลไม้", btn_reset:"วิเคราะห์ใหม่", months:["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."], reco:"แนะนำ:" },
+            en: { app_title:"Thai Element Analysis", app_subtitle:"Sadao Hospital Traditional Medicine", calc_info:"Auto Conception Calc", lbl_day:"Day", lbl_month:"Month", lbl_year:"Year", btn_analyze:"Analyze", forecast_title:"Today's Season", vul_label:"Vulnerable:", res_trait:"Traits", res_health:"Health Risks", res_good:"Good Foods", res_bad:"Avoid Foods", res_menu:"Menu Ideas", res_fruit:"Fruits", btn_reset:"Reset", months:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], reco:"Advice:" }
+        };
 
-            if (m == 5 || m == 6) { key = "summer"; theme = "summer"; fx = "sun"; }
-            else if (m == 7 || m == 8) { key = "rain_start"; theme = "rain"; fx = "rain"; }
-            else if (m == 9 || m == 10) { key = "rain_heavy"; theme = "rain"; fx = "rain"; }
-            else if (m == 11 || m == 12) { key = "winter_start"; theme = "winter"; fx = "snow"; }
-            else if (m == 1 || m == 2) { key = "winter"; theme = "winter"; fx = "snow"; }
-            else { key = "winter_late"; theme = "winter"; fx = "snow"; }
-
-            const info = seasonData[key][currentLang];
-            return { ...info, theme, fx };
+        window.onload = function() {
+            const dS = document.getElementById('inputDay'); for(let i=1; i<=31; i++) { let o = document.createElement('option'); o.value=i; o.innerText=i; dS.appendChild(o); }
+            const yS = document.getElementById('inputYear'); const curY = new Date().getFullYear(); 
+            for(let i=0; i<100; i++) { let y=curY-i; let o=document.createElement('option'); o.value=y; o.innerText=y+543; yS.appendChild(o); }
+            yS.value = curY-30;
+            updateUI(); updateDaily();
         }
 
-        function createWeatherFX(type) {
-            const container = document.getElementById('weatherContainer');
-            container.innerHTML = ''; 
-            if (type === 'rain') {
-                for(let i=0; i<40; i++) {
-                    let d = document.createElement('div'); d.className = 'rain';
-                    d.style.left = Math.random() * 100 + '%'; d.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
-                    d.style.animationDelay = (Math.random() * 1) + 's'; container.appendChild(d);
-                }
-            } else if (type === 'sun') {
-                let s = document.createElement('div'); s.className = 'sun-glare'; container.appendChild(s);
-            } else if (type === 'snow') {
-                for(let i=0; i<40; i++) {
-                    let s = document.createElement('div'); s.className = 'snowflake';
-                    s.style.left = Math.random() * 100 + '%'; d = (Math.random() * 3 + 3) + 's';
-                    s.style.animationDuration = d; s.style.animationDelay = (Math.random() * 2) + 's';
-                    s.style.opacity = Math.random() * 0.8 + 0.2; container.appendChild(s);
-                }
+        function changeLang(l) { currentLang=l; document.getElementById('btn-th').className=`lang-btn ${l=='th'?'active':''}`; document.getElementById('btn-en').className=`lang-btn ${l=='en'?'active':''}`; updateUI(); updateDaily(); if(document.getElementById('cardObject').classList.contains('is-flipped')) startAnalysis(); }
+        
+        function updateUI() {
+            document.querySelectorAll('[data-i18n]').forEach(e => e.innerText = i18n[currentLang][e.getAttribute('data-i18n')]);
+            const mS = document.getElementById('inputMonth'); const oldM = mS.value||1; mS.innerHTML=''; 
+            i18n[currentLang].months.forEach((m,i)=>{ let o=document.createElement('option'); o.value=i+1; o.innerText=m; mS.appendChild(o); }); mS.value=oldM;
+            const yS = document.getElementById('inputYear'); const opts = yS.options;
+            for(let i=0; i<opts.length; i++) { let v=parseInt(opts[i].value); opts[i].innerText = currentLang=='th'?(v+543):v; }
+        }
+
+        function getDailySeason(m) {
+            if (m>=5 && m<=6) return { ...seasonData.summer[currentLang], type:'sun' };
+            if (m>=7 && m<=10) return { ...seasonData.rain[currentLang], type:'rain' };
+            return { ...seasonData.winter[currentLang], type:'snow' };
+        }
+
+        function updateDaily() {
+            const today = new Date();
+            const lunar = calculateRealLunarDate(today);
+            const season = getDailySeason(lunar.thaiMonth);
+            
+            document.getElementById('todayDate').innerText = `${today.getDate()} ${i18n[currentLang].months[today.getMonth()]} ${currentLang=='th'?today.getFullYear()+543:today.getFullYear()}`;
+            document.getElementById('todaySeason').innerText = season.name;
+            document.getElementById('todayVulnerable').innerText = season.vul;
+            document.getElementById('todayHealth').innerText = season.health;
+            
+            const div = document.getElementById('weatherContainer'); div.innerHTML='';
+            const front = document.getElementById('cardFront');
+            front.classList.remove('theme-winter','theme-summer','theme-rain');
+            
+            if(season.type=='rain') {
+                front.classList.add('theme-rain');
+                for(let i=0;i<30;i++){ let d=document.createElement('div'); d.className='rain'; d.style.left=Math.random()*100+'%'; d.style.animationDuration=(0.5+Math.random())+'s'; div.appendChild(d); }
+            } else if(season.type=='sun') {
+                front.classList.add('theme-summer');
+                let s=document.createElement('div'); s.className='sun-glare'; div.appendChild(s);
+            } else {
+                front.classList.add('theme-winter');
+                for(let i=0;i<30;i++){ let s=document.createElement('div'); s.className='snowflake'; s.style.left=Math.random()*100+'%'; s.style.animationDuration=(3+Math.random()*2)+'s'; div.appendChild(s); }
             }
         }
 
-        function updateDailyForecast() {
-            const today = new Date();
-            const lunar = calculateRealLunarDate(today);
-            const season = getDailySeason(lunar);
-            
-            const d = today.getDate();
-            const mName = i18n[currentLang].months[today.getMonth()];
-            const y = (currentLang === 'th') ? today.getFullYear()+543 : today.getFullYear();
-
-            document.getElementById('todayDate').innerText = `${d} ${mName} ${y}`;
-            document.getElementById('todaySeason').innerText = season.name;
-            document.getElementById('todayVulnerable').innerText = season.vul; 
-            document.getElementById('todayHealth').innerText = season.health;
-            document.getElementById('todayFood').innerText = `${i18n[currentLang].reco} ${season.food}`;
-            
-            const cardFront = document.getElementById('cardFront');
-            cardFront.classList.remove('theme-winter', 'theme-summer', 'theme-rain');
-            if (season.theme) cardFront.classList.add(`theme-${season.theme}`);
-            
-            createWeatherFX(season.fx);
-        }
-
-        function getElementData(month) {
-            let key = "";
-            if (month >= 5 && month <= 7) key = "fire";
-            else if (month >= 8 && month <= 10) key = "wind";
-            else if (month == 11 || month == 12 || month == 1) key = "water";
-            else key = "earth";
-            return contentData[key][currentLang];
-        }
-
-        function createFoodTags(items, containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = "";
-            items.forEach(item => {
-                const tag = document.createElement("a");
-                tag.className = "food-tag";
-                const searchQuery = (currentLang === 'en') ? `${item} Thai food` : `${item} อาหาร`;
-                tag.href = `https://www.google.com/search?tbm=isch&q=${searchQuery}`; 
-                tag.target = "_blank";
-                tag.innerHTML = `${item} <i class="fas fa-external-link-alt"></i>`;
-                container.appendChild(tag);
+        function createFoodTags(items, id) {
+            const c = document.getElementById(id); c.innerHTML='';
+            items.forEach(i => {
+                let a = document.createElement('a'); a.className='food-tag';
+                a.innerHTML = `${i} <i class="fas fa-search text-xs ml-1 text-gray-400"></i>`;
+                a.href = `https://www.google.com/search?tbm=isch&q=${i} ${currentLang=='en'?'Thai food':'อาหาร'}`;
+                a.target = '_blank'; c.appendChild(a);
             });
         }
 
         async function startAnalysis() {
-            const d = parseInt(document.getElementById('inputDay').value);
-            const m = parseInt(document.getElementById('inputMonth').value);
-            const yVal = parseInt(document.getElementById('inputYear').value);
-            const yAD = (currentLang === 'th') ? yVal - 543 : yVal;
+            const d=parseInt(document.getElementById('inputDay').value);
+            const m=parseInt(document.getElementById('inputMonth').value);
+            const y=parseInt(document.getElementById('inputYear').value);
+            const yAD = currentLang=='th' ? y-543 : y;
 
-            let birthDate = new Date(yAD, m - 1, d);
-            let conceptionDate = new Date(birthDate);
-            conceptionDate.setMonth(birthDate.getMonth() - 9);
+            let birthDate = new Date(yAD, m-1, d);
+            let conceptionDate = new Date(birthDate); conceptionDate.setMonth(birthDate.getMonth()-9);
             
-            const lunarInfo = calculateRealLunarDate(conceptionDate);
-            const data = getElementData(lunarInfo.thaiMonth);
+            const lunar = calculateRealLunarDate(conceptionDate);
             
-            // Gradient Header Logic
-            let color = "", avatar = "";
-            if(data.name.includes("Fire") || data.name.includes("ไฟ")) { 
-                color = "linear-gradient(135deg, #FF9966 0%, #FF5E62 100%)"; 
-                avatar = "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png"; 
+            // Logic Selection using PDF Rules
+            let key = "earth"; // Default fallback
+            for (let rule of sadaoData) {
+                if (rule.check(lunar.thaiMonth, lunar.phase)) {
+                    key = rule.key;
+                    break;
+                }
             }
-            else if(data.name.includes("Wind") || data.name.includes("ลม")) { 
-                color = "linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)"; 
-                avatar = "https://img2.pic.in.th/261c90e765ec6b116.png"; 
-            }
-            else if(data.name.includes("Water") || data.name.includes("น้ำ")) { 
-                color = "linear-gradient(135deg, #36D1DC 0%, #5B86E5 100%)"; 
-                avatar = "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png"; 
-            }
-            else { 
-                color = "linear-gradient(135deg, #CAC531 0%, #F3F9A7 100%)"; 
-                avatar = "https://img2.pic.in.th/1c8b450894dd6fe8e.png"; 
-            }
+
+            const data = contentData[key][currentLang];
+            
+            // Map Colors
+            let color="", avatar="";
+            if(key.includes("fire")) { color="linear-gradient(135deg, #FF9966, #FF5E62)"; avatar="https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png"; }
+            else if(key.includes("wind")) { color="linear-gradient(135deg, #56ab2f, #a8e063)"; avatar="https://img2.pic.in.th/261c90e765ec6b116.png"; }
+            else if(key.includes("water")) { color="linear-gradient(135deg, #36D1DC, #5B86E5)"; avatar="https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png"; }
+            else { color="linear-gradient(135deg, #CAC531, #F3F9A7)"; avatar="https://img2.pic.in.th/1c8b450894dd6fe8e.png"; }
 
             document.getElementById('resMain').innerText = data.name;
-            document.getElementById('resSub').innerText = data.sub; 
-            
+            document.getElementById('resSub').innerText = data.sub;
             document.getElementById('avatarImg').src = avatar;
             document.getElementById('avatarImg').classList.remove('hidden');
             document.getElementById('resultHeader').style.background = color;
