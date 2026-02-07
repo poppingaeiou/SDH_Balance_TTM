@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>วิเคราะห์ธาตุเจ้าเรือน (Sadao Ultimate)</title>
+    <title>วิเคราะห์ธาตุเจ้าเรือน (Sadao Official)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -68,6 +68,17 @@
         
         .is-flipped { transform: rotateY(180deg); }
 
+        /* Logo Animation */
+        .logo-container {
+            width: 100px; height: 100px; margin: 0 auto 15px;
+            background: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 2px solid var(--gold-main);
+            overflow: hidden;
+        }
+        .logo-img { width: 85%; height: auto; object-fit: contain; }
+
         /* Custom Inputs */
         .input-group { position: relative; margin-bottom: 20px; }
         .input-label { 
@@ -105,17 +116,19 @@
         /* Results Styling */
         .back-header { 
             background: linear-gradient(135deg, var(--green-deep), #0f3025);
-            padding: 30px 20px 60px; text-align: center; color: white;
+            padding: 30px 20px 50px; text-align: center; color: white;
             border-radius: 0 0 40% 40% / 0 0 30px 30px;
             position: relative; flex-shrink: 0;
         }
         
-        .avatar-3d {
-            width: 140px; height: 140px; margin: -10px auto 10px;
-            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3));
+        /* New Avatar Style for Real Images */
+        .avatar-real {
+            width: 160px; height: 160px; margin: -10px auto 10px;
+            object-fit: contain; /* โชว์เต็มรูปไม่ตัด */
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25)); /* เงาฟุ้งสวย */
             animation: float 4s ease-in-out infinite;
         }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
         .back-content { 
             flex-grow: 1; overflow-y: auto; padding: 20px; 
@@ -151,8 +164,8 @@
     <div class="thai-pattern"></div>
 
     <div class="text-center mb-6 z-10 animate-fade-in-down mt-10">
-        <div class="inline-block p-4 rounded-full bg-white shadow-lg border-2 border-yellow-400 mb-3 relative">
-            <i class="fas fa-spa text-4xl" style="color: var(--green-deep);"></i>
+        <div class="logo-container">
+            <img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" alt="Logo" class="logo-img">
         </div>
         <h1 class="text-2xl font-bold text-gray-800 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
         <p class="text-yellow-700 text-sm font-medium mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
@@ -206,7 +219,8 @@
 
             <div id="resultFace" class="card-face card-back">
                 <div id="resultHeader" class="back-header">
-                    <img id="avatarImg" src="" class="avatar-3d hidden">
+                    <img id="avatarImg" src="" class="avatar-real hidden">
+                    
                     <h2 class="text-2xl font-bold text-white drop-shadow-md" id="resMain">...</h2>
                     <p class="text-white/90 text-xs mt-2 px-4 leading-relaxed font-light" id="resSub">...</p>
                     <div class="mt-3">
@@ -269,7 +283,7 @@
         }
 
         // ==========================================
-        // 1. High Precision Lunar Calculation (Dynamic Rollover)
+        // 1. High Precision Lunar Calculation
         // ==========================================
         function calculateRealLunarDate(day, month, yearAD) {
             const date = new Date(yearAD, month - 1, day);
@@ -300,8 +314,6 @@
             let thaiMonth = monthMap[month];
 
             // ⚠️ Dynamic Rollover Logic:
-            // ถ้าเป็น "ข้างขึ้น" (Waxing) แต่เป็น "ครึ่งเดือนหลังสากล" (วันที่ > 15)
-            // แสดงว่าเดือนไทยได้ "เปลี่ยนเดือนใหม่" ไปแล้วในรอบเดือนสากลนั้นๆ
             if (phase === "Waxing" && day > 15) {
                 thaiMonth += 1;
                 if (thaiMonth > 12) thaiMonth = 1;
@@ -317,76 +329,70 @@
         }
 
         // ==========================================
-        // 2. Comprehensive Database (Updated Sub-Strings)
+        // 2. Comprehensive Database (Updated Avatars)
         // ==========================================
-        const masterData = [
-            // --- 1. ศิศิรฤดู (น้ำระคนไฟ) : แรม 1 ค่ำ เดือน 2 -> ขึ้น 15 ค่ำ เดือน 4 ---
-            // *ในข้อมูลรพ.สะเดา คือ "ธาตุดิน ช่วงเดือน 3-4"*
+        const sadaoData = [
+            // --- 1. ศิศิรฤดู (น้ำระคนไฟ) -> ธาตุดิน 1-2 ---
             { startM: 2, startP: "Waning", endM: 4, endP: "Waxing", 
               main: "ธาตุดิน (ปถวี)", 
-              sub: "พิกัดแห่งเสมหะสมุฏฐาน และปิตตะสมุฏฐานระคนกัน", // Water + Fire
-              color: "linear-gradient(135deg, #D7CCC8, #8D6E63)",
-              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Walking.png",
+              sub: "พิกัดแห่งเสมหะสมุฏฐาน และปิตตะสมุฏฐานระคนกัน",
+              color: "linear-gradient(135deg, #8D6E63, #5D4037)",
+              avatarUrl: "https://img2.pic.in.th/344b40c69021fa3e3486df08c9b0aaa4.jpg", // รูปธาตุดิน
               desc: "ธาตุไฟเริ่มแทรก อาจถ่ายเหลวได้ง่าย ลำไส้แปรปรวน สตรีอาจมีปัญหาประจำเดือน",
               avoid: "อาหารแสลง อาหารรสจัด อาหารหมักดอง",
               trait: "จิตใจหนักแน่นมั่นคง ดื้อรั้นเล็กน้อย",
               food: "อาหารรสฝาดสมาน เช่น กล้วยน้ำว้าดิบ น้ำฝรั่ง ยำหัวปลี" },
 
-            // --- 2. คิมหันตฤดู (ไฟระคนน้ำ) : แรม 1 ค่ำ เดือน 4 -> ขึ้น 15 ค่ำ เดือน 6 ---
-            // *ในข้อมูลรพ.สะเดา คือ "ธาตุไฟ ช่วงเดือน 4-5"*
+            // --- 2. คิมหันตฤดู (ไฟระคนน้ำ) -> ธาตุไฟ 4-5 ---
             { startM: 4, startP: "Waning", endM: 6, endP: "Waxing", 
               main: "ธาตุไฟ (เตโช)", 
-              sub: "พิกัดแห่งปิตตะสมุฏฐาน และเสมหะสมุฏฐานระคนกัน", // Fire + Water
+              sub: "พิกัดแห่งปิตตะสมุฏฐาน และเสมหะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #FF7043, #D84315)",
-              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Sweating.png",
+              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/58138bccc52a7d293a8fabde7b9aca26.jpg", // รูปธาตุไฟ
               desc: "เป็นลม หน้ามืด ไข้แดด ร้อนใน หลับยาก เพราะความร้อนสะสมสูง",
               avoid: "อาหารรสเผ็ดร้อนจัด แดดจัด อารมณ์โมโห แอลกอฮอล์",
               trait: "รูปร่างสมส่วน ผิวขาวเหลือง พูดชัด หิวบ่อย กินจุ ขี้หงุดหงิด โกรธง่ายหายเร็ว",
               food: "อาหารรสจืด เย็น ขม เพื่อดับพิษร้อน เช่น แตงโม ต้มจืดฟัก น้ำเก๊กฮวย" },
 
-            // --- 3. วสันตฤดู (ไฟระคนลม) : แรม 1 ค่ำ เดือน 6 -> ขึ้น 15 ค่ำ เดือน 8 ---
-            // *ในข้อมูลรพ.สะเดา คือ "ธาตุไฟ ช่วงเดือน 6-7" และ "ธาตุลม ช่วง 7-8"*
+            // --- 3. วสันตฤดู (ไฟระคนลม) -> ธาตุไฟ 6-7 ---
             { startM: 6, startP: "Waning", endM: 8, endP: "Waxing", 
               main: "ธาตุไฟ (เตโช)", 
-              sub: "พิกัดแห่งปิตตะสมุฏฐาน และวาตะสมุฏฐานระคนกัน", // Fire + Wind
+              sub: "พิกัดแห่งปิตตะสมุฏฐาน และวาตะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #FFAB91, #E64A19)",
-              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Running.png",
+              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/58138bccc52a7d293a8fabde7b9aca26.jpg", // รูปธาตุไฟ
               desc: "อากาศเปลี่ยน ความดันโลหิตอาจแปรปรวน อารมณ์ขึ้นลงง่าย นอนหลับยาก",
               avoid: "ความเครียด อาหารรสจัดเกินไป",
               trait: "คล่องแคล่ว ว่องไว ผมหงอกก่อนวัย",
               food: "อาหารรสขมเย็น ช่วยลดความร้อน เช่น มะระ บรเพ็ด ใบบัวบก" },
 
-            // --- 4. วสสานฤดู (ลมระคนไฟ) : แรม 1 ค่ำ เดือน 8 -> ขึ้น 15 ค่ำ เดือน 10 ---
-            // *ในข้อมูลรพ.สะเดา คือ "ธาตุลม ช่วง 8-9" และ "9-10"*
+            // --- 4. วสสานฤดู (ลมระคนไฟ) -> ธาตุลม 8-9 ---
             { startM: 8, startP: "Waning", endM: 10, endP: "Waxing", 
               main: "ธาตุลม (วาโย)", 
-              sub: "พิกัดแห่งวาตะสมุฏฐาน และปิตตะสมุฏฐานระคนกัน", // Wind + Fire
+              sub: "พิกัดแห่งวาตะสมุฏฐาน และปิตตะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #81C784, #388E3C)",
-              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Cartwheeling.png",
+              avatarUrl: "https://img2.pic.in.th/e8f1ca35d7d696de4c583ccb76dadd92.jpg", // รูปธาตุลม
               desc: "ท้องอืด แน่นท้อง อาหารไม่ย่อย เรอเหม็นเปรี้ยว ลมในกระเพาะเยอะ",
               avoid: "เคี้ยวอาหารไม่ละเอียด ทานเร็วเกินไป ความเครียด",
               trait: "เคลื่อนไหวเร็ว อารมณ์แปรปรวน",
               food: "สมุนไพรขับลม เช่น ขิง ข่า ตะไคร้ กะเพรา" },
 
-            // --- 5. สารทฤดู (ลมระคนน้ำ) : แรม 1 ค่ำ เดือน 10 -> ขึ้น 15 ค่ำ เดือน 12 ---
-            // *ในข้อมูลรพ.สะเดา คือ "ธาตุน้ำ ช่วง 10-11"*
+            // --- 5. สารทฤดู (ลมระคนน้ำ) -> ธาตุน้ำ 10-11 ---
             { startM: 10, startP: "Waning", endM: 12, endP: "Waxing", 
               main: "ธาตุน้ำ (อาโป)", 
-              sub: "พิกัดแห่งวาตะสมุฏฐาน และเสมหะสมุฏฐานระคนกัน", // Wind + Water
+              sub: "พิกัดแห่งวาตะสมุฏฐาน และเสมหะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #42A5F5, #1565C0)",
-              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Getting%20Massage.png",
+              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/691ab2bc8bd127f21c3a91c0439629ef.jpg", // รูปธาตุน้ำ
               desc: "อาการปวดในข้อ ปวดเข่า ปวดกระดูก ริดสีดวง ฝี สิว",
               avoid: "รสหวานจัด มันจัด เค็มจัด การนั่งนานๆ",
               trait: "รูปร่างอวบ ผิวขาว ตาโต พูดช้าเสียงไพเราะ เคลื่อนไหวช้า ผมสวยดกดำ",
               food: "อาหารรสเบื่อเมา (แก้ปวด) รสขม เช่น ใบยอ มะรุม" },
 
-            // --- 6. เหมันตฤดู (น้ำระคนลม) : แรม 1 ค่ำ เดือน 12 -> ขึ้น 15 ค่ำ เดือน 2 ---
-            // *ในข้อมูลรพ.สะเดา คือ "ธาตุน้ำ 12-1" และ "ธาตุดิน 1-2"*
+            // --- 6. เหมันตฤดู (น้ำระคนลม) -> ธาตุน้ำ 12-1 ---
             { startM: 12, startP: "Waning", endM: 2, endP: "Waxing", 
               main: "ธาตุน้ำ (อาโป)", 
-              sub: "พิกัดแห่งเสมหะสมุฏฐาน และวาตะสมุฏฐานระคนกัน", // Water + Wind
+              sub: "พิกัดแห่งเสมหะสมุฏฐาน และวาตะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #90CAF9, #2196F3)",
-              avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Shrugging.png",
+              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/691ab2bc8bd127f21c3a91c0439629ef.jpg", // รูปธาตุน้ำ
               desc: "ผดผื่น สิว ลมพิษ คันง่าย ภูมิแพ้ผิวหนัง หรือท้องผูกง่ายจากความเย็น",
               avoid: "การนอนกลางวันมากเกินไป อาหารหมักดอง",
               trait: "ผิวพรรณละเอียดสวย แต่อาจแพ้ง่าย",
@@ -394,14 +400,13 @@
         ];
 
         // ==========================================
-        // 3. Logic การวิเคราะห์ (Matching System)
+        // 3. Logic Matching
         // ==========================================
         function getCombinedAnalysis(lunarInfo) {
             let tm = lunarInfo.thaiMonth;
             let tp = lunarInfo.phase;
             
-            // หา Rule ที่ตรงทั้งหมด
-            let matches = masterData.filter(rule => {
+            let matches = sadaoData.filter(rule => {
                 if (rule.startM < rule.endM) {
                     let isAfterStart = (tm > rule.startM) || (tm === rule.startM && tp === rule.startP);
                     let isBeforeEnd = (tm < rule.endM) || (tm === rule.endM && tp === "Waxing");
@@ -413,7 +418,7 @@
                 }
             });
 
-            return matches.length > 0 ? matches[0] : masterData[0];
+            return matches.length > 0 ? matches[0] : sadaoData[0];
         }
 
         // ==========================================
@@ -424,13 +429,11 @@
             const m = parseInt(document.getElementById('inputMonth').value);
             const yAD = parseInt(document.getElementById('inputYear').value);
 
-            // 1. คำนวณจันทรคติ
+            // 1. คำนวณ
             const lunarInfo = calculateRealLunarDate(d, m, yAD);
-            
-            // 2. วิเคราะห์ข้อมูล
             const result = getCombinedAnalysis(lunarInfo);
 
-            // 3. แสดงผล (UI Update)
+            // 2. แสดงผล
             document.getElementById('resMain').innerText = result.main;
             document.getElementById('resSub').innerText = result.sub;
             document.getElementById('lunarInfo').innerText = lunarInfo.display;
@@ -440,16 +443,15 @@
             document.getElementById('resAvoid').innerText = result.avoid;
             document.getElementById('resFood').innerText = result.food;
 
-            // Theme & Avatar
+            // 3. รูปภาพ & ธีม
             document.getElementById('resultHeader').style.background = result.color;
             const avatarImg = document.getElementById('avatarImg');
             avatarImg.src = result.avatarUrl;
             avatarImg.classList.remove('hidden');
 
-            // Animation
             document.getElementById('cardObject').classList.add('is-flipped');
             
-            // Save Data
+            // 4. บันทึกข้อมูล
             try {
                 const birthDateStr = `${yAD}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 fetch(SCRIPT_URL, {
