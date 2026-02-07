@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>วิเคราะห์ธาตุเจ้าเรือน (รพ.สะเดา) - แม่นยำ</title>
+    <title>วิเคราะห์ธาตุเจ้าเรือน (รพ.สะเดา) - คำนวณจันทรคติ</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -48,7 +48,7 @@
             <i class="fas fa-spa text-3xl text-green-700"></i>
         </div>
         <h1 class="text-xl font-bold text-green-900 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
-        <p class="text-yellow-700 text-xs font-medium">ฉบับละเอียด (รพ.สะเดา)</p>
+        <p class="text-yellow-700 text-xs font-medium">ฉบับคำนวณดิถีจันทร์ (รพ.สะเดา)</p>
     </div>
 
     <div class="card-scene w-full max-w-sm">
@@ -59,7 +59,7 @@
                     <div class="text-center mb-6 mt-4">
                         <h2 class="text-green-800 font-bold text-lg">ระบุวันเกิดของคุณ</h2>
                         <div class="h-1 w-16 bg-gradient-to-r from-yellow-300 to-yellow-500 mx-auto mt-2 rounded-full"></div>
-                        <p class="text-xs text-gray-400 mt-2">ระบบจะคำนวณตามปฏิทินจันทรคติ (ข้างขึ้น-ข้างแรม) เพื่อความแม่นยำสูงสุด</p>
+                        <p class="text-xs text-gray-400 mt-2">ระบบจะคำนวณวันทางจันทรคติ (ขึ้น/แรม) ให้อัตโนมัติ</p>
                     </div>
                     <div class="space-y-4">
                         <div class="relative">
@@ -90,25 +90,26 @@
                     </div>
                 </div>
                 <button onclick="startAnalysis()" class="w-full bg-gradient-to-r from-green-800 to-green-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all flex justify-center items-center gap-2 mb-2 group hover:shadow-xl">
-                    <span>เริ่มวิเคราะห์ (ละเอียด)</span> <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    <span>เริ่มวิเคราะห์ (คำนวณข้างขึ้น/แรม)</span> <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </button>
             </div>
 
             <div id="resultFace" class="card-face card-back">
                 
-                <div id="resultHeader" class="back-header h-64 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700">
+                <div id="resultHeader" class="back-header h-72 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700">
                     <div class="absolute inset-0 bg-black/10"></div>
                     <div class="avatar-container relative z-10">
                         <img id="avatarImg" src="" alt="3D Avatar" class="avatar-img hidden">
                     </div>
+                    
                     <h2 class="text-2xl font-bold drop-shadow-md z-10 mt-1" id="resMain">...</h2>
                     
-                    <div class="z-10 flex flex-col items-center mt-1">
+                    <div class="z-10 flex flex-col items-center mt-2 w-full px-4">
                          <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md z-10 border border-white/30 mb-1" id="resSub">...</span>
-                         <div class="bg-black/30 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10 mt-1">
-                             <p class="text-[11px] text-yellow-200 font-medium">
-                                 <i class="fas fa-moon mr-1"></i>ผลการคำนวณ: <span id="lunarInfo" class="text-white">...</span>
-                             </p>
+                         
+                         <div class="bg-black/30 w-full py-2 rounded-lg backdrop-blur-sm border border-white/10 mt-1 text-center">
+                             <p class="text-[10px] text-gray-200">ผลการคำนวณจันทรคติ (โดยประมาณ):</p>
+                             <p class="text-lg text-yellow-300 font-bold" id="lunarInfo">...</p>
                          </div>
                     </div>
                 </div>
@@ -116,7 +117,7 @@
                 <div class="back-content space-y-4">
                     
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                        <h3 class="text-green-800 font-bold text-sm mb-2"><i class="fas fa-notes-medical bg-green-100 p-1.5 rounded-full text-green-600 mr-2 text-xs"></i> ปัญหาสุขภาพในช่วงนี้</h3>
+                        <h3 class="text-green-800 font-bold text-sm mb-2"><i class="fas fa-notes-medical bg-green-100 p-1.5 rounded-full text-green-600 mr-2 text-xs"></i> ปัญหาสุขภาพเฉพาะช่วงนี้</h3>
                         <p id="resDesc" class="text-gray-600 text-sm leading-relaxed font-medium"></p>
                     </div>
 
@@ -166,40 +167,67 @@
             yearSelect.value = (currentYearBE - 30 - 543);
         }
 
-        // 1. Logic แปลงเดือนสากล -> เดือนไทย (Approximate)
-        function getThaiLunarInfo(day, month) {
-            // Mapping เดือนสากล -> เดือนไทย
-            const monthMap = {
-                12: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 
-                6: 7, 7: 8, 8: 9, 9: 10, 10: 11, 11: 12
-            };
+        // 1. ✅ NEW: Advanced Moon Phase Algorithm (คำนวณดิถีจันทร์จริง)
+        function calculateRealLunarDate(day, month, yearAD) {
+            const date = new Date(yearAD, month - 1, day);
             
-            let thaiMonth = monthMap[month];
+            // Epoch: Known New Moon (Jan 6, 2000)
+            // ใช้รอบดวงจันทร์เฉลี่ย 29.53059 วัน
+            const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); // UTC approximated
+            const diffTime = date.getTime() - knownNewMoon.getTime();
+            const diffDays = diffTime / (1000 * 3600 * 24);
+            const synodicMonth = 29.53059;
             
-            // คำนวณดิถี (ข้างขึ้น/ข้างแรม) แบบประมาณการ
+            let moonAge = diffDays % synodicMonth;
+            if (moonAge < 0) moonAge += synodicMonth;
+            
+            // แปลง Moon Age (0-29.5) เป็น ข้างขึ้น/ข้างแรม (Thai System)
+            // Day 0-14.7 = Waxing (ขึ้น 1 - 15 ค่ำ)
+            // Day 14.8-29.5 = Waning (แรม 1 - 15 ค่ำ)
+            
             let phase = "";
-            let phaseDay = 0;
+            let lunarDay = 0;
             
-            if (day <= 15) {
-                phase = "Waxing"; // ข้างขึ้น
-                phaseDay = day;
+            // ปัดเศษวันให้เป็นจำนวนเต็ม
+            const roundedAge = Math.floor(moonAge) + 1; // +1 เพราะเริ่มนับค่ำที่ 1
+            
+            if (roundedAge <= 15) {
+                phase = "Waxing";
+                lunarDay = roundedAge;
             } else {
-                phase = "Waning"; // ข้างแรม
-                phaseDay = day - 15;
+                phase = "Waning";
+                lunarDay = roundedAge - 15;
             }
             
-            return { 
-                thaiMonth: thaiMonth, 
-                day: day, 
-                phase: phase, 
-                phaseDay: phaseDay,
-                display: `${phase === "Waxing" ? "ขึ้น" : "แรม"} ${phaseDay} ค่ำ เดือน ${thaiMonth}`
+            // คำนวณเดือนไทย (Approximate Month Mapping)
+            // เดือนไทยเร็วกว่าสากลประมาณ 1-2 เดือน (ธ.ค. = เดือน 1)
+            // หมายเหตุ: ปีอธิกมาสอาจทำให้คลาดเคลื่อน 1 เดือน
+            let thaiMonth = month + 1;
+            if (month == 12) thaiMonth = 1;
+            if (month == 11) thaiMonth = 12; 
+            // Mapping ช่วงกลางปี
+            if (month >= 1 && month <= 10) thaiMonth = month + 1;
+            
+            // Adjust Thai Month names based on offset
+            // เดือน 12 ไทย = พ.ย. / เดือน 1 ไทย = ธ.ค.
+            const monthOffsets = {
+                11: 12, 12: 1, 1: 2, 2: 3, 3: 4, 4: 5, 
+                5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 11
+            };
+            // Override with standard table
+            thaiMonth = monthOffsets[month] || (month + 1);
+
+            return {
+                phase: phase,
+                lunarDay: lunarDay,
+                thaiMonth: thaiMonth,
+                display: `${phase === "Waxing" ? "ขึ้น" : "แรม"} ${lunarDay} ค่ำ เดือน ${thaiMonth}`
             };
         }
 
-        // 2. Database: ข้อมูลจากไฟล์ Text ที่คุณให้มา (Sadao Rules)
+        // 2. Database: ข้อมูลอาการตามเอกสาร รพ.สะเดา
         const sadaoData = [
-            // --- ธาตุดิน ---
+            // --- ธาตุดิน (เดือน 1-4) ---
             { startM: 1, startP: "Waning", endM: 2, endP: "Waxing", main: "ธาตุดิน (ปถวี)", sub: "ช่วงเดือน 1-2", color: "from-yellow-600 to-brown-700", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Construction%20Worker.png",
               desc: "มีอาการท้องผูก ขับถ่ายลำบาก ปวดท้อง ลมติดในเส้น",
               avoid: "อาหารมันที่ย่อยยาก ของทอด",
@@ -216,7 +244,7 @@
               trait: "จิตใจหนักแน่นมั่นคง ดื้อรั้น",
               food: "อาหารรสฝาดสมาน เช่น กล้วยน้ำว้าดิบ และอาหารรสหวาน มัน เค็ม" },
 
-            // --- ธาตุไฟ ---
+            // --- ธาตุไฟ (เดือน 4-9) ---
             { startM: 4, startP: "Waning", endM: 5, endP: "Waxing", main: "ธาตุไฟ (เตโช)", sub: "ช่วงเดือน 4-5", color: "from-orange-500 to-red-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Sweating.png",
               desc: "เป็นลม หน้ามืด ไข้แดด ร้อนใน หลับยาก",
               avoid: "อาหารรสจัด เผ็ดจัด เปรี้ยวจัด เค็มจัด โมโห ดื่มแอลกอฮอล์ แสงแดด",
@@ -233,7 +261,7 @@
               trait: "คิดเร็วทำเร็ว หงุดหงิดง่าย",
               food: "อาหารรสหอมเย็น จืด" },
 
-            // --- ธาตุลม ---
+            // --- ธาตุลม (เดือน 7-10) ---
             { startM: 7, startP: "Waning", endM: 8, endP: "Waxing", main: "ธาตุลม (วาโย)", sub: "ช่วงเดือน 7-8", color: "from-emerald-400 to-green-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Gesturing%20NO.png",
               desc: "ไอ ระคายเคืองคอ เจ็บคอ จุกคอ ลมตีขึ้น",
               avoid: "การอดอาหาร อดนอน กลั้นอุจจาระ/ปัสสาวะ ยกของหนัก อาหารรสจัด วิตกกังวล",
@@ -250,7 +278,7 @@
               trait: "คิดมาก วิตกกังวลลงกระเพาะ นอนหลับยาก",
               food: "อาหารย่อยง่าย รสไม่จัด" },
 
-            // --- ธาตุน้ำ ---
+            // --- ธาตุน้ำ (เดือน 10-1) ---
             { startM: 10, startP: "Waning", endM: 11, endP: "Waxing", main: "ธาตุน้ำ (อาโป)", sub: "ช่วงเดือน 10-11", color: "from-blue-400 to-cyan-600", avatarUrl: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Getting%20Massage.png",
               desc: "อาการปวดในข้อ ปวดข้อเข่า ปวดกระดูก ริดสีดวง ฝี สิว",
               avoid: "รับประทานอาหาร รสหวานจัด รสเปรี้ยวจัด รสเค็มจัด นอนกลางวันมากเกินไป",
@@ -268,24 +296,20 @@
               food: "อาหารรสขม รสจืด เพื่อฟอกเลือด" }
         ];
 
-        // 3. Logic การจับคู่ (Matching)
-        function getSadaoElement(thaiInfo) {
-            let tm = thaiInfo.thaiMonth;
-            let tp = thaiInfo.phase; // "Waxing" or "Waning"
+        // 3. Logic Matching
+        function getSadaoElement(lunarInfo) {
+            let tm = lunarInfo.thaiMonth;
+            let tp = lunarInfo.phase; // "Waxing" or "Waning"
 
             for (let rule of sadaoData) {
                 // Logic: เช็คว่าอยู่ในช่วง Start -> End หรือไม่
                 if (rule.startM < rule.endM) {
-                    // กรณีเดือนเรียงกันปกติ (เช่น 1->2)
                     let isAfterStart = (tm > rule.startM) || (tm === rule.startM && tp === rule.startP);
-                    let isBeforeEnd = (tm < rule.endM) || (tm === rule.endM && tp === "Waxing"); // จบที่ขึ้น 15 ค่ำเสมอ
-                    
+                    let isBeforeEnd = (tm < rule.endM) || (tm === rule.endM && tp === "Waxing");
                     if (isAfterStart && isBeforeEnd) return rule;
-                } else {
-                    // กรณีข้ามปี (เช่น 12->1)
+                } else { // ข้ามปี
                     let isAfterStart = (tm === rule.startM && tp === rule.startP) || (tm > rule.startM);
                     let isBeforeEnd = (tm === rule.endM && tp === "Waxing") || (tm < rule.endM);
-                    
                     if (isAfterStart || isBeforeEnd) return rule;
                 }
             }
@@ -298,8 +322,8 @@
             const y = parseInt(document.getElementById('inputYear').value);
             const yAD = y - 543;
 
-            // 1. แปลงเดือนไทย
-            const lunarInfo = getThaiLunarInfo(d, m);
+            // 1. คำนวณจันทรคติ (New Algorithm)
+            const lunarInfo = calculateRealLunarDate(d, m, yAD);
             
             // 2. หาธาตุ
             const result = getSadaoElement(lunarInfo);
@@ -308,7 +332,7 @@
             document.getElementById('resMain').innerText = result.main;
             document.getElementById('resSub').innerText = result.sub;
             
-            // แสดงผลการคำนวณให้คนไข้เห็น
+            // แสดงผลการคำนวณที่ส่วนไฮไลท์
             document.getElementById('lunarInfo').innerText = lunarInfo.display;
 
             document.getElementById('resDesc').innerText = result.desc;
@@ -317,7 +341,7 @@
             document.getElementById('resFood').innerText = result.food;
 
             const header = document.getElementById('resultHeader');
-            header.className = `back-header h-64 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700 ${result.color}`;
+            header.className = `back-header h-72 p-4 text-white flex flex-col items-center justify-start bg-gradient-to-br transition-all duration-700 ${result.color}`;
             
             const avatarImg = document.getElementById('avatarImg');
             avatarImg.src = result.avatarUrl;
@@ -326,7 +350,9 @@
             document.getElementById('cardObject').classList.add('is-flipped');
             
             try {
+                // บันทึกผลคำนวณจันทรคติลง Sheet ด้วย
                 const birthDateStr = `${yAD}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                // ส่ง lunarInfo.display ไปด้วยถ้าทำได้ (ต้องแก้ Apps Script ฝั่งรับ) แต่ตอนนี้ส่งแบบเดิมไปก่อน
                 fetch(SCRIPT_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
