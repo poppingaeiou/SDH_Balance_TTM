@@ -67,7 +67,6 @@
             position: relative;
             height: 100%;
             display: flex; flex-direction: column;
-            /* Default background before theme loads */
             background: linear-gradient(to bottom, #ffffff, #f0f0f0);
         }
         
@@ -79,48 +78,31 @@
         
         .is-flipped { transform: rotateY(180deg); }
 
-        /* --- WEATHER EFFECTS (Adjusted for Visibility) --- */
+        /* Weather Container */
         .weather-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1; pointer-events: none; overflow: hidden;
             border-radius: 30px;
         }
+        .theme-winter { background: linear-gradient(to bottom, #90CAF9 0%, #E3F2FD 100%) !important; }
+        .theme-summer { background: linear-gradient(to bottom, #FFCC80 0%, #FFF3E0 100%) !important; }
+        .theme-rain { background: linear-gradient(to bottom, #B0BEC5 0%, #ECEFF1 100%) !important; }
 
-        /* Themes: Adjusted Colors for Contrast */
-        .theme-winter { 
-            /* สีฟ้าเข้มขึ้นเพื่อให้เห็นหิมะสีขาว */
-            background: linear-gradient(to bottom, #64B5F6 0%, #E3F2FD 100%) !important; 
-        }
-        .theme-summer { 
-            background: linear-gradient(to bottom, #FFCC80 0%, #FFF3E0 100%) !important; 
-        }
-        .theme-rain { 
-            background: linear-gradient(to bottom, #B0BEC5 0%, #ECEFF1 100%) !important; 
-        }
-
-        /* Snow Effect - Enhanced */
         .snowflake {
-            position: absolute; width: 5px; height: 5px; 
-            background: #fff; /* สีขาว */
-            border-radius: 50%;
-            animation: snow-fall linear infinite; 
-            box-shadow: 0 0 4px rgba(255,255,255,0.8); /* เรืองแสงนิดๆ */
+            position: absolute; width: 5px; height: 5px; background: #fff; border-radius: 50%;
+            animation: snow-fall linear infinite; box-shadow: 0 0 4px rgba(255,255,255,0.8);
         }
         @keyframes snow-fall { 
             0% { transform: translateY(-10px) translateX(0); opacity: 0; } 
             20% { opacity: 1; }
             100% { transform: translateY(900px) translateX(20px); opacity: 0; } 
         }
-
-        /* Rain Effect */
         .rain {
             background: linear-gradient(to bottom, rgba(0,0,255,0) 0%, rgba(255,255,255,0.8) 100%);
             height: 40px; position: absolute; width: 2px;
             animation: rain-fall 0.7s linear infinite;
         }
         @keyframes rain-fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(900px); } }
-
-        /* Sun Effect */
         .sun-glare {
             position: absolute; top: -80px; right: -80px; width: 300px; height: 300px;
             background: radial-gradient(circle, rgba(255,255,200,0.6) 0%, rgba(255,255,255,0) 70%);
@@ -135,36 +117,42 @@
             display: flex; flex-direction: column; height: 100%;
         }
 
-        /* Logo */
+        /* --- LOGO ANIMATION & STYLE (Updated) --- */
+        @keyframes logo-float {
+            0%, 100% { transform: translateY(0); box-shadow: 0 10px 25px rgba(212,175,55,0.3); }
+            50% { transform: translateY(-8px); box-shadow: 0 20px 35px rgba(212,175,55,0.5); } /* Glow stronger when up */
+        }
+
         .logo-container {
             width: 100px; height: 100px; margin: 0 auto 20px;
             background: white; 
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             border: 3px solid var(--gold-main);
             overflow: hidden;
+            /* Animation */
+            animation: logo-float 4s ease-in-out infinite;
         }
         .logo-img { width: 90%; height: auto; object-fit: contain; }
 
-        /* Inputs - Make slightly transparent to blend with weather */
+        /* Inputs */
         .input-group { position: relative; margin-bottom: 20px; }
         .input-label { 
             position: absolute; top: -10px; left: 15px; 
-            background: rgba(255,255,255,0.9); padding: 0 8px; 
+            background: rgba(255,255,255,0.95); padding: 0 8px; 
             color: var(--green-deep); font-size: 13px; font-weight: bold;
             border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .custom-select { 
-            width: 100%; padding: 14px; border: 1.5px solid rgba(255,255,255,0.6); 
+            width: 100%; padding: 14px; border: 1.5px solid rgba(255,255,255,0.7); 
             border-radius: 16px; font-family: 'Prompt'; font-size: 16px; color: #333;
-            appearance: none; background-color: rgba(255,255,255,0.75); /* โปร่งแสง */
+            appearance: none; background-color: rgba(255,255,255,0.85);
             backdrop-filter: blur(5px);
             transition: all 0.3s;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231B4D3E' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
             background-position: right 1rem center; background-repeat: no-repeat; background-size: 1.2em;
         }
-        .custom-select:focus { border-color: var(--gold-main); box-shadow: 0 0 0 4px rgba(255,255,255,0.5); outline: none; background-color: white; }
+        .custom-select:focus { border-color: var(--gold-main); box-shadow: 0 0 0 4px rgba(255,255,255,0.6); outline: none; background-color: white; }
 
         .btn-gold {
             background: linear-gradient(135deg, var(--green-deep) 0%, #2E7D32 100%);
@@ -179,11 +167,11 @@
         /* Forecast Box */
         .forecast-box {
             margin-top: auto; 
-            background: rgba(255, 255, 255, 0.85); /* โปร่งแสงให้เห็นพื้นหลัง */
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
             border-radius: 20px; padding: 20px;
-            border: 1px solid rgba(255,255,255,0.9);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         }
         .forecast-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -199,20 +187,20 @@
         }
         
         .vulnerable-box {
-            background: rgba(255,235,238,0.9); border: 1px dashed #EF5350;
+            background: rgba(255,235,238,0.95); border: 1px dashed #EF5350;
             border-radius: 10px; padding: 10px; margin-bottom: 10px;
             font-size: 12px; color: #C62828; display: flex; align-items: center;
         }
         .vulnerable-box i { font-size: 16px; margin-right: 8px; }
 
-        .warning-text { font-size: 13px; color: #333; line-height: 1.6; margin-bottom: 10px; }
+        .warning-text { font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 10px; }
         .food-advice { 
-            font-size: 12px; color: #555; background: rgba(241,248,233,0.9); 
+            font-size: 12px; color: #555; background: rgba(241,248,233,0.95); 
             padding: 10px; border-radius: 10px; border: 1px dashed #81C784;
             display: flex; align-items: flex-start;
         }
 
-        /* Results Styling */
+        /* Results Styling (Increased Top Padding) */
         .back-header { 
             background: linear-gradient(135deg, var(--green-deep), #0f3025);
             padding: 50px 20px 40px; 
@@ -238,18 +226,24 @@
             -webkit-overflow-scrolling: touch;
         }
         
+        /* --- UPDATED SECTION TITLES (Pop-out Style) --- */
         .section-title {
             font-size: 15px; font-weight: bold; color: var(--green-deep);
-            margin-bottom: 10px; display: flex; align-items: center;
-            border-bottom: 2px solid var(--gold-light); padding-bottom: 5px;
+            margin-bottom: 12px; display: flex; align-items: center;
+            /* Added Background & Shadow */
+            background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.5));
+            padding: 8px 12px;
+            border-radius: 10px;
+            border-left: 4px solid var(--gold-main);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
-        .section-title i { margin-right: 8px; color: var(--gold-main); }
+        .section-title i { margin-right: 10px; color: var(--gold-main); font-size: 18px; }
 
         .detail-box {
-            background: #FAFAFA; border-radius: 16px; padding: 15px; margin-bottom: 15px;
-            border-left: 5px solid var(--green-deep);
+            background: #FAFAFA; border-radius: 16px; padding: 15px; margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.03);
             font-size: 13px; color: #555; line-height: 1.7;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
 
         .food-tag {
@@ -297,14 +291,8 @@
                         <div class="logo-container">
                             <img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" alt="Logo" class="logo-img">
                         </div>
-                        <h1 class="text-2xl font-bold text-gray-800 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
-                        <p class="text-yellow-700 text-sm font-medium mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
-                    </div>
-
-                    <div class="text-center mb-6">
-                        <span class="text-xs text-gray-600 bg-white/80 px-4 py-2 rounded-full shadow-sm backdrop-blur-sm border border-white font-medium">
-                            <i class="fas fa-magic mr-1 text-yellow-600"></i> ระบบคำนวณวันปฏิสนธิอัตโนมัติ
-                        </span>
+                        <h1 class="text-2xl font-bold text-gray-800 tracking-wide drop-shadow-sm">วิเคราะห์ธาตุเจ้าเรือน</h1>
+                        <p class="text-yellow-800 text-sm font-medium mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
                     </div>
 
                     <div class="input-group">
@@ -377,17 +365,17 @@
                     <div class="section-title"><i class="fas fa-user-circle"></i> ลักษณะนิสัยและจุดเด่น</div>
                     <div class="detail-box" id="resTrait">...</div>
 
-                    <div class="section-title" style="color: #C62828;"><i class="fas fa-heartbeat" style="color:#EF5350;"></i> ความเสี่ยงปัญหาสุขภาพ</div>
-                    <div class="detail-box" style="border-left-color: #EF5350; background: #FFEBEE;" id="resHealth">...</div>
+                    <div class="section-title" style="color: #C62828; border-color: #EF5350;"><i class="fas fa-heartbeat" style="color:#EF5350;"></i> ความเสี่ยงปัญหาสุขภาพ</div>
+                    <div class="detail-box" style="background: #FFEBEE; border: 1px dashed #EF5350;" id="resHealth">...</div>
 
                     <div class="section-title"><i class="fas fa-thumbs-up"></i> รสชาติอาหารที่แนะนำ</div>
-                    <div class="detail-box" style="border-left-color: #66BB6A; background: #E8F5E9;">
+                    <div class="detail-box" style="background: #E8F5E9; border-color: #66BB6A;">
                         <div id="resTasteGood" class="font-bold mb-1 text-green-800"></div>
                         <div id="resTasteGoodReason" class="text-xs text-gray-600 mt-1"></div>
                     </div>
 
                     <div class="section-title"><i class="fas fa-thumbs-down"></i> รสชาติอาหารที่ควรเลี่ยง</div>
-                    <div class="detail-box" style="border-left-color: #FF7043; background: #FBE9E7;">
+                    <div class="detail-box" style="background: #FBE9E7; border-color: #FF7043;">
                         <div id="resTasteBad" class="font-bold mb-1 text-red-800"></div>
                         <div id="resTasteBadReason" class="text-xs text-gray-600 mt-1"></div>
                     </div>
