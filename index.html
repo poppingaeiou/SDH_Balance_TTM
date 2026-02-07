@@ -633,8 +633,10 @@
             document.getElementById('resTrait').innerText = data.trait;
             document.getElementById('resHealth').innerText = data.health;
             document.getElementById('resTasteGood').innerText = data.recTaste;
-            document.getElementById('resTasteGoodReason').innerText = data.recTasteReason;
+            // FIXED: Use correct data key
+            document.getElementById('resTasteGoodReason').innerText = data.recReason;
             document.getElementById('resTasteBad').innerText = data.badTaste;
+            // FIXED: Use correct data key
             document.getElementById('resTasteBadReason').innerText = data.badReason;
 
             createFoodTags(data.foods, 'foodList');
