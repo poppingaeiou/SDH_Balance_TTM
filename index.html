@@ -68,18 +68,17 @@
         
         .is-flipped { transform: rotateY(180deg); }
 
-        /* Logo Animation - Removed background: white */
+        /* Logo Animation - Background kept white */
         .logo-container {
             width: 100px; height: 100px; margin: 0 auto 15px;
-            /* background: white;  <-- ลบออกแล้ว */
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             border: 2px solid var(--gold-main);
             overflow: hidden;
-            background-color: transparent; /* เพิ่มเพื่อให้แน่ใจว่าเป็นโปร่งใส */
+            background-color: white; /* คงพื้นหลังสีขาวไว้ */
         }
-        .logo-img { width: 90%; height: auto; object-fit: contain; } /* ปรับขนาดรูปนิดหน่อย */
+        .logo-img { width: 90%; height: auto; object-fit: contain; }
 
         /* Custom Inputs */
         .input-group { position: relative; margin-bottom: 20px; }
@@ -123,11 +122,11 @@
             position: relative; flex-shrink: 0;
         }
         
-        /* New Avatar Style for Real Images */
+        /* New Avatar Style for Transparent Images */
         .avatar-real {
             width: 160px; height: 160px; margin: -10px auto 10px;
-            object-fit: contain; /* โชว์เต็มรูปไม่ตัด */
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25)); /* เงาฟุ้งสวย */
+            object-fit: contain;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25));
             animation: float 4s ease-in-out infinite;
         }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
@@ -167,7 +166,7 @@
 
     <div class="text-center mb-6 z-10 animate-fade-in-down mt-10">
         <div class="logo-container">
-            <img src="image_0.png" alt="Logo" class="logo-img">
+            <img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" alt="Logo" class="logo-img">
         </div>
         <h1 class="text-2xl font-bold text-gray-800 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
         <p class="text-yellow-700 text-sm font-medium mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
@@ -331,7 +330,7 @@
         }
 
         // ==========================================
-        // 2. Comprehensive Database (Updated Avatars)
+        // 2. Comprehensive Database (Updated Avatars with Transparent Images)
         // ==========================================
         const sadaoData = [
             // --- 1. ศิศิรฤดู (น้ำระคนไฟ) -> ธาตุดิน 1-2 ---
@@ -339,7 +338,7 @@
               main: "ธาตุดิน (ปถวี)", 
               sub: "พิกัดแห่งเสมหะสมุฏฐาน และปิตตะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #8D6E63, #5D4037)",
-              avatarUrl: "https://img2.pic.in.th/344b40c69021fa3e3486df08c9b0aaa4.jpg", // รูปธาตุดิน
+              avatarUrl: "image_1.png", // รูปธาตุดิน (ใส)
               desc: "ธาตุไฟเริ่มแทรก อาจถ่ายเหลวได้ง่าย ลำไส้แปรปรวน สตรีอาจมีปัญหาประจำเดือน",
               avoid: "อาหารแสลง อาหารรสจัด อาหารหมักดอง",
               trait: "จิตใจหนักแน่นมั่นคง ดื้อรั้นเล็กน้อย",
@@ -350,7 +349,7 @@
               main: "ธาตุไฟ (เตโช)", 
               sub: "พิกัดแห่งปิตตะสมุฏฐาน และเสมหะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #FF7043, #D84315)",
-              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/58138bccc52a7d293a8fabde7b9aca26.jpg", // รูปธาตุไฟ
+              avatarUrl: "image_2.png", // รูปธาตุไฟ (ใส)
               desc: "เป็นลม หน้ามืด ไข้แดด ร้อนใน หลับยาก เพราะความร้อนสะสมสูง",
               avoid: "อาหารรสเผ็ดร้อนจัด แดดจัด อารมณ์โมโห แอลกอฮอล์",
               trait: "รูปร่างสมส่วน ผิวขาวเหลือง พูดชัด หิวบ่อย กินจุ ขี้หงุดหงิด โกรธง่ายหายเร็ว",
@@ -361,7 +360,7 @@
               main: "ธาตุไฟ (เตโช)", 
               sub: "พิกัดแห่งปิตตะสมุฏฐาน และวาตะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #FFAB91, #E64A19)",
-              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/58138bccc52a7d293a8fabde7b9aca26.jpg", // รูปธาตุไฟ
+              avatarUrl: "image_2.png", // รูปธาตุไฟ (ใส)
               desc: "อากาศเปลี่ยน ความดันโลหิตอาจแปรปรวน อารมณ์ขึ้นลงง่าย นอนหลับยาก",
               avoid: "ความเครียด อาหารรสจัดเกินไป",
               trait: "คล่องแคล่ว ว่องไว ผมหงอกก่อนวัย",
@@ -372,7 +371,7 @@
               main: "ธาตุลม (วาโย)", 
               sub: "พิกัดแห่งวาตะสมุฏฐาน และปิตตะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #81C784, #388E3C)",
-              avatarUrl: "https://img2.pic.in.th/e8f1ca35d7d696de4c583ccb76dadd92.jpg", // รูปธาตุลม
+              avatarUrl: "image_3.png", // รูปธาตุลม (ใส)
               desc: "ท้องอืด แน่นท้อง อาหารไม่ย่อย เรอเหม็นเปรี้ยว ลมในกระเพาะเยอะ",
               avoid: "เคี้ยวอาหารไม่ละเอียด ทานเร็วเกินไป ความเครียด",
               trait: "เคลื่อนไหวเร็ว อารมณ์แปรปรวน",
@@ -383,7 +382,7 @@
               main: "ธาตุน้ำ (อาโป)", 
               sub: "พิกัดแห่งวาตะสมุฏฐาน และเสมหะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #42A5F5, #1565C0)",
-              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/691ab2bc8bd127f21c3a91c0439629ef.jpg", // รูปธาตุน้ำ
+              avatarUrl: "image_4.png", // รูปธาตุน้ำ (ใส)
               desc: "อาการปวดในข้อ ปวดเข่า ปวดกระดูก ริดสีดวง ฝี สิว",
               avoid: "รสหวานจัด มันจัด เค็มจัด การนั่งนานๆ",
               trait: "รูปร่างอวบ ผิวขาว ตาโต พูดช้าเสียงไพเราะ เคลื่อนไหวช้า ผมสวยดกดำ",
@@ -394,7 +393,7 @@
               main: "ธาตุน้ำ (อาโป)", 
               sub: "พิกัดแห่งเสมหะสมุฏฐาน และวาตะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #90CAF9, #2196F3)",
-              avatarUrl: "https://img5.pic.in.th/file/secure-sv1/691ab2bc8bd127f21c3a91c0439629ef.jpg", // รูปธาตุน้ำ
+              avatarUrl: "image_4.png", // รูปธาตุน้ำ (ใส)
               desc: "ผดผื่น สิว ลมพิษ คันง่าย ภูมิแพ้ผิวหนัง หรือท้องผูกง่ายจากความเย็น",
               avoid: "การนอนกลางวันมากเกินไป อาหารหมักดอง",
               trait: "ผิวพรรณละเอียดสวย แต่อาจแพ้ง่าย",
