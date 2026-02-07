@@ -21,6 +21,7 @@
         body { 
             font-family: 'Prompt', sans-serif; 
             background-color: #FDFBF7;
+            /* พื้นหลังลายไทยจางๆ */
             background-image: 
                 radial-gradient(var(--gold-main) 0.5px, transparent 0.5px), 
                 radial-gradient(var(--green-deep) 0.5px, transparent 0.5px);
@@ -36,11 +37,11 @@
             pointer-events: none; z-index: -1;
         }
 
-        /* 3D Card Scene */
+        /* 3D Card Scene - เพิ่ม Padding Top แก้ปัญหาข้อความชิดขอบ */
         .card-scene { 
             width: 100%; max-width: 450px; margin: 0 auto;
-            min-height: 85vh; perspective: 1500px; 
-            padding: 20px 0;
+            min-height: 100vh; perspective: 1500px; 
+            padding: 60px 20px 40px 20px; /* Top padding increased */
         }
 
         .card-object { 
@@ -52,22 +53,20 @@
         .card-face { 
             width: 100%; border-radius: 30px; 
             backface-visibility: hidden; 
-            background: rgba(255, 255, 255, 0.95);
-            /* Glassmorphism for Front to see Weather */
-            backdrop-filter: blur(10px);
+            /* Default Background */
+            background: white;
             box-shadow: 
                 0 20px 50px rgba(27, 77, 62, 0.15),
                 0 0 0 1px rgba(212, 175, 55, 0.2) inset;
             overflow: hidden;
             min-height: 800px; 
             display: flex; flex-direction: column;
+            transition: background 1s ease; /* Smooth transition for weather bg */
         }
         
         .card-front { 
             transform: rotateY(0deg); 
-            background: rgba(255,255,255,0.85); /* โปร่งแสงเล็กน้อย */
             position: relative;
-            z-index: 2;
             height: 100%;
             display: flex; flex-direction: column;
         }
@@ -81,76 +80,85 @@
         .is-flipped { transform: rotateY(180deg); }
 
         /* --- WEATHER EFFECTS (Animation) --- */
-        .weather-bg {
+        .weather-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none; opacity: 0.6;
-            border-radius: 30px; overflow: hidden;
+            z-index: 1; pointer-events: none; overflow: hidden;
+            border-radius: 30px;
         }
 
-        /* 1. Rain Effect */
-        .rain {
-            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 100%);
-            height: 50px; position: absolute; width: 1px;
-            animation: rain-fall 0.8s linear infinite;
-        }
-        @keyframes rain-fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(800px); } }
+        /* Winter Theme (Blue Gradient Background) */
+        .theme-winter { background: linear-gradient(to bottom, #E3F2FD 0%, #FFFFFF 80%) !important; }
+        /* Summer Theme (Orange Gradient) */
+        .theme-summer { background: linear-gradient(to bottom, #FFF3E0 0%, #FFFFFF 80%) !important; }
+        /* Rain Theme (Grey Gradient) */
+        .theme-rain { background: linear-gradient(to bottom, #ECEFF1 0%, #FFFFFF 80%) !important; }
 
-        /* 2. Sun/Hot Effect */
-        .sun-glare {
-            position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
-            background: radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(255,215,0,0) 70%);
-            animation: sun-pulse 4s ease-in-out infinite;
-        }
-        .heat-haze {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-            opacity: 0.3; animation: haze-move 10s linear infinite;
-        }
-        @keyframes sun-pulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.2); opacity: 0.6; } }
-        @keyframes haze-move { from { transform: translateY(0); } to { transform: translateY(-20px); } }
-
-        /* 3. Snow/Mist/Cold Effect */
+        /* Snow Effect */
         .snowflake {
-            position: absolute; width: 4px; height: 4px; background: white; border-radius: 50%;
+            position: absolute; width: 6px; height: 6px; background: white; border-radius: 50%;
             animation: snow-fall linear infinite;
             filter: blur(1px);
+            box-shadow: 0 0 5px rgba(255,255,255,0.8);
         }
         @keyframes snow-fall { 
             0% { transform: translateY(-10px) translateX(0); opacity: 0; } 
             20% { opacity: 1; }
-            100% { transform: translateY(800px) translateX(20px); opacity: 0; } 
+            100% { transform: translateY(800px) translateX(30px); opacity: 0; } 
+        }
+
+        /* Rain Effect */
+        .rain {
+            background: linear-gradient(to bottom, rgba(0,0,255,0) 0%, rgba(100,149,237,0.6) 100%);
+            height: 40px; position: absolute; width: 2px;
+            animation: rain-fall 0.7s linear infinite;
+        }
+        @keyframes rain-fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(800px); } }
+
+        /* Sun Effect */
+        .sun-glare {
+            position: absolute; top: -80px; right: -80px; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,160,0,0.3) 0%, rgba(255,255,0,0) 70%);
+            animation: sun-pulse 5s ease-in-out infinite;
+        }
+        @keyframes sun-pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
+
+        /* Content Wrapper (Z-Index fix) */
+        .front-content {
+            position: relative; z-index: 10; /* อยู่หน้าสภาพอากาศ */
+            padding: 30px;
+            display: flex; flex-direction: column; height: 100%;
         }
 
         /* Logo Animation */
         .logo-container {
-            width: 90px; height: 90px; margin: 0 auto 10px;
+            width: 100px; height: 100px; margin: 0 auto 15px;
             background: white; 
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 2px solid var(--gold-main);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 3px solid var(--gold-main);
             overflow: hidden;
-            position: relative; z-index: 10;
         }
         .logo-img { width: 90%; height: auto; object-fit: contain; }
 
-        /* Inputs */
-        .input-group { position: relative; margin-bottom: 20px; z-index: 10; }
+        /* Custom Inputs */
+        .input-group { position: relative; margin-bottom: 20px; }
         .input-label { 
             position: absolute; top: -10px; left: 15px; 
             background: white; padding: 0 8px; 
             color: var(--green-deep); font-size: 12px; font-weight: bold;
-            border-radius: 4px; z-index: 2;
+            border-radius: 4px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .custom-select { 
-            width: 100%; padding: 16px; border: 1.5px solid #E0E0E0; 
+            width: 100%; padding: 16px; border: 1.5px solid rgba(27, 77, 62, 0.2); 
             border-radius: 16px; font-family: 'Prompt'; font-size: 16px; color: #333;
             appearance: none; background-color: rgba(255,255,255,0.9);
             transition: all 0.3s;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23D4AF37' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231B4D3E' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
             background-position: right 1rem center; background-repeat: no-repeat; background-size: 1.2em;
         }
-        .custom-select:focus { border-color: var(--gold-main); box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1); outline: none; background-color: white; }
+        .custom-select:focus { border-color: var(--gold-main); box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2); outline: none; background-color: white; }
 
         /* Button */
         .btn-gold {
@@ -159,38 +167,39 @@
             border-radius: 16px; font-size: 18px; font-weight: bold;
             box-shadow: 0 10px 20px rgba(27, 77, 62, 0.3);
             cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-            position: relative; overflow: hidden; z-index: 10;
+            position: relative; overflow: hidden;
         }
         .btn-gold:active { transform: scale(0.98); }
 
-        /* Today's Forecast Box */
+        /* Forecast Box */
         .forecast-box {
-            margin-top: auto; z-index: 10;
-            background: rgba(255, 255, 255, 0.85); /* โปร่งแสงเพื่อให้เห็น BG */
-            backdrop-filter: blur(8px);
+            margin-top: auto; 
+            background: rgba(255, 255, 255, 0.9); /* More opaque for readability */
+            backdrop-filter: blur(10px);
             border-radius: 20px; padding: 20px;
-            border: 1px solid rgba(255,255,255,0.6);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
         .forecast-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px;
+            margin-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px;
         }
         .forecast-title { font-size: 14px; font-weight: bold; color: var(--green-deep); }
-        .forecast-date { font-size: 11px; color: #666; }
+        .forecast-date { font-size: 11px; color: #666; font-weight: 500; }
         
         .utu-badge {
             background: var(--green-deep); color: white;
-            padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: bold;
-            display: inline-block; margin-bottom: 5px;
+            padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold;
+            display: inline-block; margin-bottom: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .warning-text { font-size: 13px; color: #333; line-height: 1.5; margin-bottom: 8px; }
+        .warning-text { font-size: 13px; color: #333; line-height: 1.6; margin-bottom: 10px; }
         .food-advice { 
-            font-size: 12px; color: #555; background: rgba(255,255,255,0.6); 
-            padding: 8px; border-radius: 8px; border: 1px dashed #ccc;
+            font-size: 12px; color: #444; background: #F1F8E9; 
+            padding: 10px; border-radius: 12px; border: 1px dashed #81C784;
+            display: flex; align-items: flex-start;
         }
 
-        /* Results */
+        /* Results Styling */
         .back-header { 
             background: linear-gradient(135deg, var(--green-deep), #0f3025);
             padding: 20px 20px 40px; text-align: center; color: white;
@@ -262,67 +271,72 @@
     <div class="card-scene">
         <div id="cardObject" class="card-object">
             
-            <div class="card-face card-front">
-                <div id="weatherContainer" class="weather-bg"></div>
+            <div id="cardFront" class="card-face card-front">
+                
+                <div id="weatherContainer" class="weather-container"></div>
 
-                <div class="text-center mb-4 z-10 animate-fade-in-down mt-2">
-                    <div class="logo-container">
-                        <img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" alt="Logo" class="logo-img">
+                <div class="front-content">
+                    
+                    <div class="text-center mb-6">
+                        <div class="logo-container">
+                            <img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" alt="Logo" class="logo-img">
+                        </div>
+                        <h1 class="text-xl font-bold text-gray-800 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
+                        <p class="text-yellow-700 text-xs font-medium mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
                     </div>
-                    <h1 class="text-xl font-bold text-gray-800 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
-                    <p class="text-yellow-700 text-xs font-medium mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
-                </div>
 
-                <div class="text-center mb-4 z-10">
-                    <p class="text-xs text-gray-500 bg-white/70 px-2 py-1 rounded inline-block backdrop-blur-sm">
-                        กรอกวันเกิด (ระบบจะคำนวณวันปฏิสนธิอัตโนมัติ)
-                    </p>
-                </div>
-
-                <div class="input-group">
-                    <span class="input-label">วันที่</span>
-                    <select id="inputDay" class="custom-select"></select>
-                </div>
-                <div class="input-group">
-                    <span class="input-label">เดือนเกิด</span>
-                    <select id="inputMonth" class="custom-select">
-                        <option value="1">มกราคม</option>
-                        <option value="2">กุมภาพันธ์</option>
-                        <option value="3">มีนาคม</option>
-                        <option value="4">เมษายน</option>
-                        <option value="5">พฤษภาคม</option>
-                        <option value="6">มิถุนายน</option>
-                        <option value="7">กรกฎาคม</option>
-                        <option value="8">สิงหาคม</option>
-                        <option value="9">กันยายน</option>
-                        <option value="10">ตุลาคม</option>
-                        <option value="11">พฤศจิกายน</option>
-                        <option value="12">ธันวาคม</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <span class="input-label">ปี พ.ศ.เกิด</span>
-                    <select id="inputYear" class="custom-select"></select>
-                </div>
-
-                <button onclick="startAnalysis()" class="btn-gold mt-2">
-                    <span>วิเคราะห์ธาตุเจ้าเรือน</span> <i class="fas fa-search ml-2"></i>
-                </button>
-
-                <div class="forecast-box">
-                    <div class="forecast-header">
-                        <div class="forecast-title"><i class="fas fa-calendar-day mr-1"></i> พยากรณ์อุตุสมุฏฐานวันนี้</div>
-                        <div class="forecast-date" id="todayDate">...</div>
+                    <div class="text-center mb-4">
+                        <span class="text-xs text-gray-600 bg-white/80 px-3 py-1 rounded-full shadow-sm backdrop-blur-sm border border-white">
+                            <i class="fas fa-info-circle mr-1"></i> กรอกวันเกิด (ระบบคำนวณปฏิสนธิอัตโนมัติ)
+                        </span>
                     </div>
-                    <div>
-                        <span class="utu-badge" id="todaySeason">...</span>
-                        <p class="warning-text" id="todayHealth">...</p>
-                        <div class="food-advice">
-                            <i class="fas fa-utensils text-green-600 mr-1"></i> <span id="todayFood">...</span>
+
+                    <div class="input-group">
+                        <span class="input-label">วันที่</span>
+                        <select id="inputDay" class="custom-select"></select>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-label">เดือนเกิด</span>
+                        <select id="inputMonth" class="custom-select">
+                            <option value="1">มกราคม</option>
+                            <option value="2">กุมภาพันธ์</option>
+                            <option value="3">มีนาคม</option>
+                            <option value="4">เมษายน</option>
+                            <option value="5">พฤษภาคม</option>
+                            <option value="6">มิถุนายน</option>
+                            <option value="7">กรกฎาคม</option>
+                            <option value="8">สิงหาคม</option>
+                            <option value="9">กันยายน</option>
+                            <option value="10">ตุลาคม</option>
+                            <option value="11">พฤศจิกายน</option>
+                            <option value="12">ธันวาคม</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-label">ปี พ.ศ.เกิด</span>
+                        <select id="inputYear" class="custom-select"></select>
+                    </div>
+
+                    <button onclick="startAnalysis()" class="btn-gold mt-2">
+                        <span>วิเคราะห์ธาตุเจ้าเรือน</span> <i class="fas fa-search ml-2"></i>
+                    </button>
+
+                    <div class="forecast-box">
+                        <div class="forecast-header">
+                            <div class="forecast-title"><i class="fas fa-calendar-day mr-1"></i> อุตุสมุฏฐานวันนี้</div>
+                            <div class="forecast-date" id="todayDate">...</div>
+                        </div>
+                        <div>
+                            <span class="utu-badge" id="todaySeason">...</span>
+                            <p class="warning-text" id="todayHealth">...</p>
+                            <div class="food-advice">
+                                <i class="fas fa-utensils text-green-600 mr-2 mt-1"></i> 
+                                <span id="todayFood">...</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
+
+                </div> </div>
 
             <div id="resultFace" class="card-face card-back">
                 <div id="resultHeader" class="back-header">
@@ -388,7 +402,9 @@
                 yearSelect.appendChild(opt); 
             }
             yearSelect.value = (currentYearBE - 30 - 543);
-            updateDailyForecast(); // Trigger Weather
+            
+            // Trigger Weather & Forecast
+            updateDailyForecast();
         }
 
         // ==========================================
@@ -427,55 +443,61 @@
         }
 
         // ==========================================
-        // 2. Daily Forecast Logic & FX
+        // 2. Daily Forecast & Dynamic Theme
         // ==========================================
         function getDailySeason(lunar) {
             const m = lunar.thaiMonth;
-            // Map Season -> Info & FX
+            
             if (m == 5 || m == 6) return { 
-                name: "อุตุสมุฏฐาน: คิมหันตฤดู (ธาตุไฟ)", 
-                health: "อากาศร้อนจัด ความร้อนภายนอกกระทบร่างกาย เสี่ยงต่อลมแดดและอาการขาดน้ำ ธาตุไฟกำเริบได้ง่าย", 
+                name: "คิมหันตฤดู (ร้อน)", 
+                element: "ธาตุไฟ", 
+                health: "อากาศร้อนจัด ความร้อนภายนอกกระทบร่างกาย เสี่ยงต่อลมแดดและขาดน้ำ", 
                 food: "ควรทานอาหารรสขม เย็น จืด เพื่อลดความร้อน",
-                fx: "sun"
+                theme: "summer", fx: "sun"
             };
             if (m == 7 || m == 8) return { 
-                name: "อุตุสมุฏฐาน: วสันตฤดู (ธาตุลมระคนไฟ)", 
-                health: "เริ่มมีฝนตก อากาศเปลี่ยนแปลง เดี๋ยวร้อนเดี๋ยวฝน ระวังเป็นหวัด วิงเวียน และลมกองหยาบในท้อง", 
+                name: "วสันตฤดู (ฝนแรก)", 
+                element: "ธาตุลมระคนไฟ", 
+                health: "อากาศเปลี่ยนแปลง เดี๋ยวร้อนเดี๋ยวฝน ระวังเป็นหวัด วิงเวียนศีรษะ", 
                 food: "อาหารรสเปรี้ยว เค็ม เผ็ดเล็กน้อย ช่วยฟอกเลือด",
-                fx: "rain"
+                theme: "rain", fx: "rain"
             };
             if (m == 9 || m == 10) return { 
-                name: "อุตุสมุฏฐาน: วสสานฤดู (ธาตุลม)", 
-                health: "ฝนชุก ความชื้นสูง เตโชธาตุพิการ(ไฟย่อยอาหารไม่ดี) ท้องอืด แน่นท้อง อาหารไม่ย่อย", 
+                name: "วสสานฤดู (ฝนชุก)", 
+                element: "ธาตุลม", 
+                health: "ความชื้นสูง เตโชธาตุพิการ(ไฟย่อยไม่ดี) ท้องอืด แน่นท้อง อาหารไม่ย่อย", 
                 food: "สมุนไพรขับลม ขิง ข่า ตะไคร้ รสเผ็ดร้อน",
-                fx: "rain"
+                theme: "rain", fx: "rain"
             };
             if (m == 11 || m == 12) return { 
-                name: "อุตุสมุฏฐาน: สารทฤดู (ธาตุน้ำ)", 
-                health: "ปลายฝนต้นหนาว อากาศเย็นลง ระวังเสมหะกำเริบ เจ็บคอ ไอ และปวดเมื่อยตามข้อ", 
+                name: "สารทฤดู (ปลายฝนต้นหนาว)", 
+                element: "ธาตุน้ำ", 
+                health: "อากาศเริ่มเย็นลง ระวังเสมหะกำเริบ เจ็บคอ ไอ และปวดเมื่อย", 
                 food: "อาหารรสขม รสร้อน ปรับสมดุลน้ำในร่างกาย",
-                fx: "snow" // Use Snow FX for "Cool/Mist"
+                theme: "winter", fx: "snow"
             };
             if (m == 1 || m == 2) return { 
-                name: "อุตุสมุฏฐาน: เหมันตฤดู (ธาตุน้ำระคนดิน)", 
-                health: "อากาศหนาวแห้ง โลหิตจับตัวเป็นก้อน ระวังผิวแห้ง ปวดข้อ น้ำมูกไหลจากความเย็น", 
+                name: "เหมันตฤดู (หนาว)", 
+                element: "ธาตุน้ำระคนดิน", 
+                health: "อากาศหนาวแห้ง โลหิตจับตัว ระวังผิวแห้ง ปวดข้อ น้ำมูกไหล", 
                 food: "อาหารรสมัน เค็ม ร้อน ให้ความอบอุ่น",
-                fx: "snow"
+                theme: "winter", fx: "snow"
             };
             return { 
-                name: "อุตุสมุฏฐาน: ศิศิรฤดู (ธาตุดิน)", 
-                health: "ลมหนาวและน้ำค้างแรง ร่างกายสะสมความเย็น ระวังวิงเวียน อ่อนเพลีย ไม่มีแรง", 
+                name: "ศิศิรฤดู (น้ำค้าง)", 
+                element: "ธาตุดิน", 
+                health: "ลมหนาวและน้ำค้างแรง ร่างกายสะสมความเย็น ระวังวิงเวียน อ่อนเพลีย", 
                 food: "อาหารบำรุงกำลัง รสหวาน มัน เค็ม",
-                fx: "snow"
+                theme: "winter", fx: "snow"
             };
         }
 
         function createWeatherFX(type) {
             const container = document.getElementById('weatherContainer');
-            container.innerHTML = ''; // Clear old fx
+            container.innerHTML = ''; 
             
             if (type === 'rain') {
-                for(let i=0; i<30; i++) {
+                for(let i=0; i<40; i++) {
                     let d = document.createElement('div');
                     d.className = 'rain';
                     d.style.left = Math.random() * 100 + '%';
@@ -487,17 +509,14 @@
                 let s = document.createElement('div');
                 s.className = 'sun-glare';
                 container.appendChild(s);
-                let h = document.createElement('div');
-                h.className = 'heat-haze';
-                container.appendChild(h);
             } else if (type === 'snow') {
-                for(let i=0; i<30; i++) {
+                for(let i=0; i<40; i++) {
                     let s = document.createElement('div');
                     s.className = 'snowflake';
                     s.style.left = Math.random() * 100 + '%';
-                    s.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    s.style.animationDuration = (Math.random() * 3 + 3) + 's';
                     s.style.animationDelay = (Math.random() * 2) + 's';
-                    s.style.opacity = Math.random();
+                    s.style.opacity = Math.random() * 0.8 + 0.2;
                     container.appendChild(s);
                 }
             }
@@ -508,20 +527,27 @@
             const lunar = calculateRealLunarDate(today);
             const season = getDailySeason(lunar);
             
+            // 1. Text Update
             const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             document.getElementById('todayDate').innerText = `${today.getDate()} ${thaiMonths[today.getMonth()]} ${today.getFullYear()+543}`;
-            document.getElementById('todaySeason').innerText = season.name;
+            document.getElementById('todaySeason').innerText = `${season.name}`;
             document.getElementById('todayHealth').innerText = season.health;
             document.getElementById('todayFood').innerText = `แนะนำ: ${season.food}`;
+            
+            // 2. Theme & FX Update
+            const cardFront = document.getElementById('cardFront');
+            // Reset Classes
+            cardFront.classList.remove('theme-winter', 'theme-summer', 'theme-rain');
+            // Add New Class
+            if (season.theme) cardFront.classList.add(`theme-${season.theme}`);
             
             createWeatherFX(season.fx);
         }
 
         // ==========================================
-        // 3. Analysis Data & Logic
+        // 3. Analysis Logic (Same as V.Conception)
         // ==========================================
         function getElementData(month) {
-            // Same Logic as V.Conception (Detail Text)
             if (month >= 5 && month <= 7) {
                 return {
                     name: "ธาตุไฟ (เตโช)",
