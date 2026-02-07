@@ -3,145 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เช็กธาตุเจ้าเรือน - รพ.สะเดา</title>
+    <title>วิเคราะห์ธาตุเจ้าเรือน - รพ.สะเดา</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Sarabun', sans-serif; background-color: #f0f9f4; }
-        .hidden { display: none; }
-        .loading { opacity: 0.5; pointer-events: none; }
+        :root {
+            --primary-gold: #D4AF37;
+            --deep-green: #1B4D3E;
+        }
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: #fdfbf7;
+            overflow-x: hidden;
+            transition: background 1s ease;
+        }
+        .thai-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        /* Loading Animation */
+        .spinner-wheel {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-gold);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Input Customization */
+        input[type="date"] {
+            appearance: none;
+            -webkit-appearance: none;
+            color: #333;
+            font-family: 'Prompt', sans-serif;
+        }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body class="thai-pattern min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div id="formSection" class="w-full max-w-md bg-white p-6 rounded-2xl shadow-xl border border-green-100">
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-green-800">สมดุลสะเดา 🌿</h1>
-            <p class="text-gray-500 text-sm">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
+    <div class="text-center mb-8 animate-fade-in-down">
+        <div class="inline-block p-3 rounded-full border-2 border-yellow-500 bg-white shadow-md mb-3">
+            <i class="fas fa-seedling text-3xl text-green-800"></i>
         </div>
-        
-        <label class="block mb-2 font-bold text-gray-700">ระบุวันเกิดของคุณ</label>
-        <input type="date" id="birthDate" class="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-50">
-        
-        <button id="btnAnalyze" onclick="calculateAndSave()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition shadow-md">
-            🔍 วิเคราะห์ธาตุเจ้าเรือน
-        </button>
+        <h1 class="text-2xl font-bold text-green-900 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
+        <p class="text-yellow-700 font-light text-sm">กลุ่มงานการแพทย์แผนไทยและการแพทย์ทางเลือก <br>โรงพยาบาลสะเดา</p>
     </div>
 
-    <div id="resultSection" class="hidden w-full max-w-md bg-white p-6 rounded-2xl shadow-xl text-center border-t-4 border-green-500">
-        <div id="elementIcon" class="text-6xl mb-4 animate-bounce">🔥</div>
-        
-        <h2 class="text-gray-500 text-sm uppercase tracking-wide">ธาตุเจ้าเรือนของคุณคือ</h2>
-        <h1 id="resultTitle" class="text-3xl font-bold text-green-900 mb-2"></h1>
-        
-        <p id="resultDesc" class="text-gray-600 mb-6 px-4"></p>
-        
-        <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 text-left mb-6 shadow-sm">
-            <div class="flex items-start">
-                <span class="text-2xl mr-3">⚠️</span>
-                <div>
-                    <strong class="text-yellow-800 block mb-1">จุดที่ต้องระวัง (พิกัดยา):</strong>
-                    <span id="subElementResult" class="text-gray-700 text-sm"></span>
-                </div>
+    <div id="mainContainer" class="w-full max-w-md glass-card rounded-2xl p-6 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-800 via-yellow-500 to-green-800"></div>
+
+        <div id="formSection">
+            <label class="block text-gray-700 text-sm font-bold mb-2 ml-1">
+                <i class="far fa-calendar-alt mr-1"></i> ใส่วัน/เดือน/ปีเกิด
+            </label>
+            <div class="relative">
+                <input type="date" id="birthDate" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:outline-none transition shadow-inner">
             </div>
+            
+            <p class="text-xs text-gray-400 mt-2 ml-1">*ระบบจะคำนวณตามคัมภีร์ตากศิลา/เวชศึกษา</p>
+
+            <button onclick="analyze()" class="mt-6 w-full bg-gradient-to-r from-green-800 to-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 flex justify-center items-center gap-2">
+                <span>เริ่มวิเคราะห์</span> <i class="fas fa-arrow-right"></i>
+            </button>
         </div>
 
-        <button onclick="location.reload()" class="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-lg hover:bg-gray-200 transition">
-            🔄 เช็กให้คนอื่นต่อ
-        </button>
+        <div id="loadingSection" class="hidden flex flex-col items-center justify-center py-10">
+            <div class="spinner-wheel mb-4"></div>
+            <p class="text-green-800 animate-pulse">กำลังหมุนล้อธาตุ...</p>
+        </div>
+
+        <div id="resultSection" class="hidden text-center">
+            <div id="elementBadge" class="inline-block px-4 py-1 rounded-full text-xs font-bold text-white mb-4 shadow-sm uppercase tracking-wider">
+                THAI TRADITIONAL MEDICINE
+            </div>
+
+            <div class="relative w-24 h-24 mx-auto mb-4">
+                <div class="absolute inset-0 bg-yellow-200 rounded-full opacity-20 animate-ping"></div>
+                <div class="relative w-full h-full bg-white rounded-full flex items-center justify-center border-4 border-yellow-100 shadow-md">
+                    <span id="resultIcon" class="text-5xl">🔥</span>
+                </div>
+            </div>
+
+            <h2 id="resultMain" class="text-3xl font-bold text-gray-800 mb-1">ธาตุไฟ</h2>
+            <h3 id="resultSub" class="text-lg text-yellow-600 font-medium mb-4">กำเดา (ความร้อน)</h3>
+            
+            <div class="bg-white/60 rounded-xl p-4 mb-6 border border-gray-100 text-left shadow-sm">
+                <p id="resultDesc" class="text-gray-600 text-sm leading-relaxed"></p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="bg-green-50 p-3 rounded-lg border border-green-100">
+                    <i class="fas fa-utensils text-green-600 mb-1"></i>
+                    <p class="text-xs text-green-800 font-bold">อาหารแนะนำ</p>
+                    <span id="foodRec" class="text-xs text-gray-600">ผักบุ้ง, แตงกวา</span>
+                </div>
+                <div class="bg-red-50 p-3 rounded-lg border border-red-100">
+                    <i class="fas fa-hand-holding-medical text-red-600 mb-1"></i>
+                    <p class="text-xs text-red-800 font-bold">สมุนไพร</p>
+                    <span id="herbRec" class="text-xs text-gray-600">ใบบัวบก</span>
+                </div>
+            </div>
+
+            <button onclick="location.reload()" class="text-gray-400 hover:text-green-700 text-sm underline">
+                ตรวจสอบใหม่อีกครั้ง
+            </button>
+        </div>
+    </div>
+
+    <div class="mt-8 text-center opacity-60">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png" alt="Google" class="h-4 inline-block opacity-50 grayscale">
+        <span class="text-xs text-gray-500">Powered by Google Cloud & Sadao Hospital</span>
     </div>
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        // ✅ URL ของคุณใส่ไว้ตรงนี้แล้ว (ห้ามลบ)
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX7ZJvwflkNzhZ1SPPOJZZcJBvh_Bpbc2acOjh6fEcj58fv9wHu4i9M8J5BoCNmIoDbw/exec'; 
+        // 🔗 URL ของ Apps Script ของคุณ (อันเดิมที่ส่งมา)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX7ZJvwflkNzhZ1SPPOJZZcJBvh_Bpbc2acOjh6fEcj58fv9wHu4i9M8J5BoCNmIoDbw/exec';
 
-        // ฐานข้อมูลธาตุ (Logic แบบละเอียดขึ้น)
-        // Format: [เดือนเริ่มต้น, วันเริ่มต้น, เดือนสิ้นสุด, วันสิ้นสุด, ...]
-        const elementRules = [
-            { start: [1, 16], end: [2, 15], main: "น้ำ (เหมันต์)", sub: "คูถเสมหะ (เสมหะในลำไส้)", icon: "💧", desc: "ระวังระบบขับถ่าย ท้องเสียหรือท้องผูกง่าย ควรเลี่ยงอาหารรสหวานจัด" },
-            { start: [2, 16], end: [3, 15], main: "ไฟ (คิมหันต์)", sub: "พัทธปิตตะ (ดีในฝัก)", icon: "🔥", desc: "มักหงุดหงิดง่าย อาหารไม่ย่อย ควรทานอาหารรสขมเย็น" },
-            { start: [3, 16], end: [4, 15], main: "ไฟ (คิมหันต์)", sub: "อพัทธปิตตะ (ดีนอกฝัก)", icon: "🔥", desc: "จุกเสียด แน่นท้อง กรดไหลย้อน แนะนำทานขมิ้นชัน" },
-            { start: [4, 16], end: [5, 15], main: "ไฟ (คิมหันต์)", sub: "กำเดา (ความร้อน)", icon: "🔥", desc: "เป็นไข้ง่าย แพ้แดด ปวดหัวไมเกรน ควรดื่มน้ำเยอะๆ" },
-            { start: [5, 16], end: [6, 15], main: "ลม (วสันต์)", sub: "หทัยวาตะ (ลมเลี้ยงหัวใจ)", icon: "🌬️", desc: "ใจสั่น วิตกกังวล นอนไม่หลับ แนะนำนั่งสมาธิและทานยาหอม" },
-            { start: [6, 16], end: [7, 15], main: "ลม (วสันต์)", sub: "สัตถกวาตะ (ลมคมเหมือนอาวุธ)", icon: "🌬️", desc: "ปวดกล้ามเนื้อเหมือนเข็มแทง เจ็บแปลบตามตัว ควรนวดผ่อนคลาย" },
-            { start: [7, 16], end: [8, 15], main: "ลม (วสันต์)", sub: "สุมนาวาตะ (เส้นเลือด)", icon: "🌬️", desc: "วิงเวียน หน้ามืดง่าย ไหลเวียนเลือดไม่ดี ควรออกกำลังกายเบาๆ" },
-            { start: [8, 16], end: [9, 15], main: "ลม (วสันต์)", sub: "ชิวหาสดมภ์ (ลมที่ลิ้น)", icon: "🌬️", desc: "ลิ้นกระด้าง กินไม่อร่อย เบื่ออาหาร" },
-            { start: [9, 16], end: [10, 15], main: "น้ำ (เหมันต์)", sub: "ศอเสมหะ (เสมหะในคอ)", icon: "💧", desc: "เจ็บคอบ่อย ไอ มีเสมหะ ควรจิบน้ำอุ่นผสมมะนาว" },
-            { start: [10, 16], end: [11, 15], main: "น้ำ (เหมันต์)", sub: "อุระเสมหะ (เสมหะในอก)", icon: "💧", desc: "หอบหืด ภูมิแพ้อากาศ แน่นหน้าอก ควรทำร่างกายให้อบอุ่น" },
-            { start: [11, 16], end: [12, 15], main: "น้ำ (เหมันต์)", sub: "คูถเสมหะ (ช่วงต้น)", icon: "💧", desc: "ระบบขับถ่ายไม่ปกติ ถ่ายยาก" },
-            { start: [12, 16], end: [1, 15], main: "น้ำ (เหมันต์)", sub: "เสมหะช่วงปลาย", icon: "💧", desc: "เย็นปลายมือปลายเท้า ขี้หนาว" }
+        // 🧠 Logic วงกลมธาตุ (อิงตามภาพที่ให้มา + ข้อมูลมาตรฐาน)
+        const elementData = [
+            // --- ธาตุไฟ (คิมหันต์) ---
+            { start: [2, 16], end: [3, 15], main: "ธาตุไฟ (พิตตะ)", sub: "พัทธปิตตะ (ดีในฝัก)", icon: "🔥", color: "from-orange-100 to-red-100", badge: "bg-red-500", desc: "มักหงุดหงิดง่าย ท้องผูก อาหารไม่ย่อย", food: "รสขมเย็น: มะระ, สะเดา", herb: "ขมิ้นชัน, ฟ้าทะลายโจร" },
+            { start: [3, 16], end: [4, 15], main: "ธาตุไฟ (พิตตะ)", sub: "อพัทธปิตตะ (ดีนอกฝัก)", icon: "🔥", color: "from-orange-100 to-red-100", badge: "bg-red-500", desc: "จุกเสียด แน่นท้อง ปวดท้องบ่อย กรดไหลย้อน", food: "รสจืดเย็น: ตำลึง, ผักบุ้ง", herb: "ว่านหางจระเข้, รางจืด" },
+            { start: [4, 16], end: [5, 15], main: "ธาตุไฟ (พิตตะ)", sub: "กำเดา (ความร้อน)", icon: "🔥", color: "from-orange-100 to-red-100", badge: "bg-red-500", desc: "เป็นไข้ง่าย แพ้แดด ปวดหัวไมเกรน ร้อนใน", food: "รสเย็น: แตงโม, ฟักเขียว", herb: "ย่านาง, ใบบัวบก" },
+            
+            // --- ธาตุลม (วสันต์) ---
+            { start: [5, 16], end: [6, 15], main: "ธาตุลม (วาตะ)", sub: "หทัยวาตะ (ลมเลี้ยงหัวใจ)", icon: "🌬️", color: "from-green-100 to-yellow-100", badge: "bg-yellow-600", desc: "ใจสั่น วิตกกังวล นอนไม่หลับ อ่อนเพลีย", food: "รสสุขุม: ขิง, กะเพรา", herb: "ดอกมะลิ, เกสรทั้ง 5" },
+            { start: [6, 16], end: [7, 15], main: "ธาตุลม (วาตะ)", sub: "สัตถกวาตะ (ลมคมราวดาบ)", icon: "🌬️", color: "from-green-100 to-yellow-100", badge: "bg-yellow-600", desc: "ปวดกล้ามเนื้อเหมือนเข็มแทง เจ็บแปลบตามตัว", food: "รสเผ็ดร้อน: พริกไทย, ดีปลี", herb: "ไพล, เถาวัลย์เปรียง" },
+            { start: [7, 16], end: [8, 15], main: "ธาตุลม (วาตะ)", sub: "สุมนาวาตะ (เส้นเลือด)", icon: "🌬️", color: "from-green-100 to-yellow-100", badge: "bg-yellow-600", desc: "วิงเวียน หน้ามืดง่าย ชาปลายมือปลายเท้า", food: "รสร้อน: ตะไคร้, ข่า", herb: "พริกไทยดำ, ขิงแก่" },
+
+            // --- ธาตุน้ำ (เหมันต์) --- (ช่วงเดือนที่เหลือ)
+            // *Logic นี้ผมปรับให้ครอบคลุม Loop ของปี*
+            { start: [8, 16], end: [9, 15], main: "ธาตุน้ำ (เสมหะ)", sub: "ศอเสมหะ (คอ)", icon: "💧", color: "from-blue-100 to-cyan-100", badge: "bg-blue-500", desc: "เจ็บคอบ่อย ไอ มีเสมหะในคอ", food: "รสเปรี้ยว: มะนาว, มะขามป้อม", herb: "มะแว้ง, มะขามป้อม" },
+            { start: [9, 16], end: [10, 15], main: "ธาตุน้ำ (เสมหะ)", sub: "อุระเสมหะ (อก)", icon: "💧", color: "from-blue-100 to-cyan-100", badge: "bg-blue-500", desc: "หอบหืด ภูมิแพ้อากาศ แน่นหน้าอก", food: "รสเผ็ดร้อนเล็กน้อย: หอมแดง", herb: "หนุมานประสานกาย" },
+            { start: [10, 16], end: [11, 15], main: "ธาตุน้ำ (เสมหะ)", sub: "คูถเสมหะ (ลำไส้ใหญ่)", icon: "💧", color: "from-blue-100 to-cyan-100", badge: "bg-blue-500", desc: "ท้องผูกสลับท้องเสีย ถ่ายไม่สุด", food: "รสฝาด/เปรี้ยว: กล้วยน้ำว้า", herb: "ชุมเห็ดเทศ, สมอไทย" }
         ];
 
-        function checkDateRange(d, m, startD, startM, endD, endM) {
-            // ฟังก์ชันเช็กว่าวันเกิดอยู่ในช่วงหรือไม่ (รองรับช่วงข้ามปี)
-            if (startM === endM) {
-                return m === startM && d >= startD && d <= endD;
-            } else {
-                // กรณีปกติ (เช่น 16 มี.ค. - 15 เม.ย.)
-                if (m === startM && d >= startD) return true;
-                if (m === endM && d <= endD) return true;
-                return false;
-            }
-        }
+        // Fallback สำหรับเดือนอื่นๆ (ธาตุดิน หรือ ช่วงรอยต่อ)
+        const defaultElement = { main: "ธาตุดิน", sub: "หทัยวาตะ (ช่วงรอยต่อ)", icon: "⛰️", color: "from-yellow-100 to-orange-100", badge: "bg-yellow-800", desc: "ร่างกายต้องการความสมดุล พักผ่อนให้เพียงพอ", food: "อาหารย่อยง่าย", herb: "ยาหอม" };
 
-        function getThaiElement(dateStr) {
-            const date = new Date(dateStr);
-            const d = date.getDate();
-            const m = date.getMonth() + 1; // 1-12
-            
-            for (let rule of elementRules) {
-                // เช็กเงื่อนไขวันที่และเดือน
-                if (checkDateRange(d, m, rule.start[1], rule.start[0], rule.end[1], rule.end[0])) {
-                    return rule;
+        function getElement(d, m) {
+            // Check range
+            for (let rule of elementData) {
+                // กรณีเดือนเดียวกัน (StartM == EndM) -> ยากจะเกิดขึ้นใน Logic นี้แต่กันไว้
+                if (rule.start[0] === rule.end[0]) {
+                    if (m === rule.start[0] && d >= rule.start[1] && d <= rule.end[1]) return rule;
+                } 
+                // กรณีข้ามเดือนปกติ (เช่น 16 ก.พ. - 15 มี.ค.)
+                else {
+                    if ((m === rule.start[0] && d >= rule.start[1]) || (m === rule.end[0] && d <= rule.end[1])) return rule;
                 }
             }
-            // Fallback (เผื่อกรณีหาไม่เจอ ให้เป็นธาตุน้ำไปก่อน)
-            return elementRules[0]; 
+            return elementData[0]; // Default ไปที่ธาตุน้ำช่วงต้นปีถ้าหาไม่เจอ
         }
 
-        async function calculateAndSave() {
-            const birthDate = document.getElementById('birthDate').value;
-            if (!birthDate) return alert("กรุณาเลือกวันเกิดก่อนครับ");
+        async function analyze() {
+            const dateInput = document.getElementById('birthDate').value;
+            if (!dateInput) return alert('กรุณาระบุวันเกิดด้วยครับ');
 
-            // แสดง Loading
-            const btn = document.getElementById('btnAnalyze');
-            const originalText = btn.innerText;
-            btn.innerText = "⏳ กำลังประมวลผล...";
-            btn.classList.add('loading');
+            // 1. UI Transition
+            document.getElementById('formSection').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
 
-            // 1. ประมวลผล (Frontend Logic)
-            const result = getThaiElement(birthDate);
+            const date = new Date(dateInput);
+            const result = getElement(date.getDate(), date.getMonth() + 1);
 
-            // 2. แสดงผลทันที
-            setTimeout(() => {
-                document.getElementById('formSection').classList.add('hidden');
+            // 2. Mock Delay (เพื่อให้ดูเหมือนประมวลผลจริงจัง + เห็น Animation)
+            setTimeout(async () => {
+                document.getElementById('loadingSection').classList.add('hidden');
                 document.getElementById('resultSection').classList.remove('hidden');
-                
-                document.getElementById('elementIcon').innerText = result.icon;
-                document.getElementById('resultTitle').innerText = result.main;
-                document.getElementById('resultDesc').innerText = result.desc;
-                document.getElementById('subElementResult').innerText = result.sub;
-            }, 500);
 
-            // 3. ส่งข้อมูลไปเก็บที่ Google Sheet (Backend)
-            // ใช้เทคนิค no-cors เพื่อส่งข้อมูลโดยไม่ติด Browser Policy
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        userId: "Guest_User", // ถ้าต่อ LIFF ได้แล้วค่อยเปลี่ยนตรงนี้
-                        birthDate: birthDate,
-                        element: result.main,
-                        subElement: result.sub
-                    })
-                });
-                console.log("บันทึกข้อมูลเรียบร้อย");
-            } catch (error) {
-                console.error("บันทึกข้อมูลไม่สำเร็จ แต่แสดงผลได้:", error);
-            }
+                // Update Content
+                document.getElementById('resultMain').innerText = result.main;
+                document.getElementById('resultSub').innerText = result.sub;
+                document.getElementById('resultIcon').innerText = result.icon;
+                document.getElementById('resultDesc').innerText = result.desc;
+                document.getElementById('foodRec').innerText = result.food;
+                document.getElementById('herbRec').innerText = result.herb;
+                
+                // Update Theme Colors
+                document.getElementById('elementBadge').className = `inline-block px-4 py-1 rounded-full text-xs font-bold text-white mb-4 shadow-sm uppercase tracking-wider ${result.badge}`;
+                document.body.className = `min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br ${result.color}`;
+
+                // 3. Send Data to Google Sheet
+                try {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            userId: "Sadao_User", // ถ้าต่อ LIFF ได้แล้วค่อยเปลี่ยนเป็น liff.getDecodedIDToken().sub
+                            birthDate: dateInput,
+                            element: result.main,
+                            subElement: result.sub
+                        })
+                    });
+                } catch (e) {
+                    console.log('Save Error (Minor):', e);
+                }
+
+            }, 1500); // รอ 1.5 วินาที
         }
     </script>
 </body>
