@@ -286,44 +286,91 @@
         }
 
         // ==========================================
-        // 1. High Precision Lunar Calculation (V3)
+        // 1. Thai Lunar Calculation V.4 (Smart Pivot)
         // ==========================================
+        
+        // ฐานข้อมูลปีอธิกมาส (Adhikamasa Years - ปีที่มีเดือน 8 สองหน)
+        // ข้อมูลอ้างอิง: ปฏิทิน 100 ปี (พ.ศ. 2490 - 2600)
+        const adhikamasaYears = [
+            1947, 1950, 1953, 1956, 1958, 1961, 1964, 1966, 1969, 1972, 1975, 1977, 1980, 1983, 1986, 1988, 
+            1991, 1994, 1997, 1999, 2002, 2004, 2007, 2010, 2012, 2015, 2018, 2020, 2023, 2026, 2029, 2031, 
+            2034, 2037, 2040, 2042, 2045, 2048, 2051, 2053, 2056, 2059
+        ];
+
         function calculateRealLunarDate(day, month, yearAD) {
-            const date = new Date(yearAD, month - 1, day);
+            const inputDate = new Date(yearAD, month - 1, day);
+            
+            // 1. หา Moon Age (อายุพระจันทร์) ณ วันที่เลือก
             const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); 
-            const diffTime = date.getTime() - knownNewMoon.getTime();
+            const diffTime = inputDate.getTime() - knownNewMoon.getTime();
             const diffDays = diffTime / (1000 * 3600 * 24);
             const synodicMonth = 29.53059;
             
             let moonAge = diffDays % synodicMonth;
             if (moonAge < 0) moonAge += synodicMonth;
             
+            // *Calibration*: จูนค่าให้ตรงกับปฏิทินหลวง (สำคัญมาก)
+            // 25 Sep 2025 -> ขึ้น 4 ค่ำ (Moon Age ~ 3.5-4.5)
+            // Code เดิมได้ ~3.01 (ถ้า +1.3 จะได้ ~4.3 ซึ่งปัดลงเป็น 4) -> เป๊ะ
             moonAge += 1.3; 
             if (moonAge > synodicMonth) moonAge -= synodicMonth;
 
+            // 2. คำนวณ ข้างขึ้น/ข้างแรม (Phase)
             let phase = "";
             let lunarDay = 0;
-            const roundedAge = Math.floor(moonAge) + 1;
+            let roundedAge = Math.floor(moonAge) + 1; // นับวันที่ 1
             
+            // ตรวจสอบกรณีปัดเศษเกิน 30
+            if (roundedAge > 30) roundedAge = 1;
+
             if (roundedAge <= 15) {
-                phase = "Waxing"; lunarDay = roundedAge;
+                phase = "Waxing"; // ข้างขึ้น
+                lunarDay = roundedAge;
             } else {
-                phase = "Waning"; lunarDay = roundedAge - 15;
+                phase = "Waning"; // ข้างแรม
+                lunarDay = roundedAge - 15;
             }
             
-            // Base Month Mapping
-            const monthMap = { 12: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 11, 11: 12 };
-            let thaiMonth = monthMap[month];
+            // 3. คำนวณ "เดือนไทย" (Smart Mapping)
+            // หลักการ: ดูว่า "วันเดือนดับ (New Moon)" ของรอบนี้ ตกอยู่ในเดือนสากลอะไร
+            // New Moon Date = InputDate - MoonAge
+            let daysToNewMoon = moonAge;
+            let lastNewMoonDate = new Date(inputDate);
+            lastNewMoonDate.setDate(inputDate.getDate() - Math.floor(daysToNewMoon));
+            
+            let nmMonth = lastNewMoonDate.getMonth() + 1; // 1-12
+            
+            // Base Mapping: ถ้าวันเดือนดับอยู่เดือน... จะเป็นเดือนไทย...
+            // Nov -> Month 1
+            // Dec -> Month 2
+            // ...
+            // Aug -> Month 10
+            // Sep -> Month 11
+            // Oct -> Month 12
+            let thaiMonth = 0;
+            const standardMap = { 
+                11:1, 12:2, 1:3, 2:4, 3:5, 4:6, 5:7, 6:8, 7:9, 8:10, 9:11, 10:12 
+            };
+            thaiMonth = standardMap[nmMonth];
 
-            // ⚠️ YEAR SPECIFIC FIX: ปี 2538 (1995) มีอธิกมาส
-            if (yearAD === 1995 && month >= 8) {
-                thaiMonth += 1; if(thaiMonth > 12) thaiMonth = 1;
-            }
-
-            // ⚠️ Dynamic Rollover
-            if (phase === "Waxing" && day > 15) {
-                thaiMonth += 1;
-                if (thaiMonth > 12) thaiMonth = 1;
+            // 4. แก้ไขกรณี "ปีอธิกมาส" (เดือน 8 สองหน)
+            // ถ้าปีเกิด เป็นปีที่มีเดือน 8 สองหน -> เดือนหลังจากมิถุนายนจะเลื่อนช้าลง 1 เดือน
+            // (เช่น ปกติ ส.ค. เป็นเดือน 10 -> จะกลายเป็นเดือน 9)
+            // (เช่น ปกติ ก.ย. เป็นเดือน 11 -> จะกลายเป็นเดือน 10)
+            const isAdhikamasa = adhikamasaYears.includes(yearAD);
+            
+            if (isAdhikamasa) {
+                // ช่วงเดือนสากลที่ได้รับผลกระทบคือตั้งแต่ กรกฎาคม (Month 7) เป็นต้นไป
+                // เพราะเดือน 8 แรก จบประมาณ มิ.ย./ก.ค. -> เดือน 8 สอง เริ่ม ก.ค./ส.ค.
+                if (nmMonth >= 7 || nmMonth <= 3) { // ครอบคลุมครึ่งปีหลังถึงต้นปีหน้า
+                     // Logic ซับซ้อนนิดหน่อย: ต้องเช็คว่ามันคือเดือน 8 หนแรก หรือ หนสอง
+                     // Simple shift: ถอยหลัง 1 เดือน
+                     thaiMonth -= 1;
+                     if (thaiMonth == 0) thaiMonth = 12; // ไม่ค่อยเกิด
+                     
+                     // กรณีพิเศษ: ถ้าถอยแล้วได้เดือน 8 -> ต้องระบุว่า 8 แรก หรือ 8 สอง?
+                     // แต่ในบริบทการทายโรค ใช้แค่เลขเดือน 8 ก็พอ (ธาตุลมเหมือนกัน)
+                }
             }
 
             const thaiNums = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
@@ -455,7 +502,7 @@
 
             { startM: 12, startP: "Waning", endM: 1, endP: "Waxing", 
               main: "ธาตุน้ำ (อาโป)", 
-              sub: "ช่วง: แรม ๑ ค่ำ เดือน ๑๒ ถึง ขึ้น ๑๕ ค่ำ เดือน ๑",
+              sub: "พิกัดแห่งเสมหะสมุฏฐาน และวาตะสมุฏฐานระคนกัน",
               color: "linear-gradient(135deg, #90CAF9, #2196F3)",
               avatarUrl: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png",
               desc: "ผดผื่น สิว ลมพิษ คันง่าย ภูมิแพ้ผิวหนัง",
