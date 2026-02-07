@@ -40,7 +40,7 @@
         .card-scene { 
             width: 100%; max-width: 450px; margin: 0 auto;
             min-height: 100vh; perspective: 1500px; 
-            padding: 40px 20px 40px 20px; 
+            padding: 40px 20px; /* เว้นขอบบนล่างให้การ์ดลอยเด่น */
         }
 
         .card-object { 
@@ -54,10 +54,10 @@
             backface-visibility: hidden; 
             background: white;
             box-shadow: 
-                0 20px 50px rgba(27, 77, 62, 0.15),
+                0 20px 60px rgba(27, 77, 62, 0.2), /* เพิ่มเงาให้ดูลึกขึ้น */
                 0 0 0 1px rgba(212, 175, 55, 0.2) inset;
             overflow: hidden;
-            min-height: 800px; 
+            min-height: 850px; 
             display: flex; flex-direction: column;
             transition: background 1s ease;
         }
@@ -77,7 +77,7 @@
         
         .is-flipped { transform: rotateY(180deg); }
 
-        /* Weather Effects */
+        /* Weather Container */
         .weather-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1; pointer-events: none; overflow: hidden;
@@ -94,15 +94,14 @@
         }
         @keyframes snow-fall { 
             0% { transform: translateY(-10px) translateX(0); opacity: 0; } 
-            20% { opacity: 1; }
-            100% { transform: translateY(800px) translateX(30px); opacity: 0; } 
+            100% { transform: translateY(900px) translateX(30px); opacity: 0; } 
         }
         .rain {
             background: linear-gradient(to bottom, rgba(0,0,255,0) 0%, rgba(100,149,237,0.6) 100%);
             height: 40px; position: absolute; width: 2px;
             animation: rain-fall 0.7s linear infinite;
         }
-        @keyframes rain-fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(800px); } }
+        @keyframes rain-fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(900px); } }
         .sun-glare {
             position: absolute; top: -80px; right: -80px; width: 300px; height: 300px;
             background: radial-gradient(circle, rgba(255,160,0,0.3) 0%, rgba(255,255,0,0) 70%);
@@ -110,16 +109,16 @@
         }
         @keyframes sun-pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
 
-        /* Content Wrapper */
+        /* Content Wrapper (Increased Padding Top) */
         .front-content {
             position: relative; z-index: 10;
-            padding: 30px;
+            padding: 50px 30px 30px; /* เพิ่มขอบบนเป็น 50px */
             display: flex; flex-direction: column; height: 100%;
         }
 
         /* Logo */
         .logo-container {
-            width: 100px; height: 100px; margin: 0 auto 15px;
+            width: 100px; height: 100px; margin: 0 auto 20px; /* เพิ่มระยะห่างด้านล่าง */
             background: white; 
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -130,16 +129,16 @@
         .logo-img { width: 90%; height: auto; object-fit: contain; }
 
         /* Input Styles */
-        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group { position: relative; margin-bottom: 20px; }
         .input-label { 
             position: absolute; top: -10px; left: 15px; 
             background: white; padding: 0 8px; 
-            color: var(--green-deep); font-size: 12px; font-weight: bold;
+            color: var(--green-deep); font-size: 13px; font-weight: bold;
             border-radius: 4px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .custom-select { 
-            width: 100%; padding: 14px; border: 1.5px solid rgba(27, 77, 62, 0.2); 
+            width: 100%; padding: 16px; border: 1.5px solid rgba(27, 77, 62, 0.2); 
             border-radius: 16px; font-family: 'Prompt'; font-size: 16px; color: #333;
             appearance: none; background-color: rgba(255,255,255,0.9);
             transition: all 0.3s;
@@ -150,7 +149,7 @@
 
         .btn-gold {
             background: linear-gradient(135deg, var(--green-deep) 0%, #2E7D32 100%);
-            color: white; border: none; padding: 16px; width: 100%;
+            color: white; border: none; padding: 18px; width: 100%;
             border-radius: 16px; font-size: 18px; font-weight: bold;
             box-shadow: 0 10px 20px rgba(27, 77, 62, 0.3);
             cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
@@ -163,49 +162,48 @@
             margin-top: auto; 
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-radius: 20px; padding: 18px;
+            border-radius: 20px; padding: 20px;
             border: 1px solid rgba(255,255,255,0.8);
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
         .forecast-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px;
+            margin-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px;
         }
-        .forecast-title { font-size: 13px; font-weight: bold; color: var(--green-deep); }
+        .forecast-title { font-size: 14px; font-weight: bold; color: var(--green-deep); }
         .forecast-date { font-size: 11px; color: #666; font-weight: 500; }
         
         .utu-badge {
             background: var(--green-deep); color: white;
-            padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold;
-            display: inline-block; margin-bottom: 6px; box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+            padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold;
+            display: inline-block; margin-bottom: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
-        /* New: Vulnerable Group Style */
         .vulnerable-box {
             background: #FFEBEE; border: 1px dashed #EF5350;
-            border-radius: 8px; padding: 8px; margin-bottom: 8px;
-            font-size: 11px; color: #C62828; display: flex; align-items: center;
+            border-radius: 10px; padding: 10px; margin-bottom: 10px;
+            font-size: 12px; color: #C62828; display: flex; align-items: center;
         }
-        .vulnerable-box i { font-size: 14px; margin-right: 6px; }
+        .vulnerable-box i { font-size: 16px; margin-right: 8px; }
 
-        .warning-text { font-size: 12px; color: #444; line-height: 1.5; margin-bottom: 8px; }
+        .warning-text { font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 10px; }
         .food-advice { 
-            font-size: 11px; color: #555; background: #F1F8E9; 
-            padding: 8px; border-radius: 8px; border: 1px dashed #81C784;
+            font-size: 12px; color: #555; background: #F1F8E9; 
+            padding: 10px; border-radius: 10px; border: 1px dashed #81C784;
             display: flex; align-items: flex-start;
         }
 
-        /* Results Styling (Compact Header) */
+        /* Results Styling (Increased Top Padding) */
         .back-header { 
             background: linear-gradient(135deg, var(--green-deep), #0f3025);
-            padding: 20px 20px 30px; /* Reduced bottom padding */
+            padding: 50px 20px 40px; /* เพิ่มขอบบนเป็น 50px */
             text-align: center; color: white;
             border-radius: 0 0 40% 40% / 0 0 30px 30px;
             position: relative; flex-shrink: 0;
         }
         
         .avatar-real {
-            width: 140px; height: 140px; margin: -5px auto 5px;
+            width: 150px; height: 150px; margin: -5px auto 10px;
             object-fit: contain;
             filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
             animation: float 4s ease-in-out infinite;
@@ -222,28 +220,43 @@
         }
         
         .section-title {
-            font-size: 14px; font-weight: bold; color: var(--green-deep);
-            margin-bottom: 8px; display: flex; align-items: center;
+            font-size: 15px; font-weight: bold; color: var(--green-deep);
+            margin-bottom: 10px; display: flex; align-items: center;
+            border-bottom: 2px solid var(--gold-light); padding-bottom: 5px;
         }
         .section-title i { margin-right: 8px; color: var(--gold-main); }
 
         .detail-box {
-            background: #FAFAFA; border-radius: 12px; padding: 12px; margin-bottom: 12px;
-            border-left: 4px solid var(--green-deep);
-            font-size: 12px; color: #555; line-height: 1.6;
+            background: #FAFAFA; border-radius: 16px; padding: 15px; margin-bottom: 15px;
+            border-left: 5px solid var(--green-deep);
+            font-size: 13px; color: #555; line-height: 1.7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .food-tag {
-            display: inline-block; padding: 6px 12px; margin: 0 4px 6px 0;
-            background: white; border: 1px solid #E0E0E0; border-radius: 20px;
+            display: inline-block; padding: 8px 14px; margin: 0 6px 8px 0;
+            background: white; border: 1px solid #E0E0E0; border-radius: 25px;
             font-size: 12px; color: #333; cursor: pointer;
-            transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.2s; box-shadow: 0 3px 6px rgba(0,0,0,0.05);
         }
         .food-tag:hover {
             background: var(--gold-light); border-color: var(--gold-main);
             transform: translateY(-2px);
         }
         .food-tag i { color: var(--green-leaf); margin-left: 4px; font-size: 10px;}
+
+        .lunar-badge {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2);
+            padding: 6px 15px; border-radius: 20px;
+            font-size: 13px; color: #FFD700; display: inline-block;
+            backdrop-filter: blur(4px);
+            margin-bottom: 5px;
+        }
+        
+        .conception-text {
+            font-size: 11px; color: rgba(255,255,255,0.8);
+            display: inline-block; padding: 2px 8px;
+        }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
@@ -265,12 +278,18 @@
                         <div class="logo-container">
                             <img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" alt="Logo" class="logo-img">
                         </div>
-                        <h1 class="text-xl font-bold text-gray-800 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
-                        <p class="text-yellow-700 text-xs font-medium mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
+                        <h1 class="text-2xl font-bold text-gray-800 tracking-wide">วิเคราะห์ธาตุเจ้าเรือน</h1>
+                        <p class="text-yellow-700 text-sm font-medium mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
+                    </div>
+
+                    <div class="text-center mb-6">
+                        <span class="text-xs text-gray-600 bg-white/80 px-4 py-2 rounded-full shadow-sm backdrop-blur-sm border border-white font-medium">
+                            <i class="fas fa-magic mr-1 text-yellow-600"></i> ระบบคำนวณวันปฏิสนธิอัตโนมัติ
+                        </span>
                     </div>
 
                     <div class="input-group">
-                        <span class="input-label">วันที่</span>
+                        <span class="input-label">วันที่เกิด</span>
                         <select id="inputDay" class="custom-select"></select>
                     </div>
                     <div class="input-group">
@@ -295,7 +314,7 @@
                         <select id="inputYear" class="custom-select"></select>
                     </div>
 
-                    <button onclick="startAnalysis()" class="btn-gold mt-2">
+                    <button onclick="startAnalysis()" class="btn-gold mt-4">
                         <span>วิเคราะห์ธาตุเจ้าเรือน</span> <i class="fas fa-search ml-2"></i>
                     </button>
 
@@ -308,8 +327,10 @@
                             <span class="utu-badge" id="todaySeason">...</span>
                             
                             <div class="vulnerable-box">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <span><b>กลุ่มเสี่ยงวันนี้:</b> <span id="todayVulnerable">...</span></span>
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div>
+                                    <span class="font-bold">กลุ่มเสี่ยงวันนี้:</span> <span id="todayVulnerable">...</span>
+                                </div>
                             </div>
 
                             <p class="warning-text" id="todayHealth">...</p>
@@ -328,8 +349,10 @@
                     <img id="avatarImg" src="" class="avatar-real hidden">
                     <h2 class="text-2xl font-bold text-white drop-shadow-md" id="resMain">...</h2>
                     <p class="text-white/90 text-xs mt-2 px-4 leading-relaxed font-light" id="resSub">...</p>
-                    
-                    </div>
+                    <div class="mt-3 flex flex-col items-center space-y-1">
+                        <span class="lunar-badge"><i class="fas fa-dna mr-1"></i> ปฏิสนธิ: <span id="conceptionLunarDisplay">...</span></span>
+                        </div>
+                </div>
 
                 <div class="back-content">
                     <div class="section-title"><i class="fas fa-user-circle"></i> ลักษณะนิสัยและจุดเด่น</div>
@@ -340,18 +363,18 @@
 
                     <div class="section-title"><i class="fas fa-thumbs-up"></i> รสชาติอาหารที่แนะนำ</div>
                     <div class="detail-box" style="border-left-color: #66BB6A; background: #E8F5E9;">
-                        <div id="resTasteGood" class="font-bold mb-1"></div>
-                        <div id="resTasteGoodReason" class="text-[10px] text-gray-500"></div>
+                        <div id="resTasteGood" class="font-bold mb-1 text-green-800"></div>
+                        <div id="resTasteGoodReason" class="text-xs text-gray-600 mt-1"></div>
                     </div>
 
                     <div class="section-title"><i class="fas fa-thumbs-down"></i> รสชาติอาหารที่ควรเลี่ยง</div>
                     <div class="detail-box" style="border-left-color: #FF7043; background: #FBE9E7;">
-                        <div id="resTasteBad" class="font-bold mb-1"></div>
-                        <div id="resTasteBadReason" class="text-[10px] text-gray-500"></div>
+                        <div id="resTasteBad" class="font-bold mb-1 text-red-800"></div>
+                        <div id="resTasteBadReason" class="text-xs text-gray-600 mt-1"></div>
                     </div>
 
                     <div class="section-title"><i class="fas fa-utensils"></i> เมนูอาหารแนะนำ (กดเพื่อดูรูป)</div>
-                    <div id="foodList" class="mb-4"></div>
+                    <div id="foodList" class="mb-6"></div>
 
                     <div class="section-title"><i class="fas fa-lemon"></i> ผลไม้ที่แนะนำ (กดเพื่อดูรูป)</div>
                     <div id="fruitList" class="mb-4"></div>
@@ -359,7 +382,7 @@
 
                 <div class="p-4 bg-white border-t z-20">
                     <p class="text-[9px] text-center text-gray-400 mb-2">อ้างอิง: คัมภีร์ปฐมจินดา, อุตุสมุฏฐานวินิจฉัย (รพ.สะเดา)</p>
-                    <button onclick="resetCard()" class="w-full py-3 rounded-xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition">
+                    <button onclick="resetCard()" class="w-full py-3 rounded-xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition shadow-md">
                         <i class="fas fa-redo mr-1"></i> วิเคราะห์ใหม่
                     </button>
                 </div>
@@ -517,7 +540,7 @@
             const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             document.getElementById('todayDate').innerText = `${today.getDate()} ${thaiMonths[today.getMonth()]} ${today.getFullYear()+543}`;
             document.getElementById('todaySeason').innerText = `${season.name}`;
-            document.getElementById('todayVulnerable').innerText = season.vulnerable; // Set Vulnerable Group
+            document.getElementById('todayVulnerable').innerText = season.vulnerable; 
             document.getElementById('todayHealth').innerText = season.health;
             document.getElementById('todayFood').innerText = `แนะนำ: ${season.food}`;
             
@@ -625,6 +648,7 @@
 
             document.getElementById('resMain').innerText = data.name;
             document.getElementById('resSub').innerText = data.sub; 
+            document.getElementById('conceptionLunarDisplay').innerText = lunarInfo.display;
             
             document.getElementById('avatarImg').src = data.avatar;
             document.getElementById('avatarImg').classList.remove('hidden');
