@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เช็กธาตุเจ้าเรือน - รพ.สะเดา</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f0f9f4; }
+        .hidden { display: none; }
+        .loading { opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="formSection" class="w-full max-w-md bg-white p-6 rounded-2xl shadow-xl border border-green-100">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-green-800">สมดุลสะเดา 🌿</h1>
+            <p class="text-gray-500 text-sm">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
+        </div>
+        
+        <label class="block mb-2 font-bold text-gray-700">ระบุวันเกิดของคุณ</label>
+        <input type="date" id="birthDate" class="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:ring-2 focus:ring-green-500 focus:outline-none bg-gray-50">
+        
+        <button id="btnAnalyze" onclick="calculateAndSave()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition shadow-md">
+            🔍 วิเคราะห์ธาตุเจ้าเรือน
+        </button>
+    </div>
+
+    <div id="resultSection" class="hidden w-full max-w-md bg-white p-6 rounded-2xl shadow-xl text-center border-t-4 border-green-500">
+        <div id="elementIcon" class="text-6xl mb-4 animate-bounce">🔥</div>
+        
+        <h2 class="text-gray-500 text-sm uppercase tracking-wide">ธาตุเจ้าเรือนของคุณคือ</h2>
+        <h1 id="resultTitle" class="text-3xl font-bold text-green-900 mb-2"></h1>
+        
+        <p id="resultDesc" class="text-gray-600 mb-6 px-4"></p>
+        
+        <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 text-left mb-6 shadow-sm">
+            <div class="flex items-start">
+                <span class="text-2xl mr-3">⚠️</span>
+                <div>
+                    <strong class="text-yellow-800 block mb-1">จุดที่ต้องระวัง (พิกัดยา):</strong>
+                    <span id="subElementResult" class="text-gray-700 text-sm"></span>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="location.reload()" class="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-lg hover:bg-gray-200 transition">
+            🔄 เช็กให้คนอื่นต่อ
+        </button>
+    </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        // ✅ URL ของคุณใส่ไว้ตรงนี้แล้ว (ห้ามลบ)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX7ZJvwflkNzhZ1SPPOJZZcJBvh_Bpbc2acOjh6fEcj58fv9wHu4i9M8J5BoCNmIoDbw/exec'; 
+
+        // ฐานข้อมูลธาตุ (Logic แบบละเอียดขึ้น)
+        // Format: [เดือนเริ่มต้น, วันเริ่มต้น, เดือนสิ้นสุด, วันสิ้นสุด, ...]
+        const elementRules = [
+            { start: [1, 16], end: [2, 15], main: "น้ำ (เหมันต์)", sub: "คูถเสมหะ (เสมหะในลำไส้)", icon: "💧", desc: "ระวังระบบขับถ่าย ท้องเสียหรือท้องผูกง่าย ควรเลี่ยงอาหารรสหวานจัด" },
+            { start: [2, 16], end: [3, 15], main: "ไฟ (คิมหันต์)", sub: "พัทธปิตตะ (ดีในฝัก)", icon: "🔥", desc: "มักหงุดหงิดง่าย อาหารไม่ย่อย ควรทานอาหารรสขมเย็น" },
+            { start: [3, 16], end: [4, 15], main: "ไฟ (คิมหันต์)", sub: "อพัทธปิตตะ (ดีนอกฝัก)", icon: "🔥", desc: "จุกเสียด แน่นท้อง กรดไหลย้อน แนะนำทานขมิ้นชัน" },
+            { start: [4, 16], end: [5, 15], main: "ไฟ (คิมหันต์)", sub: "กำเดา (ความร้อน)", icon: "🔥", desc: "เป็นไข้ง่าย แพ้แดด ปวดหัวไมเกรน ควรดื่มน้ำเยอะๆ" },
+            { start: [5, 16], end: [6, 15], main: "ลม (วสันต์)", sub: "หทัยวาตะ (ลมเลี้ยงหัวใจ)", icon: "🌬️", desc: "ใจสั่น วิตกกังวล นอนไม่หลับ แนะนำนั่งสมาธิและทานยาหอม" },
+            { start: [6, 16], end: [7, 15], main: "ลม (วสันต์)", sub: "สัตถกวาตะ (ลมคมเหมือนอาวุธ)", icon: "🌬️", desc: "ปวดกล้ามเนื้อเหมือนเข็มแทง เจ็บแปลบตามตัว ควรนวดผ่อนคลาย" },
+            { start: [7, 16], end: [8, 15], main: "ลม (วสันต์)", sub: "สุมนาวาตะ (เส้นเลือด)", icon: "🌬️", desc: "วิงเวียน หน้ามืดง่าย ไหลเวียนเลือดไม่ดี ควรออกกำลังกายเบาๆ" },
+            { start: [8, 16], end: [9, 15], main: "ลม (วสันต์)", sub: "ชิวหาสดมภ์ (ลมที่ลิ้น)", icon: "🌬️", desc: "ลิ้นกระด้าง กินไม่อร่อย เบื่ออาหาร" },
+            { start: [9, 16], end: [10, 15], main: "น้ำ (เหมันต์)", sub: "ศอเสมหะ (เสมหะในคอ)", icon: "💧", desc: "เจ็บคอบ่อย ไอ มีเสมหะ ควรจิบน้ำอุ่นผสมมะนาว" },
+            { start: [10, 16], end: [11, 15], main: "น้ำ (เหมันต์)", sub: "อุระเสมหะ (เสมหะในอก)", icon: "💧", desc: "หอบหืด ภูมิแพ้อากาศ แน่นหน้าอก ควรทำร่างกายให้อบอุ่น" },
+            { start: [11, 16], end: [12, 15], main: "น้ำ (เหมันต์)", sub: "คูถเสมหะ (ช่วงต้น)", icon: "💧", desc: "ระบบขับถ่ายไม่ปกติ ถ่ายยาก" },
+            { start: [12, 16], end: [1, 15], main: "น้ำ (เหมันต์)", sub: "เสมหะช่วงปลาย", icon: "💧", desc: "เย็นปลายมือปลายเท้า ขี้หนาว" }
+        ];
+
+        function checkDateRange(d, m, startD, startM, endD, endM) {
+            // ฟังก์ชันเช็กว่าวันเกิดอยู่ในช่วงหรือไม่ (รองรับช่วงข้ามปี)
+            if (startM === endM) {
+                return m === startM && d >= startD && d <= endD;
+            } else {
+                // กรณีปกติ (เช่น 16 มี.ค. - 15 เม.ย.)
+                if (m === startM && d >= startD) return true;
+                if (m === endM && d <= endD) return true;
+                return false;
+            }
+        }
+
+        function getThaiElement(dateStr) {
+            const date = new Date(dateStr);
+            const d = date.getDate();
+            const m = date.getMonth() + 1; // 1-12
+            
+            for (let rule of elementRules) {
+                // เช็กเงื่อนไขวันที่และเดือน
+                if (checkDateRange(d, m, rule.start[1], rule.start[0], rule.end[1], rule.end[0])) {
+                    return rule;
+                }
+            }
+            // Fallback (เผื่อกรณีหาไม่เจอ ให้เป็นธาตุน้ำไปก่อน)
+            return elementRules[0]; 
+        }
+
+        async function calculateAndSave() {
+            const birthDate = document.getElementById('birthDate').value;
+            if (!birthDate) return alert("กรุณาเลือกวันเกิดก่อนครับ");
+
+            // แสดง Loading
+            const btn = document.getElementById('btnAnalyze');
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ กำลังประมวลผล...";
+            btn.classList.add('loading');
+
+            // 1. ประมวลผล (Frontend Logic)
+            const result = getThaiElement(birthDate);
+
+            // 2. แสดงผลทันที
+            setTimeout(() => {
+                document.getElementById('formSection').classList.add('hidden');
+                document.getElementById('resultSection').classList.remove('hidden');
+                
+                document.getElementById('elementIcon').innerText = result.icon;
+                document.getElementById('resultTitle').innerText = result.main;
+                document.getElementById('resultDesc').innerText = result.desc;
+                document.getElementById('subElementResult').innerText = result.sub;
+            }, 500);
+
+            // 3. ส่งข้อมูลไปเก็บที่ Google Sheet (Backend)
+            // ใช้เทคนิค no-cors เพื่อส่งข้อมูลโดยไม่ติด Browser Policy
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        userId: "Guest_User", // ถ้าต่อ LIFF ได้แล้วค่อยเปลี่ยนตรงนี้
+                        birthDate: birthDate,
+                        element: result.main,
+                        subElement: result.sub
+                    })
+                });
+                console.log("บันทึกข้อมูลเรียบร้อย");
+            } catch (error) {
+                console.error("บันทึกข้อมูลไม่สำเร็จ แต่แสดงผลได้:", error);
+            }
+        }
+    </script>
+</body>
+</html>
