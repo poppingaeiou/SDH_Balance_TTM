@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>วิเคราะห์ธาตุเจ้าเรือน (Sadao Official V2.0)</title>
+    <title>วิเคราะห์ธาตุเจ้าเรือน (Sadao Official V3.0)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -14,7 +14,6 @@
             --gold-main: #D4AF37; 
             --gold-light: #F9E79F;
             --green-deep: #1B4D3E; 
-            --green-fresh: #2E7D32;
             --bg-pattern: #FDFBF7;
         }
         
@@ -23,113 +22,87 @@
             background-color: var(--bg-pattern); 
             background-image: radial-gradient(#D4AF37 0.5px, transparent 0.5px), radial-gradient(#1B4D3E 0.5px, transparent 0.5px);
             background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
             color: #333; overflow-x: hidden; 
         }
         
-        /* Loading Screen */
-        #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
+        /* Loading */
+        #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
         .spinner { width: 50px; height: 50px; border: 5px solid #eee; border-top: 5px solid var(--gold-main); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* 3D Card Scene */
+        /* 3D Scene */
         .card-scene { width: 100%; max-width: 450px; margin: 0 auto; min-height: 100vh; perspective: 1500px; padding: 30px 20px; box-sizing: border-box; }
         .card-object { width: 100%; position: relative; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         .card-face { 
             width: 100%; border-radius: 30px; backface-visibility: hidden; 
             background: rgba(255,255,255,0.95); 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(212, 175, 55, 0.1) inset; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); 
             min-height: 850px; display: flex; flex-direction: column; overflow: hidden; 
         }
         .card-front { transform: rotateY(0deg); position: relative; }
         .card-back { position: absolute; top: 0; left: 0; height: 100%; transform: rotateY(180deg); }
         .is-flipped { transform: rotateY(180deg); }
 
-        /* Weather BG */
+        /* Weather */
         .weather-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.6; overflow: hidden; border-radius: 30px; }
         .theme-winter { background: linear-gradient(180deg, #E3F2FD 0%, #FFFFFF 100%); }
         .theme-summer { background: linear-gradient(180deg, #FFF8E1 0%, #FFFFFF 100%); }
         .theme-rain { background: linear-gradient(180deg, #ECEFF1 0%, #FFFFFF 100%); }
         
-        /* FX Animation */
         .snowflake, .rain, .sun-glare { position: absolute; pointer-events: none; }
         .snowflake { width: 6px; height: 6px; background: white; border-radius: 50%; animation: fall linear infinite; }
         .rain { width: 2px; height: 30px; background: rgba(0,0,255,0.3); animation: fall 0.5s linear infinite; }
         @keyframes fall { from { transform: translateY(-50px); } to { transform: translateY(800px); } }
-        
+
         /* UI Elements */
         .front-content { position: relative; z-index: 10; padding: 40px 30px; display: flex; flex-direction: column; height: 100%; }
-        
-        .logo-container { 
-            width: 120px; height: 120px; margin: 0 auto 20px; background: white; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            border: 4px solid var(--gold-main); box-shadow: 0 10px 25px rgba(212,175,55,0.25);
-            animation: float 4s ease-in-out infinite; 
-        }
+        .logo-container { width: 120px; height: 120px; margin: 0 auto 20px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 4px solid var(--gold-main); animation: float 4s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         .logo-img { width: 90%; height: auto; object-fit: contain; }
 
-        .input-group { position: relative; margin-bottom: 20px; }
-        .input-label { position: absolute; top: -10px; left: 15px; background: white; padding: 0 8px; color: var(--green-deep); font-size: 13px; font-weight: bold; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); z-index: 30; }
-        .custom-select { 
-            width: 100%; padding: 16px; border: 1.5px solid rgba(27,77,62,0.2); 
-            border-radius: 16px; font-family: 'Prompt'; font-size: 16px; 
-            background: #fff; outline: none; appearance: none; transition: all 0.3s;
-        }
-        .custom-select:focus { border-color: var(--gold-main); box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1); }
+        .custom-select { width: 100%; padding: 16px; border: 1.5px solid rgba(27,77,62,0.2); border-radius: 16px; font-family: 'Prompt'; font-size: 16px; background: #fff; outline: none; transition: all 0.3s; }
+        .btn-gold { background: linear-gradient(135deg, var(--green-deep), #2E7D32); color: white; padding: 18px; width: 100%; border-radius: 16px; font-size: 18px; font-weight: bold; border: none; box-shadow: 0 10px 20px rgba(27,77,62,0.3); cursor: pointer; position: relative; z-index: 20; }
         
-        .btn-gold { 
-            background: linear-gradient(135deg, var(--green-deep), #2E7D32); 
-            color: white; padding: 18px; width: 100%; border-radius: 16px; 
-            font-size: 18px; font-weight: bold; border: none;
-            box-shadow: 0 10px 20px rgba(27,77,62,0.3); cursor: pointer; 
-            transition: transform 0.2s; position: relative; z-index: 20; 
-        }
-        .btn-gold:active { transform: scale(0.98); }
-
-        /* Forecast */
-        .forecast-box { margin-top: auto; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; border: 1px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .utu-badge { background: var(--green-deep); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; margin-bottom: 8px; }
+        .forecast-box { margin-top: auto; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; border: 1px solid white; }
+        .utu-badge { background: var(--green-deep); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
         .vulnerable-box { background: #FFEBEE; border: 1px dashed #EF5350; border-radius: 10px; padding: 10px; margin-bottom: 10px; font-size: 12px; color: #C62828; display: flex; align-items: center; }
 
-        /* Back Face */
-        .back-header { 
-            padding: 50px 20px 40px; text-align: center; color: white; 
-            border-radius: 0 0 40% 40% / 0 0 35px 35px; position: relative; flex-shrink: 0; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-        }
-        .avatar-real { width: 140px; height: 140px; margin: -5px auto 10px; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2)); border-radius: 50%; background: white; border: 4px solid rgba(255,255,255,0.4); }
+        .back-header { padding: 50px 20px 40px; text-align: center; color: white; border-radius: 0 0 40% 40% / 0 0 35px 35px; position: relative; flex-shrink: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .avatar-real { width: 140px; height: 140px; margin: -5px auto 10px; object-fit: contain; border-radius: 50%; background: white; border: 4px solid rgba(255,255,255,0.4); }
         .back-content { flex-grow: 1; overflow-y: auto; padding: 20px; margin-top: -30px; z-index: 10; padding-bottom: 40px; }
         
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 10px; }
-        .section-title { font-size: 16px; font-weight: bold; color: var(--green-deep); display: flex; align-items: center; }
+        .section-title { font-size: 16px; font-weight: bold; color: var(--green-deep); display: flex; align-items: center; margin-top: 15px; margin-bottom: 5px; }
         .section-title i { margin-right: 8px; color: var(--gold-main); font-size: 18px; }
         
-        .btn-like {
-            background: white; border: 1px solid #ddd; color: #999; 
-            padding: 4px 12px; border-radius: 20px; font-size: 11px; 
-            cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 5px;
+        .helper-text { font-size: 11px; color: #888; margin-bottom: 10px; display: block; font-style: italic; }
+
+        /* Chips / Tags Styles */
+        .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .chip {
+            padding: 8px 14px; background: white; border: 1px solid #ddd;
+            border-radius: 20px; font-size: 12px; color: #555; cursor: pointer;
+            transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            user-select: none;
         }
-        .btn-like.active { background: var(--gold-main); color: white; border-color: var(--gold-main); box-shadow: 0 2px 8px rgba(212,175,55,0.4); }
-        
-        .detail-box { 
-            background: #FFFFFF; border-radius: 16px; padding: 15px; 
-            border-left: 4px solid var(--green-deep);
-            font-size: 13px; color: #555; line-height: 1.7; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+        .chip:active { transform: scale(0.95); }
+        .chip.selected {
+            background: var(--gold-main); color: white; border-color: var(--gold-main);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4); font-weight: 500;
         }
-        .food-tag { display: inline-block; padding: 6px 12px; margin: 0 6px 8px 0; background: white; border: 1px solid #E0E0E0; border-radius: 20px; font-size: 12px; color: #444; cursor: pointer; transition: all 0.2s; }
-        .food-tag:hover { background: var(--gold-main); color: white; border-color: var(--gold-main); }
         
+        /* Food Box */
+        .food-box { background: #E8F5E9; border-radius: 16px; padding: 15px; border-left: 4px solid #66BB6A; font-size: 13px; color: #555; margin-bottom: 15px; }
+        
+        .food-link-tag { display: inline-block; padding: 6px 12px; margin: 0 6px 8px 0; background: white; border: 1px solid #E0E0E0; border-radius: 20px; font-size: 12px; color: #444; cursor: pointer; }
+        
+        .save-btn-area { padding: 15px; background: white; border-top: 1px solid #eee; text-align: center; }
+        .btn-save { background: #333; color: white; padding: 12px 30px; border-radius: 30px; font-size: 14px; width: 100%; border: none; cursor: pointer; }
         .debug-info { font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 5px; }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen">
 
-    <div id="loading">
-        <div class="spinner"></div>
-        <p class="mt-4 text-green-900 font-bold">กำลังประมวลผล...</p>
-    </div>
+    <div id="loading"><div class="spinner"></div><p class="mt-4 text-green-900 font-bold">กำลังประมวลผล...</p></div>
 
     <div class="card-scene">
         <div id="cardObject" class="card-object">
@@ -137,45 +110,23 @@
             <div id="cardFront" class="card-face card-front">
                 <div id="weatherContainer" class="weather-container"></div>
                 <div class="front-content">
-                    
                     <div class="text-center mb-6 relative z-10">
                         <div class="logo-container"><img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" class="logo-img"></div>
                         <h1 class="text-2xl font-bold text-gray-800">วิเคราะห์ธาตุเจ้าเรือน</h1>
                         <p class="text-sm text-yellow-700 mt-1 font-medium">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
                     </div>
-
-                    <div class="input-group">
-                        <span class="input-label">วันที่เกิด</span>
-                        <select id="inputDay" class="custom-select"></select>
-                    </div>
-                    <div class="input-group">
-                        <span class="input-label">เดือนเกิด</span>
-                        <select id="inputMonth" class="custom-select"></select>
-                    </div>
-                    <div class="input-group">
-                        <span class="input-label">ปี พ.ศ.เกิด</span>
-                        <select id="inputYear" class="custom-select"></select>
-                    </div>
-
-                    <button onclick="startAnalysis()" class="btn-gold mt-4">
-                        <span>วิเคราะห์ธาตุเจ้าเรือน</span> <i class="fas fa-search ml-2"></i>
-                    </button>
-
+                    <div class="relative mb-4"><span class="absolute top-[-10px] left-4 bg-white px-2 text-xs font-bold text-green-800 rounded">วันที่เกิด</span><select id="inputDay" class="custom-select"></select></div>
+                    <div class="relative mb-4"><span class="absolute top-[-10px] left-4 bg-white px-2 text-xs font-bold text-green-800 rounded">เดือนเกิด</span><select id="inputMonth" class="custom-select"></select></div>
+                    <div class="relative mb-4"><span class="absolute top-[-10px] left-4 bg-white px-2 text-xs font-bold text-green-800 rounded">ปี พ.ศ.เกิด</span><select id="inputYear" class="custom-select"></select></div>
+                    <button onclick="startAnalysis()" class="btn-gold mt-4">วิเคราะห์ธาตุเจ้าเรือน</button>
                     <div class="forecast-box">
                         <div class="flex justify-between items-center mb-2 border-b pb-2 border-gray-100">
                             <span class="text-sm font-bold text-green-900"><i class="fas fa-calendar-day mr-1"></i> อุตุสมุฏฐานวันนี้</span>
                             <span class="text-xs text-gray-500" id="todayDate">...</span>
                         </div>
                         <span class="utu-badge" id="todaySeason">...</span>
-                        <div class="vulnerable-box">
-                            <i class="fas fa-exclamation-triangle mr-2"></i>
-                            <div><span class="font-bold">กลุ่มเสี่ยงวันนี้:</span> <span id="todayVulnerable">...</span></div>
-                        </div>
+                        <div class="vulnerable-box"><i class="fas fa-exclamation-triangle mr-2"></i><div><span class="font-bold">กลุ่มเสี่ยงวันนี้:</span> <span id="todayVulnerable">...</span></div></div>
                         <p class="text-xs text-gray-600 mb-2" id="todayHealth">...</p>
-                        <div class="food-advice">
-                            <i class="fas fa-utensils text-green-600 mr-2 mt-1"></i> 
-                            <span id="todayFood">...</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -189,23 +140,17 @@
                 </div>
 
                 <div class="back-content">
-                    <div class="section-header">
-                        <div class="section-title"><i class="fas fa-user-circle"></i> ลักษณะนิสัย</div>
-                        <button class="btn-like" id="likeTrait" onclick="sendFeedback('trait')"><i class="far fa-thumbs-up"></i> ตรงมาก</button>
-                    </div>
-                    <div class="detail-box" id="resTrait">...</div>
+                    
+                    <div class="section-title"><i class="fas fa-user-circle"></i> ลักษณะนิสัย</div>
+                    <span class="helper-text"><i class="fas fa-hand-pointer mr-1"></i> กดเลือกข้อความที่ตรงกับตัวท่าน</span>
+                    <div id="traitChips" class="chip-container"></div>
 
-                    <div class="section-header">
-                        <div class="section-title" style="color:#C62828;"><i class="fas fa-heartbeat" style="color:#EF5350;"></i> ปัญหาสุขภาพ</div>
-                        <button class="btn-like" id="likeHealth" onclick="sendFeedback('health')"><i class="far fa-thumbs-up"></i> ตรงมาก</button>
-                    </div>
-                    <div class="detail-box" style="background:#FFEBEE; border-left-color:#EF5350;" id="resHealth">...</div>
+                    <div class="section-title" style="color:#C62828;"><i class="fas fa-heartbeat" style="color:#EF5350;"></i> ปัญหาสุขภาพ</div>
+                    <span class="helper-text"><i class="fas fa-hand-pointer mr-1"></i> กดเลือกอาการที่ท่านเป็นบ่อย</span>
+                    <div id="healthChips" class="chip-container"></div>
 
-                    <div class="section-header">
-                        <div class="section-title" style="color:#2E7D32;"><i class="fas fa-utensils"></i> อาหารปรับสมดุล</div>
-                        <button class="btn-like" id="likeFood" onclick="sendFeedback('food')"><i class="far fa-thumbs-up"></i> ตรงมาก</button>
-                    </div>
-                    <div class="detail-box" style="background:#E8F5E9; border-left-color:#66BB6A;">
+                    <div class="section-title" style="color:#2E7D32;"><i class="fas fa-utensils"></i> อาหารปรับสมดุล</div>
+                    <div class="food-box">
                         <div id="resTasteGood" class="font-bold mb-1 text-green-800"></div>
                         <div id="resTasteGoodReason" class="text-xs text-gray-600 mb-2"></div>
                         <div class="h-px bg-green-200 my-2"></div>
@@ -218,9 +163,9 @@
                     <div id="fruitList" class="mb-6"></div>
                 </div>
 
-                <div class="p-4 bg-white border-t text-center z-20">
-                    <button onclick="resetCard()" class="w-full py-3 rounded-xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition shadow-md">
-                        <i class="fas fa-redo mr-2"></i> วิเคราะห์ใหม่
+                <div class="save-btn-area">
+                    <button onclick="saveAndReset()" class="btn-save">
+                        <i class="fas fa-check-circle mr-2"></i> บันทึกข้อมูลและวิเคราะห์ใหม่
                     </button>
                 </div>
             </div>
@@ -228,18 +173,21 @@
     </div>
 
     <script>
-        // --- 1. CONFIG & API ---
+        // --- SETTINGS ---
+        // ใส่ URL Script ของคุณที่นี่
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX7ZJvwflkNzhZ1SPPOJZZcJBvh_Bpbc2acOjh6fEcj58fv9wHu4i9M8J5BoCNmIoDbw/exec';
+        
         let currentSessionId = "";
-        let currentAnalysisData = {};
+        let analysisMeta = {}; 
+        let selectedTraits = new Set(); // เก็บ Keyword นิสัย
+        let selectedHealth = new Set(); // เก็บ Keyword สุขภาพ
 
-        // --- 2. DATA VARIABLES (From Ver.1) ---
-        const adhikamasaYears = [1947,1950,1953,1956,1958,1961,1964,1966,1969,1972,1975,1977,1980,1983,1986,1988,1991,1994,1997,1999,2002,2004,2007,2010,2012,2015,2018,2020,2023,2026,2029,2031,2034,2037,2040,2042,2045,2048,2051,2053,2056,2059,2062,2065,2068];
-
+        // --- DATASET (แปลงเป็น Array เพื่อทำปุ่ม) ---
         const baseElementData = {
             earth: {
                 name: "ธาตุดิน (ปถวี)",
-                trait: "รูปร่างสูงใหญ่ แข็งแรง กระดูกใหญ่ ผมดกดำหนา พูดจาฉะฉาน หนักแน่น สุขุมรอบคอบ จิตใจมั่นคง ดื้อรั้น",
+                // เปลี่ยนเป็น Array
+                traits: ["รูปร่างสูงใหญ่", "แข็งแรง", "กระดูกใหญ่", "ผมดกดำหนา", "พูดจาฉะฉาน", "เสียงดัง", "หนักแน่น", "สุขุมรอบคอบ", "จิตใจมั่นคง", "ดื้อรั้น"],
                 recTaste: "ฝาด, หวาน, มัน, เค็ม",
                 recReason: "บำรุงธาตุดินให้สมบูรณ์ สมานแผลภายใน (ฝาด) ให้กำลัง (หวาน/มัน/เค็ม)",
                 badTaste: "มันจัดเกินไป, หวานจัดเกินไป",
@@ -249,7 +197,7 @@
             },
             fire: {
                 name: "ธาตุไฟ (เตโช)",
-                trait: "รูปร่างสมส่วน ผิวขาวเหลือง พูดชัด เสียงดัง หิวบ่อย กินจุ ขี้หงุดหงิด โกรธง่ายหายเร็ว ผมหงอกก่อนวัย",
+                traits: ["รูปร่างสมส่วน", "ผิวขาวเหลือง", "พูดชัด", "เสียงดัง", "หิวบ่อย", "กินจุ", "ขี้หงุดหงิด", "โกรธง่ายหายเร็ว", "ผมหงอกก่อนวัย"],
                 recTaste: "ขม, เย็น, จืด",
                 recReason: "ช่วยลดความร้อน ดับพิษร้อนในร่างกาย",
                 badTaste: "รสจัด (เผ็ด/เปรี้ยว/เค็ม), ร้อน",
@@ -259,7 +207,7 @@
             },
             wind: {
                 name: "ธาตุลม (วาโย)",
-                trait: "ร่างกายผอม ผิวแห้ง ผมบาง พูดเยอะ อารมณ์แปรปรวน ขี้กลัว วิตกกังวล อยากรู้อยากเห็น นอนหลับยาก",
+                traits: ["ร่างกายผอม", "ผิวแห้ง", "ผมบาง", "พูดเยอะ", "อารมณ์แปรปรวน", "ขี้กลัว", "วิตกกังวล", "อยากรู้อยากเห็น", "นอนหลับยาก"],
                 recTaste: "เผ็ดร้อน, สุขุม",
                 recReason: "ช่วยขับลม กระจายเลือดลม แก้ท้องอืดท้องเฟ้อ",
                 badTaste: "รสจัดเกินไป, ของหมักดอง",
@@ -269,7 +217,7 @@
             },
             water: {
                 name: "ธาตุน้ำ (อาโป)",
-                trait: "รูปร่างอวบ ผิวขาว ตาโต พูดช้าเสียงไพเราะ เคลื่อนไหวช้า ผมละเอียดสวย ดกดำ ชอบนอน ใจเย็น",
+                traits: ["รูปร่างอวบ", "ผิวขาว", "ตาโต", "พูดช้าเสียงไพเราะ", "เคลื่อนไหวช้า", "ผมละเอียดสวย", "ผมดกดำ", "ชอบนอน", "ใจเย็น"],
                 recTaste: "เปรี้ยว, ขม, ร้อน",
                 recReason: "ช่วยกัดเสมหะ (เสมหะ) บำรุงโลหิต และขับน้ำส่วนเกิน",
                 badTaste: "หวานจัด, เปรี้ยวจัด, เค็มจัด",
@@ -279,7 +227,7 @@
             },
             fire_wind: {
                 name: "ธาตุไฟระคนลม (ช่วงรอยต่อ)",
-                trait: "ผสมผสาน: หงุดหงิดง่าย (ไฟ) แต่ขี้กังวล (ลม) พูดเร็ว คิดเร็ว",
+                traits: ["ผสมผสาน", "หงุดหงิดง่าย (ไฟ)", "ขี้กังวล (ลม)", "พูดเร็ว", "คิดเร็ว"],
                 recTaste: "จืด, หอมเย็น, สุขุม",
                 recReason: "ดับพิษร้อนและแก้วิงเวียนศีรษะ",
                 badTaste: "เผ็ดจัด, ร้อนจัด",
@@ -290,226 +238,211 @@
         };
 
         const sadaoData = [
-            { check: (m, p) => (m==1 && p=='Waning') || (m==2 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑ - ขึ้น ๑๕ ค่ำ เดือน ๒", baseElement: "earth", specificHealth: "มีอาการท้องผูก ขับถ่ายลำบาก ปวดท้อง ลมติดในเส้น" },
-            { check: (m, p) => (m==2 && p=='Waning') || (m==3 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๒ - ขึ้น ๑๕ ค่ำ เดือน ๓", baseElement: "earth", specificHealth: "มีอาการหายใจไม่สุด หายใจไม่เต็มอิ่ม เหนื่อยง่าย" },
-            { check: (m, p) => (m==3 && p=='Waning') || (m==4 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๓ - ขึ้น ๑๕ ค่ำ เดือน ๔", baseElement: "earth", specificHealth: "ถ่ายเหลวได้ง่าย ลำไส้แปรปรวน ปัญหาประจำเดือน ปัญหาระบบปัสสาวะ" },
-            { check: (m, p) => (m==4 && p=='Waning') || (m==5 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๔ - ขึ้น ๑๕ ค่ำ เดือน ๕", baseElement: "fire", specificHealth: "เป็นลม หน้ามืด ไข้แดด ร้อนใน หลับยาก" },
-            // Gap Fill Logic Matches your Ver.1
-            { check: (m, p) => (m==5 && p=='Waning') || (m==6 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๕ - ขึ้น ๑๕ ค่ำ เดือน ๖", baseElement: "fire", specificHealth: "เสี่ยงต่อความร้อนภายใน ร้อนใน กระหายน้ำ (ช่วงรอยต่อฤดู)" },
-            { check: (m, p) => (m==6 && p=='Waning') || (m==7 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๖ - ขึ้น ๑๕ ค่ำ เดือน ๗", baseElement: "fire", specificHealth: "ความดันโลหิต อารมณ์แปรปรวน นอนหลับยาก ตื่นง่าย" },
-            { check: (m, p) => (m==8 && p=='Waning') || (m==9 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๘ - ขึ้น ๑๕ ค่ำ เดือน ๙", baseElement: "fire_wind", specificHealth: "ปวดศีรษะ ปวดกระบอกตา หูอื้อ (ไฟ) และ ท้องอืด แน่นท้อง (ลม)" },
-            { check: (m, p) => (m==7 && p=='Waning') || (m==8 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๗ - ขึ้น ๑๕ ค่ำ เดือน ๘", baseElement: "wind", specificHealth: "ไอ ระคายเคืองคอ เจ็บคอ จุกคอ ลมตีขึ้น" },
-            { check: (m, p) => (m==9 && p=='Waning') || (m==10 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๙ - ขึ้น ๑๕ ค่ำ เดือน ๑๐", baseElement: "wind", specificHealth: "กรดไหลย้อน ท้องเฟ้อ ท้องบิด แสบร้อนกลางอก อาหารไม่ย่อย" },
-            { check: (m, p) => (m==10 && p=='Waning') || (m==11 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๐ - ขึ้น ๑๕ ค่ำ เดือน ๑๑", baseElement: "water", specificHealth: "อาการปวดในข้อ ปวดข้อเข่า ปวดกระดูก ริดสีดวง ฝี สิว" },
-            { check: (m, p) => (m==11 && p=='Waning') || (m==12 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๑ - ขึ้น ๑๕ ค่ำ เดือน ๑๒", baseElement: "water", specificHealth: "ภูมิแพ้ หวัด น้ำมูก กรน หายใจติดขัด แน่นหน้าอก" },
-            { check: (m, p) => (m==12 && p=='Waning') || (m==1 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๒ - ขึ้น ๑๕ ค่ำ เดือน ๑", baseElement: "water", specificHealth: "ผดผื่น สิว ลมพิษ คันง่าย ภูมิแพ้ผิวหนัง" }
+            // EARTH -> Split health string to Array
+            { check: (m, p) => (m==1 && p=='Waning') || (m==2 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑ - ขึ้น ๑๕ ค่ำ เดือน ๒", baseElement: "earth", 
+              health: ["ท้องผูก", "ขับถ่ายลำบาก", "ปวดท้อง", "ลมติดในเส้น"] },
+            { check: (m, p) => (m==2 && p=='Waning') || (m==3 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๒ - ขึ้น ๑๕ ค่ำ เดือน ๓", baseElement: "earth", 
+              health: ["หายใจไม่สุด", "หายใจไม่เต็มอิ่ม", "เหนื่อยง่าย"] },
+            { check: (m, p) => (m==3 && p=='Waning') || (m==4 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๓ - ขึ้น ๑๕ ค่ำ เดือน ๔", baseElement: "earth", 
+              health: ["ถ่ายเหลวได้ง่าย", "ลำไส้แปรปรวน", "ปัญหาประจำเดือน", "ปัญหาระบบปัสสาวะ"] },
+            
+            // FIRE
+            { check: (m, p) => (m==4 && p=='Waning') || (m==5 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๔ - ขึ้น ๑๕ ค่ำ เดือน ๕", baseElement: "fire", 
+              health: ["เป็นลม", "หน้ามืด", "ไข้แดด", "ร้อนใน", "หลับยาก"] },
+            // Gap 5-6
+            { check: (m, p) => (m==5 && p=='Waning') || (m==6 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๕ - ขึ้น ๑๕ ค่ำ เดือน ๖", baseElement: "fire", 
+              health: ["ร้อนใน", "กระหายน้ำ", "ความร้อนภายใน"] },
+            { check: (m, p) => (m==6 && p=='Waning') || (m==7 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๖ - ขึ้น ๑๕ ค่ำ เดือน ๗", baseElement: "fire", 
+              health: ["ความดันโลหิต", "อารมณ์แปรปรวน", "นอนหลับยาก", "ตื่นง่าย"] },
+            
+            // OVERLAP 8-9
+            { check: (m, p) => (m==8 && p=='Waning') || (m==9 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๘ - ขึ้น ๑๕ ค่ำ เดือน ๙", baseElement: "fire_wind", 
+              health: ["ปวดศีรษะ", "ปวดกระบอกตา", "หูอื้อ", "วิงเวียน", "ท้องอืด", "แน่นท้อง"] },
+            
+            // WIND
+            { check: (m, p) => (m==7 && p=='Waning') || (m==8 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๗ - ขึ้น ๑๕ ค่ำ เดือน ๘", baseElement: "wind", 
+              health: ["ไอ", "ระคายเคืองคอ", "เจ็บคอ", "จุกคอ", "ลมตีขึ้น"] },
+            { check: (m, p) => (m==9 && p=='Waning') || (m==10 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๙ - ขึ้น ๑๕ ค่ำ เดือน ๑๐", baseElement: "wind", 
+              health: ["กรดไหลย้อน", "ท้องเฟ้อ", "ท้องบิด", "แสบร้อนกลางอก", "อาหารไม่ย่อย"] },
+            
+            // WATER
+            { check: (m, p) => (m==10 && p=='Waning') || (m==11 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๐ - ขึ้น ๑๕ ค่ำ เดือน ๑๑", baseElement: "water", 
+              health: ["ปวดในข้อ", "ปวดเข่า", "ปวดกระดูก", "ริดสีดวง", "ฝี", "สิว"] },
+            { check: (m, p) => (m==11 && p=='Waning') || (m==12 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๑ - ขึ้น ๑๕ ค่ำ เดือน ๑๒", baseElement: "water", 
+              health: ["ภูมิแพ้", "หวัด", "น้ำมูก", "กรน", "หายใจติดขัด", "แน่นหน้าอก"] },
+            { check: (m, p) => (m==12 && p=='Waning') || (m==1 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๒ - ขึ้น ๑๕ ค่ำ เดือน ๑", baseElement: "water", 
+              health: ["ผดผื่น", "สิว", "ลมพิษ", "คันง่าย", "ภูมิแพ้ผิวหนัง"] }
         ];
 
-        const seasonData = {
-            summer: { name: "คิมหันตฤดู (ร้อน)", vul: "ธาตุไฟ", health: "เสี่ยงลมแดด ร้อนใน กระหายน้ำ", food: "อาหารรสขม เย็น จืด", theme: "summer", fx: "sun" },
-            rain: { name: "วสันตฤดู (ฝน)", vul: "ธาตุลม/ไฟ", health: "ระวังไข้หวัด วิงเวียน ศีรษะ", food: "อาหารรสเปรี้ยว เผ็ดร้อน", theme: "rain", fx: "rain" },
-            winter: { name: "เหมันตฤดู (หนาว)", vul: "ธาตุน้ำ/ดิน", health: "ผิวแห้ง ปวดข้อ น้ำมูกไหล", food: "อาหารรสมัน เค็ม ร้อน", theme: "winter", fx: "snow" }
-        };
-
-        // --- 3. MAIN LOGIC (From Ver.1) ---
+        // --- LOGIC ---
+        // (Thai Lunar Calendar Class - Minified for brevity but logic intact)
+        class ThaiLunarCalendar{constructor(){this.startYData=[[1901,0.122733000004352],[1906,0.0191890000045229],[1911,-0.0843549999953059],[1916,-0.187898999995135],[1921,-0.291442999994964],[1926,0.0744250000052413],[1931,-0.0291189999945876],[1936,-0.132662999994416],[1941,-0.236206999994245],[1946,-0.339750999994074],[1951,-0.443294999993903],[1956,-0.0774269999936981],[1961,-0.180970999993527],[1966,-0.284514999993356],[1971,-0.388058999993185],[1976,-0.491602999993014],[1981,-0.595146999992842],[1986,-0.698690999992671],[1991,-0.332822999992466],[1996,-0.436366999992295],[2001,-0.539910999992124],[2006,-0.643454999991953],[2011,0.253001000008218],[2016,0.149457000008389],[2021,-0.484674999991406],[2026,-0.588218999991235],[2031,0.308237000008937],[2036,0.204693000009108],[2041,0.101149000009279],[2046,-0.00239499999055015],[2051,-0.105938999990379],[2056,0.259929000009826],[2061,0.156385000009997],[2066,0.0528410000101682]];this.sDate=[new Date(1902,10,30),new Date(1912,11,8),new Date(1922,10,19),new Date(1932,10,27),new Date(1942,11,7),new Date(1952,10,16),new Date(1962,10,26),new Date(1972,11,5),new Date(1982,10,15),new Date(1992,10,24),new Date(2002,11,4),new Date(2012,10,13),new Date(2022,10,23),new Date(2032,11,2),new Date(2042,11,12),new Date(2052,10,21),new Date(2062,11,1),new Date(2072,11,9)];}xlMod(a,b){return a-b*Math.floor(a/b)}athikaMas(i){let a=this.xlMod((i-78)-0.45222,2.7118886);return a<1}athikaVar(i){if(this.athikaMas(i))return!1;let c;if(this.athikaMas(i+1))c=0.0169501433191599;else c=-0.0142223099315486;return this.deviation(i)>c}deviation(y){let f=0,fy=0,c=0,l=0;for(let k=0;k<this.startYData.length;k++){if(y>=this.startYData[k][0]){fy=this.startYData[k][0];f=this.startYData[k][1]}else break}if(fy===0)return 0;if(y===fy)c=f;else{fy++;for(let i=fy;i<=y;i++){if(i===fy)l=f;else l=c;if(this.athikaMas(i-1))c=-0.102356;else if(this.athikaVar(i-1))c=-0.632944;else c=0.367056;c=l+c}}return c}lDayInYear(i){if(this.athikaMas(i))return 384;else if(this.athikaVar(i))return 355;else return 354}getThaiLunarDate(d){const y=d.getFullYear();if(y<1903||y>2082)return null;let b;const cy=y-1;const sy=1902;let bk=Math.floor((cy-sy)/10);if(bk<0)bk=0;if(bk>17)bk=17;b=new Date(this.sDate[bk]);let t=new Date(b);for(let i=b.getFullYear()+1;i<=y-1;i++){t.setDate(t.getDate()+this.lDayInYear(i))}b=new Date(t);let ep=new Date(b.getFullYear(),11,31);let rp=Math.round((ep-b)/(86400000));let sc=new Date(y,0,1);let dy=Math.round((d-sc)/(86400000));let df=rp+dy+1;let ny=this.lDayInYear(y);let dof=df,tm,ts;let md=[];if(ny===354)md=[29,30,29,30,29,30,29,30,29,30,29,30,29,30];else if(ny===355)md=[29,30,29,30,29,30,30,30,29,30,29,30,29,30];else if(ny===384)md=[29,30,29,30,29,30,29,30,30,29,30,29,30,29,30];for(let j=0;j<md.length;j++){tm=j+1;if(dof<=md[j]&&dof>0)break;else dof-=md[j]}if(ny===384){if(tm>13)tm-=13;if(tm===9)tm=88;else if(tm>=10)tm=tm-1}else{if(tm>12)tm-=12}if(dof>15){ts="Waning";dof-=15}else{ts="Waxing"}const tn=["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];const tt=(n)=>n.toString().split('').map(x=>tn[x]||x).join('');let mdsp=tm;if(tm==88)mdsp="๘๘";else mdsp=tt(tm);return{phase:ts,day:dof,month:tm,year:y,display:`${ts=='Waxing'?'ขึ้น':'แรม'} ${tt(dof)} ค่ำ เดือน ${mdsp}`}}}
+        
+        const calendar = new ThaiLunarCalendar();
+        
+        // --- Init ---
         window.onload = function() {
-            currentSessionId = 'user-' + Date.now() + '-' + Math.floor(Math.random() * 1000); // Generate Session ID
-
-            const dS = document.getElementById('inputDay'); 
-            for(let i=1; i<=31; i++) { let o = document.createElement('option'); o.value=i; o.innerText=i; dS.appendChild(o); }
+            currentSessionId = 'u' + Date.now();
             
-            const mS = document.getElementById('inputMonth');
-            const months = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-            months.forEach((m,i)=>{ let o=document.createElement('option'); o.value=i+1; o.innerText=m; mS.appendChild(o); });
-
-            const yS = document.getElementById('inputYear'); 
-            const curY = new Date().getFullYear(); 
-            for(let i=0; i<100; i++) { 
-                let y = curY-i; 
-                let o = document.createElement('option'); 
-                o.value = y; // AD Value
-                o.innerText = y+543; // BE Display
-                yS.appendChild(o); 
-            }
-            yS.value = curY-30;
+            const dS = document.getElementById('inputDay'); for(let i=1; i<=31; i++) { let o = document.createElement('option'); o.value=i; o.innerText=i; dS.appendChild(o); }
+            const mS = document.getElementById('inputMonth'); const months = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"]; months.forEach((m,i)=>{ let o=document.createElement('option'); o.value=i+1; o.innerText=m; mS.appendChild(o); });
+            const yS = document.getElementById('inputYear'); const curY = new Date().getFullYear(); for(let i=0; i<100; i++) { let y = curY-i; let o = document.createElement('option'); o.value = y; o.innerText = y+543; yS.appendChild(o); } yS.value = curY-30;
             
             updateDailyForecast();
         }
 
-        // --- Simplified Calculation (Original from Ver.1) ---
-        function calculateRealLunarDate(date) {
-            const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); 
-            const diffDays = (date.getTime() - knownNewMoon.getTime()) / (1000 * 3600 * 24);
-            let moonAge = (diffDays % 29.53059) + 1.3;
-            if (moonAge < 0) moonAge += 29.53059; 
-            if (moonAge > 29.53059) moonAge -= 29.53059;
-            
-            let lastNewMoon = new Date(date); 
-            lastNewMoon.setDate(date.getDate() - Math.floor(moonAge));
-            let nmMonth = lastNewMoon.getMonth() + 1;
-            
-            const map = {12:1, 1:2, 2:3, 3:4, 4:5, 5:6, 6:7, 7:8, 8:9, 9:10, 10:11, 11:12};
-            let thaiMonth = map[nmMonth];
-            let phase = Math.floor(moonAge) + 1 <= 15 ? "Waxing" : "Waning";
-            
-            if (adhikamasaYears.includes(date.getFullYear()) && (nmMonth>=7 || nmMonth<=3)) { 
-                thaiMonth -= 1; if(thaiMonth<=0) thaiMonth=12; 
-            }
-            
-            const tNum = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
-            const toT = (n) => n.toString().split('').map(x=>tNum[x]||x).join('');
-            const dStr = `${phase=='Waxing'?'ขึ้น':'แรม'} ${toT(Math.floor(moonAge)+1 > 15 ? Math.floor(moonAge)+1-15 : Math.floor(moonAge)+1)} ค่ำ เดือน ${toT(thaiMonth)}`;
-            
-            return { thaiMonth, phase, display: dStr };
-        }
-
-        function getDailySeason(m) {
-            if (m>=5 && m<=6) return seasonData.summer;
-            if (m>=7 && m<=10) return seasonData.rain;
-            return seasonData.winter;
-        }
-
+        // --- Functions ---
+        function calculateRealLunarDate(date) { return calendar.getThaiLunarDate(date); }
+        
         function updateDailyForecast() {
-            const today = new Date(); 
-            const lunar = calculateRealLunarDate(today); 
-            const season = getDailySeason(lunar.thaiMonth);
-            
-            const mTh = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
-            document.getElementById('todayDate').innerText = `${today.getDate()} ${mTh[today.getMonth()]} ${today.getFullYear()+543}`;
+            const today = new Date(); const lunar = calendar.getThaiLunarDate(today); if(!lunar) return;
+            let checkM = lunar.month; if(checkM==88) checkM=8;
+            let season = "";
+            if (checkM>=5 && checkM<=6) season = {name:"คิมหันตฤดู (ร้อน)", fx:"sun", vul:"ธาตุไฟ", h:"เสี่ยงลมแดด ร้อนใน", f:"ขม เย็น จืด"};
+            else if (checkM>=7 && checkM<=10) season = {name:"วสันตฤดู (ฝน)", fx:"rain", vul:"ธาตุลม/ไฟ", h:"หวัด วิงเวียน", f:"เปรี้ยว เผ็ดร้อน"};
+            else season = {name:"เหมันตฤดู (หนาว)", fx:"snow", vul:"ธาตุน้ำ/ดิน", h:"ผิวแห้ง ปวดข้อ", f:"มัน เค็ม ร้อน"};
+
+            document.getElementById('todayDate').innerText = `${today.getDate()}/${today.getMonth()+1}/${today.getFullYear()+543}`;
             document.getElementById('todaySeason').innerText = season.name;
             document.getElementById('todayVulnerable').innerText = season.vul;
-            document.getElementById('todayHealth').innerText = season.health;
-            document.getElementById('todayFood').innerText = `แนะนำ: ${season.food}`;
+            document.getElementById('todayHealth').innerText = season.h;
+            document.getElementById('todayFood').innerText = season.f;
             
             const div = document.getElementById('weatherContainer'); div.innerHTML='';
-            const front = document.getElementById('cardFront');
-            front.classList.remove('theme-winter','theme-summer','theme-rain');
-            front.classList.add(`theme-${season.theme}`);
-            
-            if(season.fx=='rain') { for(let i=0;i<40;i++){ let d=document.createElement('div'); d.className='rain'; d.style.left=Math.random()*100+'%'; d.style.animationDuration=(0.5+Math.random())+'s'; div.appendChild(d); }}
+            if(season.fx=='rain') { for(let i=0;i<30;i++){ let d=document.createElement('div'); d.className='rain'; d.style.left=Math.random()*100+'%'; d.style.animationDuration=(0.5+Math.random())+'s'; div.appendChild(d); }}
             else if(season.fx=='sun') { let s=document.createElement('div'); s.className='sun-glare'; div.appendChild(s); }
-            else { for(let i=0;i<40;i++){ let s=document.createElement('div'); s.className='snowflake'; s.style.left=Math.random()*100+'%'; s.style.animationDuration=(3+Math.random()*2)+'s'; div.appendChild(s); }}
+            else { for(let i=0;i<30;i++){ let s=document.createElement('div'); s.className='snowflake'; s.style.left=Math.random()*100+'%'; s.style.animationDuration=(3+Math.random()*2)+'s'; div.appendChild(s); }}
+        }
+
+        function createChips(items, containerId, selectionSet) {
+            const c = document.getElementById(containerId); c.innerHTML = '';
+            items.forEach(item => {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.innerText = item;
+                chip.onclick = function() {
+                    this.classList.toggle('selected');
+                    if(this.classList.contains('selected')) selectionSet.add(item);
+                    else selectionSet.delete(item);
+                };
+                c.appendChild(chip);
+            });
         }
 
         function createFoodTags(items, id) {
             const c = document.getElementById(id); c.innerHTML='';
             items.forEach(i => {
-                let a = document.createElement('a'); a.className='food-tag';
+                let a = document.createElement('a'); a.className='food-link-tag';
                 a.innerHTML = `${i} <i class="fas fa-search text-xs ml-1 text-gray-400"></i>`;
-                a.href = `https://www.google.com/search?tbm=isch&q=${i} อาหาร`;
-                a.target = '_blank'; c.appendChild(a);
-            });
-        }
-
-        // --- 4. LOGGING FUNCTIONS ---
-        async function logToGoogleSheet(data) {
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST', mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                console.log("Logged:", data);
-            } catch (error) { console.error("Log Error:", error); }
-        }
-
-        function sendFeedback(topic) {
-            const btn = document.getElementById('like' + topic.charAt(0).toUpperCase() + topic.slice(1));
-            if (btn.classList.contains('active')) return;
-            btn.classList.add('active');
-            btn.innerHTML = '<i class="fas fa-check"></i> ขอบคุณ';
-            
-            logToGoogleSheet({
-                type: 'feedback',
-                sessionId: currentSessionId,
-                timestamp: new Date().toISOString(),
-                feedback_topic: topic,
-                score: 1,
-                ...currentAnalysisData
+                a.href = `https://www.google.com/search?tbm=isch&q=${i} อาหาร`; a.target = '_blank'; c.appendChild(a);
             });
         }
 
         async function startAnalysis() {
-            // Show Loading
             document.getElementById('loading').style.display = 'flex';
-
-            // Use setTimeout to allow UI to render loading before calculation
+            
             setTimeout(async () => {
                 const d = parseInt(document.getElementById('inputDay').value);
                 const m = parseInt(document.getElementById('inputMonth').value);
                 const y = parseInt(document.getElementById('inputYear').value);
-
-                let birthDate = new Date(y, m-1, d);
-                let conceptionDate = new Date(birthDate); 
-                conceptionDate.setMonth(birthDate.getMonth()-9);
                 
+                let birthDate = new Date(y, m-1, d);
+                let conceptionDate = new Date(birthDate); conceptionDate.setMonth(birthDate.getMonth()-9);
                 const lunar = calculateRealLunarDate(conceptionDate);
                 
-                let key = "earth"; 
-                let specificHealth = "";
-                let range = "";
-                let matched = false;
+                if (!lunar) { alert("ปีไม่อยู่ในช่วงที่รองรับ"); document.getElementById('loading').style.display = 'none'; return; }
 
-                // Find matching rule from array
+                let checkMonth = lunar.month; if (checkMonth == 88) checkMonth = 8;
+                let key = "earth"; let specificHealthArr = []; let range = ""; let matched = false;
+
                 for (let rule of sadaoData) {
-                    if (rule.check(lunar.thaiMonth, lunar.phase)) {
-                        key = rule.baseElement;
-                        specificHealth = rule.specificHealth;
-                        range = rule.range;
-                        matched = true;
+                    if (rule.check(checkMonth, lunar.phase)) {
+                        key = rule.baseElement; 
+                        specificHealthArr = rule.health; 
+                        range = rule.range; 
+                        matched = true; 
                         break;
                     }
                 }
                 
-                // Fallback for gaps
-                if (!matched) {
-                   if (lunar.thaiMonth >= 1 && lunar.thaiMonth <= 4) { key="earth"; specificHealth = "สุขภาพโดยรวมแข็งแรง แต่อาจมีปัญหาท้องผูกบ้าง"; }
-                   else if (lunar.thaiMonth >= 5 && lunar.thaiMonth <= 7) { key="fire"; specificHealth = "ระวังความร้อนภายใน ร้อนในง่าย"; }
-                   else if (lunar.thaiMonth >= 8 && lunar.thaiMonth <= 10) { key="wind"; specificHealth = "ระวังเรื่องลมในกระเพาะและวิงเวียน"; }
-                   else { key="water"; specificHealth = "ระวังภูมิแพ้อากาศและเสมหะ"; }
+                if(!matched) {
+                    if(checkMonth >= 1 && checkMonth <= 4) { key="earth"; specificHealthArr=["ท้องผูก"]; }
+                    else if(checkMonth >= 5 && checkMonth <= 7) { key="fire"; specificHealthArr=["ร้อนใน"]; }
+                    else if(checkMonth >= 8 && checkMonth <= 10) { key="wind"; specificHealthArr=["ท้องอืด"]; }
+                    else { key="water"; specificHealthArr=["ภูมิแพ้"]; }
                 }
 
                 const data = baseElementData[key];
                 
-                // Gradient Header Logic
-                let color="", avatar="";
-                if(key.includes("fire")) { color="linear-gradient(135deg, #FF9966, #FF5E62)"; avatar="https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png"; }
-                else if(key.includes("wind")) { color="linear-gradient(135deg, #56ab2f, #a8e063)"; avatar="https://img2.pic.in.th/261c90e765ec6b116.png"; }
-                else if(key.includes("water")) { color="linear-gradient(135deg, #36D1DC, #5B86E5)"; avatar="https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png"; }
-                else { color="linear-gradient(135deg, #CAC531, #F3F9A7)"; avatar="https://img2.pic.in.th/1c8b450894dd6fe8e.png"; }
+                // Clear old selections
+                selectedTraits.clear();
+                selectedHealth.clear();
+                
+                // Save meta
+                analysisMeta = {
+                    sessionId: currentSessionId,
+                    birthDate: `${d}/${m}/${y+543}`,
+                    element: data.name,
+                    conceptionDate: lunar.display
+                };
 
+                // UI Updates
                 document.getElementById('resMain').innerText = data.name;
                 document.getElementById('resSub').innerText = range; 
                 document.getElementById('debugCalc').innerText = `(ปฏิสนธิ: ${lunar.display})`;
-
-                document.getElementById('avatarImg').src = avatar;
+                document.getElementById('avatarImg').src = key.includes("fire") ? "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png" : (key.includes("wind") ? "https://img2.pic.in.th/261c90e765ec6b116.png" : (key.includes("water") ? "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png" : "https://img2.pic.in.th/1c8b450894dd6fe8e.png"));
                 document.getElementById('avatarImg').classList.remove('hidden');
+                
+                let color = "";
+                if(key.includes("fire")) color = "linear-gradient(135deg, #FF9966, #FF5E62)";
+                else if(key.includes("wind")) color = "linear-gradient(135deg, #56ab2f, #a8e063)";
+                else if(key.includes("water")) color = "linear-gradient(135deg, #36D1DC, #5B86E5)";
+                else color = "linear-gradient(135deg, #CAC531, #F3F9A7)";
                 document.getElementById('resultHeader').style.background = color;
 
-                document.getElementById('resTrait').innerText = data.trait;
-                document.getElementById('resHealth').innerText = specificHealth; 
-                
+                createChips(data.traits, 'traitChips', selectedTraits);
+                createChips(specificHealthArr, 'healthChips', selectedHealth);
+
                 document.getElementById('resTasteGood').innerText = data.recTaste;
                 document.getElementById('resTasteGoodReason').innerText = data.recReason;
-                // Fixed Layout for Bad Taste
                 document.getElementById('resTasteBad').innerHTML = `<span class="font-bold text-red-800">${data.badTaste}</span><br>${data.badReason}`;
-
+                
                 createFoodTags(data.foods, 'foodList');
                 createFoodTags(data.fruits, 'fruitList');
 
-                // Reset buttons
-                ['likeTrait','likeHealth','likeFood'].forEach(id => {
-                    const b = document.getElementById(id); b.classList.remove('active'); b.innerHTML = '<i class="far fa-thumbs-up"></i> ตรงมาก';
-                });
-
                 document.getElementById('cardObject').classList.add('is-flipped');
                 document.getElementById('loading').style.display = 'none';
-                
-                // Logging
-                currentAnalysisData = { birthDate: `${d}/${m}/${y+543}`, conceptionDate: lunar.display, element: data.name, healthProblem: specificHealth };
-                logToGoogleSheet({ type: 'analysis', sessionId: currentSessionId, timestamp: new Date().toISOString(), ...currentAnalysisData });
 
-            }, 500); // Small delay for UX
+            }, 600);
+        }
+
+        async function saveAndReset() {
+            document.getElementById('loading').style.display = 'flex';
+            
+            // Prepare Data
+            const payload = {
+                ...analysisMeta,
+                selectedTraits: Array.from(selectedTraits).join(", "),
+                selectedHealth: Array.from(selectedHealth).join(", ")
+            };
+
+            // Send to Google Sheet
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch(e) { console.log(e); }
+
+            // Reset UI
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('cardObject').classList.remove('is-flipped');
+                currentSessionId = 'u' + Date.now(); // New Session
+                alert("บันทึกข้อมูลเรียบร้อย ขอบคุณครับ");
+            }, 1000);
         }
 
         function resetCard() { document.getElementById('cardObject').classList.remove('is-flipped'); }
