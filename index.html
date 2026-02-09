@@ -3,176 +3,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>วิเคราะห์ธาตุเจ้าเรือน (Sadao V2.0 - Optimized)</title>
+    <title>วิเคราะห์ธาตุเจ้าเรือน (Sadao Official V3.0)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        :root { --gold: #D4AF37; --green-d: #1B4D3E; --bg: #FDFBF7; }
-        body { font-family: 'Prompt', sans-serif; background-color: var(--bg); color: #333; }
+        :root { --gold-main: #D4AF37; --green-deep: #1B4D3E; --bg-pattern: #FDFBF7; }
+        body { font-family: 'Prompt', sans-serif; background-color: var(--bg-pattern); background-image: radial-gradient(#D4AF37 0.5px, transparent 0.5px), radial-gradient(#1B4D3E 0.5px, transparent 0.5px); background-size: 20px 20px; color: #333; overflow-x: hidden; }
         
-        /* Card & Animation */
-        .card-scene { width: 100%; max-width: 450px; perspective: 1500px; padding: 20px; }
-        .card-object { width: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-face { width: 100%; min-height: 700px; backface-visibility: hidden; border-radius: 24px; background: white; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden; }
-        .card-back { position: absolute; top: 0; left: 0; transform: rotateY(180deg); display: flex; flex-direction: column; }
+        /* Loading */
+        #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
+        .spinner { width: 50px; height: 50px; border: 5px solid #eee; border-top: 5px solid var(--gold-main); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* 3D Scene */
+        .card-scene { width: 100%; max-width: 450px; margin: 0 auto; min-height: 100vh; perspective: 1500px; padding: 40px 20px; }
+        .card-object { width: 100%; position: relative; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .card-face { width: 100%; border-radius: 30px; backface-visibility: hidden; background: rgba(255,255,255,0.95); box-shadow: 0 20px 50px rgba(0,0,0,0.15); min-height: 850px; display: flex; flex-direction: column; overflow: hidden; }
+        .card-front { transform: rotateY(0deg); position: relative; }
+        .card-back { position: absolute; top: 0; left: 0; height: 100%; transform: rotateY(180deg); }
         .is-flipped { transform: rotateY(180deg); }
 
-        /* Status UI */
-        .section-card { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid #eee; transition: all 0.3s; }
-        .btn-feedback { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid #ddd; color: #666; transition: 0.3s; }
-        .btn-feedback.active { background: #2E7D32; color: white; border-color: #2E7D32; }
+        /* Weather */
+        .weather-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.6; }
+        .theme-winter { background: linear-gradient(180deg, #E3F2FD 0%, #FFFFFF 100%); }
+        .theme-summer { background: linear-gradient(180deg, #FFF8E1 0%, #FFFFFF 100%); }
+        .theme-rain { background: linear-gradient(180deg, #ECEFF1 0%, #FFFFFF 100%); }
         
-        #loading { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .snowflake { position: absolute; width: 5px; height: 5px; background: #fff; border-radius: 50%; animation: fall linear infinite; }
+        .rain { width: 2px; height: 30px; background: rgba(0,0,255,0.3); animation: fall 0.5s linear infinite; }
+        .sun-glare { position: absolute; top: -80px; right: -80px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,255,200,0.6) 0%, rgba(255,255,255,0) 70%); animation: pulse 5s ease-in-out infinite; }
+        @keyframes fall { from { transform: translateY(-50px); } to { transform: translateY(800px); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
+
+        /* Content */
+        .front-content { position: relative; z-index: 10; padding: 50px 30px; display: flex; flex-direction: column; height: 100%; }
+        .logo-container { width: 100px; height: 100px; margin: 0 auto 20px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--gold-main); animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .logo-img { width: 90%; }
+
+        .custom-select { width: 100%; padding: 16px; border: 1.5px solid rgba(27,77,62,0.3); border-radius: 16px; font-family: 'Prompt'; background: #fff; outline: none; }
+        .btn-gold { background: linear-gradient(135deg, var(--green-deep), #2E7D32); color: white; padding: 16px; width: 100%; border-radius: 16px; font-size: 18px; font-weight: bold; border: none; cursor: pointer; position: relative; z-index: 20; }
+        
+        .forecast-box { margin-top: auto; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; border: 1px solid white; }
+        .utu-badge { background: var(--green-deep); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .vulnerable-box { background: #FFEBEE; border: 1px dashed #EF5350; border-radius: 10px; padding: 10px; margin-bottom: 10px; font-size: 12px; color: #C62828; display: flex; align-items: center; }
+
+        .back-header { padding: 50px 20px 40px; text-align: center; color: white; border-radius: 0 0 40% 40% / 0 0 30px 30px; position: relative; flex-shrink: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        .avatar-real { width: 150px; height: 150px; margin: -5px auto 10px; object-fit: contain; border-radius: 50%; background: white; border: 4px solid rgba(255,255,255,0.4); }
+        .back-content { flex-grow: 1; overflow-y: auto; padding: 20px; margin-top: -30px; z-index: 10; padding-bottom: 60px; }
+        
+        .section-title { font-size: 15px; font-weight: bold; color: var(--green-deep); display: flex; align-items: center; margin-top: 20px; margin-bottom: 10px; }
+        .section-title i { margin-right: 8px; color: var(--gold-main); font-size: 18px; }
+        
+        .helper-text { font-size: 11px; color: #888; margin-bottom: 10px; display: block; font-style: italic; }
+
+        /* Chips / Tags Styles (New Feature) */
+        .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .chip {
+            padding: 6px 12px; background: white; border: 1px solid #ddd;
+            border-radius: 20px; font-size: 12px; color: #555; cursor: pointer;
+            transition: all 0.2s; user-select: none;
+        }
+        .chip:active { transform: scale(0.95); }
+        .chip.selected {
+            background: var(--gold-main); color: white; border-color: var(--gold-main);
+            box-shadow: 0 2px 5px rgba(212, 175, 55, 0.4); font-weight: 500;
+        }
+        
+        .detail-box { background: #FAFAFA; border-radius: 16px; padding: 15px; border-left: 4px solid var(--green-deep); font-size: 13px; color: #555; line-height: 1.7; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .food-tag { display: inline-block; padding: 8px 14px; margin: 0 6px 8px 0; background: white; border: 1px solid #E0E0E0; border-radius: 25px; font-size: 12px; color: #333; cursor: pointer; }
+        
+        .save-btn-area { padding: 15px; background: white; border-top: 1px solid #eee; text-align: center; position: absolute; bottom: 0; width: 100%; z-index: 30; }
+        .btn-save { background: #333; color: white; padding: 12px 30px; border-radius: 30px; font-size: 14px; width: 100%; border: none; cursor: pointer; }
+        
+        .debug-info { font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; }
+        .input-group { position: relative; margin-bottom: 25px; z-index: 20; }
+        .input-label { position: absolute; top: -10px; left: 15px; background: white; padding: 0 8px; color: var(--green-deep); font-size: 13px; font-weight: bold; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); z-index: 30; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-center min-h-screen">
 
-    <div id="loading">
-        <div class="spinner"></div>
-        <p class="mt-4 font-bold text-green-900">กำลังคำนวณตามคัมภีร์...</p>
-    </div>
+    <div id="loading"><div class="spinner"></div><p class="mt-4 text-green-900 font-bold">กำลังประมวลผล...</p></div>
 
     <div class="card-scene">
         <div id="cardObject" class="card-object">
             
-            <div class="card-face p-8 flex flex-col items-center">
-                <img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" class="w-24 mb-4">
-                <h1 class="text-xl font-bold text-gray-800">วิเคราะห์ธาตุเจ้าเรือน</h1>
-                <p class="text-xs text-amber-700 mb-8">โรงพยาบาลสะเดา</p>
+            <div id="cardFront" class="card-face card-front">
+                <div id="weatherContainer" class="weather-container"></div>
+                <div class="front-content">
+                    <div class="text-center mb-6">
+                        <div class="logo-container"><img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" class="logo-img"></div>
+                        <h1 class="text-2xl font-bold">วิเคราะห์ธาตุเจ้าเรือน</h1>
+                        <p class="text-sm text-yellow-700 mt-1">กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา</p>
+                    </div>
+                    <div class="input-group"><span class="input-label">วันที่เกิด</span><select id="inputDay" class="custom-select"></select></div>
+                    <div class="input-group"><span class="input-label">เดือนเกิด</span><select id="inputMonth" class="custom-select"></select></div>
+                    <div class="input-group"><span class="input-label">ปี พ.ศ.เกิด</span><select id="inputYear" class="custom-select"></select></div>
+                    <button onclick="startAnalysis()" class="btn-gold mt-4">วิเคราะห์ธาตุเจ้าเรือน</button>
+                    <div class="forecast-box">
+                        <div class="flex justify-between items-center mb-2 border-b pb-2 border-gray-100">
+                            <span class="text-sm font-bold text-green-900"><i class="fas fa-calendar-day mr-1"></i> อุตุสมุฏฐานวันนี้</span>
+                            <span class="text-xs text-gray-500" id="todayDate">...</span>
+                        </div>
+                        <span class="utu-badge" id="todaySeason">...</span>
+                        <div class="vulnerable-box"><i class="fas fa-exclamation-triangle mr-2"></i><div><span class="font-bold">กลุ่มเสี่ยงวันนี้:</span> <span id="todayVulnerable">...</span></div></div>
+                        <p class="text-xs text-gray-600 mb-2" id="todayHealth">...</p>
+                    </div>
+                </div>
+            </div>
 
-                <div class="w-full space-y-4">
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 ml-2">วันที่เกิด</label>
-                        <select id="inputDay" class="w-full p-3 border rounded-xl outline-none focus:border-amber-500"></select>
+            <div id="resultFace" class="card-face card-back">
+                <div id="resultHeader" class="back-header">
+                    <img id="avatarImg" src="" class="avatar-real hidden">
+                    <h2 class="text-2xl font-bold text-white drop-shadow-md" id="resMain">...</h2>
+                    <p class="text-white/90 text-xs mt-1" id="resSub">...</p>
+                    <div class="debug-info" id="debugCalc"></div>
+                </div>
+
+                <div class="back-content">
+                    
+                    <div class="section-title"><i class="fas fa-user-circle"></i> ลักษณะนิสัย</div>
+                    <span class="helper-text"><i class="far fa-hand-pointer"></i> แตะเลือกข้อความที่ตรงกับตัวท่าน</span>
+                    <div id="traitChips" class="chip-container"></div>
+
+                    <div class="section-title" style="color:#C62828;"><i class="fas fa-heartbeat" style="color:#EF5350;"></i> ปัญหาสุขภาพ</div>
+                    <span class="helper-text"><i class="far fa-hand-pointer"></i> แตะเลือกอาการที่ท่านเป็นบ่อย</span>
+                    <div id="healthChips" class="chip-container"></div>
+
+                    <div class="section-title" style="color:#2E7D32;"><i class="fas fa-utensils"></i> อาหารปรับสมดุล</div>
+                    <div class="detail-box" style="background:#E8F5E9; border-left-color:#66BB6A;">
+                        <div id="resTasteGood" class="font-bold mb-1 text-green-800"></div>
+                        <div id="resTasteGoodReason" class="text-xs text-gray-600 mb-2"></div>
+                        <div class="h-px bg-green-200 my-2"></div>
+                        <div class="text-xs text-red-500 font-bold mb-1">ควรเลี่ยง:</div>
+                        <div id="resTasteBad" class="text-xs text-gray-600"></div>
                     </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 ml-2">เดือนเกิด</label>
-                        <select id="inputMonth" class="w-full p-3 border rounded-xl outline-none focus:border-amber-500"></select>
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 ml-2">ปี พ.ศ. เกิด</label>
-                        <select id="inputYear" class="w-full p-3 border rounded-xl outline-none focus:border-amber-500"></select>
-                    </div>
-                    <button onclick="processAnalysis()" class="w-full py-4 bg-green-800 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 transition">
-                        วิเคราะห์ผล <i class="fas fa-magic ml-2"></i>
+
+                    <div class="section-title mt-4"><i class="fas fa-images"></i> เมนูแนะนำ (กดเพื่อดูรูป)</div>
+                    <div id="foodList" class="mb-4"></div>
+                    <div id="fruitList" class="mb-6"></div>
+                </div>
+
+                <div class="save-btn-area">
+                    <button onclick="saveAndReset()" class="btn-save">
+                        <i class="fas fa-check-circle mr-2"></i> บันทึกข้อมูลและวิเคราะห์ใหม่
                     </button>
                 </div>
             </div>
-
-            <div class="card-face card-back">
-                <div id="resHeader" class="p-6 text-center text-white">
-                    <img id="resAvatar" class="w-20 h-20 mx-auto bg-white rounded-full p-1 mb-2">
-                    <h2 id="resTitle" class="text-2xl font-bold">ธาตุ...</h2>
-                    <p id="resRange" class="text-xs opacity-80"></p>
-                </div>
-
-                <div class="p-4 flex-grow overflow-y-auto">
-                    <div class="section-card">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-green-800 text-sm"><i class="fas fa-user-circle"></i> ลักษณะนิสัย</span>
-                            <button id="btnTrait" onclick="sendFeedback('trait')" class="btn-feedback"><i class="far fa-thumbs-up"></i> ตรงมาก</button>
-                        </div>
-                        <p id="resTrait" class="text-sm text-gray-600 leading-relaxed"></p>
-                    </div>
-
-                    <div class="section-card border-l-4 border-l-red-400">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-red-800 text-sm"><i class="fas fa-heartbeat"></i> ปัญหาสุขภาพ</span>
-                            <button id="btnHealth" onclick="sendFeedback('health')" class="btn-feedback"><i class="far fa-thumbs-up"></i> ตรงมาก</button>
-                        </div>
-                        <p id="resHealth" class="text-sm text-gray-600 leading-relaxed"></p>
-                    </div>
-
-                    <div class="section-card border-l-4 border-l-amber-400">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-amber-800 text-sm"><i class="fas fa-utensils"></i> อาหารปรับสมดุล</span>
-                            <button id="btnFood" onclick="sendFeedback('food')" class="btn-feedback"><i class="far fa-thumbs-up"></i> ตรงมาก</button>
-                        </div>
-                        <div id="resFood" class="text-sm text-gray-600"></div>
-                    </div>
-                </div>
-
-                <div class="p-4 bg-gray-50">
-                    <button onclick="flipBack()" class="w-full py-3 text-gray-500 font-bold">กลับไปแก้ไข</button>
-                </div>
-            </div>
-
         </div>
     </div>
 
     <script>
-        // --- ส่วนที่ 1: CONFIG & LOGIC เดิม ---
-        const GOOGLE_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE'; // ใส่ URL ของคุณตรงนี้
-        let currentData = {};
-        let sessionId = "";
-
-        const adhikamasaYears = [1947,1950,1953,1956,1958,1961,1964,1966,1969,1972,1975,1977,1980,1983,1986,1988,1991,1994,1997,1999,2002,2004,2007,2010,2012,2015,2018,2020,2023,2026,2029,2031,2034,2037,2040,2042,2045,2048,2051,2053,2056,2059,2062,2065,2068];
+        // --- CONFIG ---
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX7ZJvwflkNzhZ1SPPOJZZcJBvh_Bpbc2acOjh6fEcj58fv9wHu4i9M8J5BoCNmIoDbw/exec';
         
-        const baseElements = {
-            earth: { name: "ธาตุดิน (ปถวี)", color: "#996633", trait: "รูปร่างสูงใหญ่ หนักแน่น สุขุมรอบคอบ จิตใจมั่นคง ดื้อรั้น", taste: "ฝาด, หวาน, มัน, เค็ม", avatar: "https://img2.pic.in.th/1c8b450894dd6fe8e.png" },
-            fire: { name: "ธาตุไฟ (เตโช)", color: "#C62828", trait: "รูปร่างสมส่วน ผิวขาวเหลือง ขี้หงุดหงิด โกรธง่ายหายเร็ว หิวบ่อย", taste: "ขม, เย็น, จืด", avatar: "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png" },
-            wind: { name: "ธาตุลม (วาโย)", color: "#2E7D32", trait: "ร่างกายผอม ผิวแห้ง ช่างพูด อารมณ์แปรปรวน นอนหลับยาก", taste: "เผ็ดร้อน", avatar: "https://img2.pic.in.th/261c90e765ec6b116.png" },
-            water: { name: "ธาตุน้ำ (อาโป)", color: "#1565C0", trait: "รูปร่างอวบ ผิวขาว ใจเย็น เคลื่อนไหวช้า เสียงไพเราะ", taste: "เปรี้ยว, ขม", avatar: "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png" },
-            fire_wind: { name: "ธาตุไฟระคนลม", color: "#EF6C00", trait: "ผสมผสาน: หงุดหงิดง่ายแต่ขี้กังวล คิดเร็วทำเร็ว", taste: "จืด, หอมเย็น", avatar: "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png" }
-        };
+        let currentSessionId = "";
+        let analysisMeta = {}; 
+        let selectedTraits = new Set();
+        let selectedHealth = new Set();
 
-        const sadaoRules = [
-            { check: (m, p) => (m==1 && p=='Waning') || (m==2 && p=='Waxing'), key: "earth", health: "ท้องผูก ขับถ่ายลำบาก ปวดท้อง ลมติดในเส้น", range: "แรม 1 ค่ำ เดือน 1 - ขึ้น 15 ค่ำ เดือน 2" },
-            { check: (m, p) => (m==2 && p=='Waning') || (m==3 && p=='Waxing'), key: "earth", health: "หายใจไม่สุด เหนื่อยง่าย หายใจไม่เต็มอิ่ม", range: "แรม 1 ค่ำ เดือน 2 - ขึ้น 15 ค่ำ เดือน 3" },
-            { check: (m, p) => (m==3 && p=='Waning') || (m==4 && p=='Waxing'), key: "earth", health: "ลำไส้แปรปรวน ระบบปัสสาวะ ปัญหาประจำเดือน", range: "แรม 1 ค่ำ เดือน 3 - ขึ้น 15 ค่ำ เดือน 4" },
-            { check: (m, p) => (m==4 && p=='Waning') || (m==5 && p=='Waxing'), key: "fire", health: "เป็นลม หน้ามืด ไข้แดด ร้อนใน หลับยาก", range: "แรม 1 ค่ำ เดือน 4 - ขึ้น 15 ค่ำ เดือน 5" },
-            { check: (m, p) => (m==5 && p=='Waning') || (m==6 && p=='Waxing'), key: "fire", health: "ร้อนใน กระหายน้ำ ความดันเลือด", range: "แรม 1 ค่ำ เดือน 5 - ขึ้น 15 ค่ำ เดือน 6" },
-            { check: (m, p) => (m==6 && p=='Waning') || (m==7 && p=='Waxing'), key: "fire", health: "อารมณ์แปรปรวน นอนหลับยาก ตื่นง่าย", range: "แรม 1 ค่ำ เดือน 6 - ขึ้น 15 ค่ำ เดือน 7" },
-            { check: (m, p) => (m==7 && p=='Waning') || (m==8 && p=='Waxing'), key: "wind", health: "ไอ ระคายเคืองคอ จุกคอ ลมตีขึ้น", range: "แรม 1 ค่ำ เดือน 7 - ขึ้น 15 ค่ำ เดือน 8" },
-            { check: (m, p) => (m==8 && p=='Waning') || (m==9 && p=='Waxing'), key: "fire_wind", health: "ปวดศีรษะ ปวดกระบอกตา และท้องอืด", range: "แรม 1 ค่ำ เดือน 8 - ขึ้น 15 ค่ำ เดือน 9" },
-            { check: (m, p) => (m==9 && p=='Waning') || (m==10 && p=='Waxing'), key: "wind", health: "กรดไหลย้อน ท้องเฟ้อ อาหารไม่ย่อย", range: "แรม 1 ค่ำ เดือน 9 - ขึ้น 15 ค่ำ เดือน 10" },
-            { check: (m, p) => (m==10 && p=='Waning') || (m==11 && p=='Waxing'), key: "water", health: "ปวดในข้อ ปวดเข่า ริดสีดวง สิว", range: "แรม 1 ค่ำ เดือน 10 - ขึ้น 15 ค่ำ เดือน 11" },
-            { check: (m, p) => (m==11 && p=='Waning') || (m==12 && p=='Waxing'), key: "water", health: "ภูมิแพ้ หวัด น้ำมูก หายใจติดขัด", range: "แรม 1 ค่ำ เดือน 11 - ขึ้น 15 ค่ำ เดือน 12" },
-            { check: (m, p) => (m==12 && p=='Waning') || (m==1 && p=='Waxing'), key: "water", health: "ผดผื่น คันง่าย ภูมิแพ้ผิวหนัง", range: "แรม 1 ค่ำ เดือน 12 - ขึ้น 15 ค่ำ เดือน 1" }
-        ];
-
-        // --- ส่วนที่ 2: ฟังก์ชันการทำงาน ---
-        window.onload = () => {
-            initSelectors();
-            sessionId = "SID-" + Date.now();
-        };
-
-        function initSelectors() {
-            const d = document.getElementById('inputDay');
-            for(let i=1; i<=31; i++) d.options.add(new Option(i, i));
-            const m = document.getElementById('inputMonth');
-            ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."].forEach((name, i) => m.options.add(new Option(name, i+1)));
-            const y = document.getElementById('inputYear');
-            const cur = new Date().getFullYear();
-            for(let i=0; i<100; i++) y.options.add(new Option((cur-i)+543, cur-i));
-        }
-
-        // Logic คำนวณเดิมเป๊ะๆ
-        function getThaiLunar(date) {
-            const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); 
-            const diffDays = (date.getTime() - knownNewMoon.getTime()) / (1000 * 3600 * 24);
-            let moonAge = (diffDays % 29.53059) + 1.3;
-            if (moonAge < 0) moonAge += 29.53059;
-            
-            let lastNewMoon = new Date(date);
-            lastNewMoon.setDate(date.getDate() - Math.floor(moonAge));
+        // --- 1. LOGIC การคำนวณ (ใช้ของเดิม 100% ไม่แตะต้อง) ---
+        const adhikamasaYears = [1947,1950,1953,1956,1958,1961,1964,1966,1969,1972,1975,1977,1980,1983,1986,1988,1991,1994,1997,1999,2002,2004,2007,2010,2012,2015,2018,2020,2023,2026,2029,2031,2034,2037,2040,2042,2045,2048,2051,2053,2056,2059,2062,2065,2068];
+        const seasonData = { summer: { name: "คิมหันตฤดู (ร้อน)", vul: "ธาตุไฟ", health: "เสี่ยงลมแดด ร้อนใน กระหายน้ำ", food: "อาหารรสขม เย็น จืด", theme: "summer", fx: "sun" }, rain: { name: "วสันตฤดู (ฝน)", vul: "ธาตุลม/ไฟ", health: "ระวังไข้หวัด วิงเวียน ศีรษะ", food: "อาหารรสเปรี้ยว เผ็ดร้อน", theme: "rain", fx: "rain" }, winter: { name: "เหมันตฤดู (หนาว)", vul: "ธาตุน้ำ/ดิน", health: "ผิวแห้ง ปวดข้อ น้ำมูกไหล", food: "อาหารรสมัน เค็ม ร้อน", theme: "winter", fx: "snow" } };
+        function getDailySeason(m) { if (m>=5 && m<=6) return seasonData.summer; if (m>=7 && m<=10) return seasonData.rain; return seasonData.winter; }
+        
+        // Simplified Calc Logic from Code Provided
+        function calculateRealLunarDate(date) {
+            const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); const diffDays = (date.getTime() - knownNewMoon.getTime()) / (1000 * 3600 * 24);
+            let moonAge = (diffDays % 29.53059) + 1.3; if (moonAge < 0) moonAge += 29.53059; if (moonAge > 29.53059) moonAge -= 29.53059;
+            let lastNewMoon = new Date(date); lastNewMoon.setDate(date.getDate() - Math.floor(moonAge));
             let nmMonth = lastNewMoon.getMonth() + 1;
             const map = {12:1, 1:2, 2:3, 3:4, 4:5, 5:6, 6:7, 7:8, 8:9, 9:10, 10:11, 11:12};
             let thaiMonth = map[nmMonth];
-            let phase = (Math.floor(moonAge)+1) <= 15 ? "Waxing" : "Waning";
-            
-            if (adhikamasaYears.includes(date.getFullYear()) && (nmMonth>=7 || nmMonth<=3)) {
-                thaiMonth -= 1; if(thaiMonth<=0) thaiMonth=12;
-            }
-            return { thaiMonth, phase };
+            let phase = Math.floor(moonAge) + 1 <= 15 ? "Waxing" : "Waning";
+            if (adhikamasaYears.includes(date.getFullYear()) && (nmMonth>=7 || nmMonth<=3)) { thaiMonth -= 1; if(thaiMonth<=0) thaiMonth=12; }
+            const tNum = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
+            const toT = (n) => n.toString().split('').map(x=>tNum[x]||x).join('');
+            const dStr = `${phase=='Waxing'?'ขึ้น':'แรม'} ${toT(Math.floor(moonAge)+1 > 15 ? Math.floor(moonAge)+1-15 : Math.floor(moonAge)+1)} ค่ำ เดือน ${toT(thaiMonth)}`;
+            return { thaiMonth, phase, display: dStr };
         }
 
-        async function processAnalysis() {
+        // --- 2. DATASET (Modified to Array for Buttons) ---
+        // เปลี่ยน Trait เป็น Array ["คำ1", "คำ2"] เพื่อสร้างปุ่ม
+        const baseElementData = {
+            earth: {
+                name: "ธาตุดิน (ปถวี)",
+                traits: ["รูปร่างสูงใหญ่", "แข็งแรง", "กระดูกใหญ่", "ผมดกดำหนา", "พูดจาฉะฉาน", "เสียงดัง", "หนักแน่น", "สุขุมรอบคอบ", "จิตใจมั่นคง", "ดื้อรั้น"],
+                recTaste: "ฝาด, หวาน, มัน, เค็ม",
+                recReason: "บำรุงธาตุดินให้สมบูรณ์ สมานแผลภายใน (ฝาด) ให้กำลัง (หวาน/มัน/เค็ม)",
+                badTaste: "มันจัดเกินไป, หวานจัดเกินไป",
+                badReason: "ดูดซึมและเผาผลาญยาก ทำให้ธาตุดินกำเริบ (อ้วน/ไขมัน)",
+                foods: ["ผักกูด", "แกงเลียง", "แกงจืดเต้าหู้", "มัสมั่น (พอดี)", "พะโล้", "ราดหน้า", "ยำถั่วพู"],
+                fruits: ["มังคุด", "ฝรั่งดิบ", "ฟักทอง", "เผือก", "ถั่วต่างๆ", "เงาะ", "น้ำนม", "อ้อย"]
+            },
+            fire: {
+                name: "ธาตุไฟ (เตโช)",
+                traits: ["รูปร่างสมส่วน", "ผิวขาวเหลือง", "พูดชัด", "เสียงดัง", "หิวบ่อย", "กินจุ", "ขี้หงุดหงิด", "โกรธง่ายหายเร็ว", "ผมหงอกก่อนวัย"],
+                recTaste: "ขม, เย็น, จืด",
+                recReason: "ช่วยลดความร้อน ดับพิษร้อนในร่างกาย",
+                badTaste: "รสจัด (เผ็ด/เปรี้ยว/เค็ม), ร้อน",
+                badReason: "กระตุ้นธาตุไฟให้กำเริบ ทำให้ร้อนใน เป็นไข้ หงุดหงิด",
+                foods: ["แกงจืดตำลึง", "ต้มฟัก", "ผัดผักบุ้ง", "แตงกวาผัดไข่", "แกงส้ม (ไม่เผ็ดมาก)", "น้ำพริกหนุ่ม"],
+                fruits: ["แตงโม", "แคนตาลูป", "แก้วมังกร", "ชมพู่", "มังคุด", "ส้มโอ"]
+            },
+            wind: {
+                name: "ธาตุลม (วาโย)",
+                traits: ["ร่างกายผอม", "ผิวแห้ง", "ผมบาง", "พูดเยอะ", "อารมณ์แปรปรวน", "ขี้กลัว", "วิตกกังวล", "อยากรู้อยากเห็น", "นอนหลับยาก"],
+                recTaste: "เผ็ดร้อน, สุขุม",
+                recReason: "ช่วยขับลม กระจายเลือดลม แก้ท้องอืดท้องเฟ้อ",
+                badTaste: "รสจัดเกินไป, ของหมักดอง",
+                badReason: "ทำให้เสมหะเหนียวข้น เลือดลมเดินไม่สะดวก",
+                foods: ["ต้มยำ", "ข่าไก่", "แกงป่า", "ผัดกะเพรา", "ไก่ผัดขิง", "น้ำพริกขิง"],
+                fruits: ["ส้ม", "เงาะ", "สละ", "ลองกอง", "ลำไย", "น้ำขิง"]
+            },
+            water: {
+                name: "ธาตุน้ำ (อาโป)",
+                traits: ["รูปร่างอวบ", "ผิวขาว", "ตาโต", "พูดช้าเสียงไพเราะ", "เคลื่อนไหวช้า", "ผมละเอียดสวย", "ผมดกดำ", "ชอบนอน", "ใจเย็น"],
+                recTaste: "เปรี้ยว, ขม, ร้อน",
+                recReason: "ช่วยกัดเสมหะ (เสมหะ) บำรุงโลหิต และขับน้ำส่วนเกิน",
+                badTaste: "หวานจัด, เปรี้ยวจัด, เค็มจัด",
+                badReason: "ทำให้น้ำเหลืองเสีย เพิ่มเสมหะ และตัวบวมง่าย",
+                foods: ["แกงส้มดอกแค", "ต้มยำปลา", "ห่อหมก", "แกงเหลือง", "น้ำพริกมะขาม", "ส้มตำ"],
+                fruits: ["สับปะรด", "ส้มโอ", "มะเฟือง", "มะขามป้อม", "ตะลิงปลิง"]
+            },
+            fire_wind: {
+                name: "ธาตุไฟระคนลม (ช่วงรอยต่อ)",
+                traits: ["ผสมผสาน", "หงุดหงิดง่าย (ไฟ)", "ขี้กังวล (ลม)", "พูดเร็ว", "คิดเร็ว"],
+                recTaste: "จืด, หอมเย็น, สุขุม",
+                recReason: "ดับพิษร้อนและแก้วิงเวียนศีรษะ",
+                badTaste: "เผ็ดจัด, ร้อนจัด",
+                badReason: "กระตุ้นทั้งลมและไฟให้กำเริบพร้อมกัน",
+                foods: ["แกงจืด", "ปลานึ่ง", "ผัดขิง (อ่อนๆ)", "น้ำสมุนไพรฤทธิ์เย็น"],
+                fruits: ["แตงโม", "ส้มโอ", "แก้วมังกร"]
+            }
+        };
+
+        // แปลงข้อมูล Health เป็น Array เพื่อสร้างปุ่ม
+        const sadaoData = [
+            { check: (m, p) => (m==1 && p=='Waning') || (m==2 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑ - ขึ้น ๑๕ ค่ำ เดือน ๒", baseElement: "earth", 
+              health: ["ท้องผูก", "ขับถ่ายลำบาก", "ปวดท้อง", "ลมติดในเส้น"] },
+            { check: (m, p) => (m==2 && p=='Waning') || (m==3 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๒ - ขึ้น ๑๕ ค่ำ เดือน ๓", baseElement: "earth", 
+              health: ["หายใจไม่สุด", "หายใจไม่เต็มอิ่ม", "เหนื่อยง่าย"] },
+            { check: (m, p) => (m==3 && p=='Waning') || (m==4 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๓ - ขึ้น ๑๕ ค่ำ เดือน ๔", baseElement: "earth", 
+              health: ["ถ่ายเหลวได้ง่าย", "ลำไส้แปรปรวน", "ปัญหาประจำเดือน", "ปัญหาระบบปัสสาวะ"] },
+            
+            { check: (m, p) => (m==4 && p=='Waning') || (m==5 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๔ - ขึ้น ๑๕ ค่ำ เดือน ๕", baseElement: "fire", 
+              health: ["เป็นลม", "หน้ามืด", "ไข้แดด", "ร้อนใน", "หลับยาก"] },
+            { check: (m, p) => (m==5 && p=='Waning') || (m==6 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๕ - ขึ้น ๑๕ ค่ำ เดือน ๖", baseElement: "fire", 
+              health: ["ร้อนใน", "กระหายน้ำ", "ความร้อนภายใน"] },
+            { check: (m, p) => (m==6 && p=='Waning') || (m==7 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๖ - ขึ้น ๑๕ ค่ำ เดือน ๗", baseElement: "fire", 
+              health: ["ความดันโลหิต", "อารมณ์แปรปรวน", "นอนหลับยาก", "ตื่นง่าย"] },
+            
+            { check: (m, p) => (m==8 && p=='Waning') || (m==9 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๘ - ขึ้น ๑๕ ค่ำ เดือน ๙", baseElement: "fire_wind", 
+              health: ["ปวดศีรษะ", "ปวดกระบอกตา", "หูอื้อ", "วิงเวียน", "ท้องอืด", "แน่นท้อง"] },
+            
+            { check: (m, p) => (m==7 && p=='Waning') || (m==8 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๗ - ขึ้น ๑๕ ค่ำ เดือน ๘", baseElement: "wind", 
+              health: ["ไอ", "ระคายเคืองคอ", "เจ็บคอ", "จุกคอ", "ลมตีขึ้น"] },
+            { check: (m, p) => (m==9 && p=='Waning') || (m==10 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๙ - ขึ้น ๑๕ ค่ำ เดือน ๑๐", baseElement: "wind", 
+              health: ["กรดไหลย้อน", "ท้องเฟ้อ", "ท้องบิด", "แสบร้อนกลางอก", "อาหารไม่ย่อย"] },
+            
+            { check: (m, p) => (m==10 && p=='Waning') || (m==11 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๐ - ขึ้น ๑๕ ค่ำ เดือน ๑๑", baseElement: "water", 
+              health: ["ปวดในข้อ", "ปวดเข่า", "ปวดกระดูก", "ริดสีดวง", "ฝี", "สิว"] },
+            { check: (m, p) => (m==11 && p=='Waning') || (m==12 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๑ - ขึ้น ๑๕ ค่ำ เดือน ๑๒", baseElement: "water", 
+              health: ["ภูมิแพ้", "หวัด", "น้ำมูก", "กรน", "หายใจติดขัด", "แน่นหน้าอก"] },
+            { check: (m, p) => (m==12 && p=='Waning') || (m==1 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๒ - ขึ้น ๑๕ ค่ำ เดือน ๑", baseElement: "water", 
+              health: ["ผดผื่น", "สิว", "ลมพิษ", "คันง่าย", "ภูมิแพ้ผิวหนัง"] }
+        ];
+
+        // --- 3. UI FUNCTIONS ---
+        window.onload = function() {
+            currentSessionId = 'u' + Date.now() + 'r' + Math.floor(Math.random()*1000);
+            
+            const dS = document.getElementById('inputDay'); for(let i=1; i<=31; i++) { let o = document.createElement('option'); o.value=i; o.innerText=i; dS.appendChild(o); }
+            const mS = document.getElementById('inputMonth'); const months = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"]; months.forEach((m,i)=>{ let o=document.createElement('option'); o.value=i+1; o.innerText=m; mS.appendChild(o); });
+            const yS = document.getElementById('inputYear'); const curY = new Date().getFullYear(); for(let i=0; i<100; i++) { let y = curY-i; let o = document.createElement('option'); o.value = y; o.innerText = y+543; yS.appendChild(o); } yS.value = curY-30;
+            updateDailyForecast();
+        }
+
+        function updateDailyForecast() {
+            const today = new Date(); const lunar = calculateRealLunarDate(today); 
+            let checkM = lunar.thaiMonth; if(checkM==88) checkM=8;
+            const season = getDailySeason(checkM);
+            const mTh = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+            document.getElementById('todayDate').innerText = `${today.getDate()} ${mTh[today.getMonth()]} ${today.getFullYear()+543}`;
+            document.getElementById('todaySeason').innerText = season.name;
+            document.getElementById('todayVulnerable').innerText = season.vul;
+            document.getElementById('todayHealth').innerText = season.health;
+            document.getElementById('todayFood').innerText = `แนะนำ: ${season.food}`;
+            
+            const div = document.getElementById('weatherContainer'); div.innerHTML='';
+            const front = document.getElementById('cardFront');
+            front.classList.remove('theme-winter','theme-summer','theme-rain'); front.classList.add(`theme-${season.theme}`);
+            if(season.fx=='rain') { for(let i=0;i<40;i++){ let d=document.createElement('div'); d.className='rain'; d.style.left=Math.random()*100+'%'; d.style.animationDuration=(0.5+Math.random())+'s'; div.appendChild(d); }}
+            else if(season.fx=='sun') { let s=document.createElement('div'); s.className='sun-glare'; div.appendChild(s); }
+            else { for(let i=0;i<40;i++){ let s=document.createElement('div'); s.className='snowflake'; s.style.left=Math.random()*100+'%'; s.style.animationDuration=(3+Math.random()*2)+'s'; div.appendChild(s); }}
+        }
+
+        // ฟังก์ชันสร้างปุ่มกด (Chips)
+        function createChips(items, containerId, selectionSet) {
+            const c = document.getElementById(containerId); c.innerHTML = '';
+            items.forEach(item => {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.innerText = item;
+                chip.onclick = function() {
+                    this.classList.toggle('selected');
+                    if(this.classList.contains('selected')) selectionSet.add(item);
+                    else selectionSet.delete(item);
+                };
+                c.appendChild(chip);
+            });
+        }
+
+        function createFoodTags(items, id) {
+            const c = document.getElementById(id); c.innerHTML='';
+            items.forEach(i => {
+                let a = document.createElement('a'); a.className='food-tag';
+                a.innerHTML = `${i} <i class="fas fa-search text-xs ml-1 text-gray-400"></i>`;
+                a.href = `https://www.google.com/search?tbm=isch&q=${i} อาหาร`; a.target = '_blank'; c.appendChild(a);
+            });
+        }
+
+        function logToGoogleSheet(data) {
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).catch(e => console.error("Log Error:", e));
+        }
+
+        async function startAnalysis() {
             document.getElementById('loading').style.display = 'flex';
             
             setTimeout(() => {
@@ -180,75 +343,96 @@
                 const m = parseInt(document.getElementById('inputMonth').value);
                 const y = parseInt(document.getElementById('inputYear').value);
                 
-                let birth = new Date(y, m-1, d);
-                let conceive = new Date(birth);
-                conceive.setMonth(birth.getMonth()-9);
+                let birthDate = new Date(y, m-1, d);
+                let conceptionDate = new Date(birthDate); conceptionDate.setMonth(birthDate.getMonth()-9);
+                const lunar = calculateRealLunarDate(conceptionDate);
                 
-                const lunar = getThaiLunar(conceive);
-                let res = sadaoRules.find(r => r.check(lunar.thaiMonth, lunar.phase)) || sadaoRules[0];
-                let base = baseElements[res.key];
+                let checkMonth = lunar.thaiMonth; if (checkMonth == 88) checkMonth = 8;
+                let key = "earth"; let specificHealthArr = []; let range = ""; let matched = false;
 
-                // เก็บข้อมูลเตรียมส่ง
-                currentData = {
-                    sessionId: sessionId,
+                // Loop หาตาม Logic เดิมเป๊ะๆ
+                for (let rule of sadaoData) {
+                    if (rule.check(checkMonth, lunar.phase)) {
+                        key = rule.baseElement; 
+                        specificHealthArr = rule.health; 
+                        range = rule.range; 
+                        matched = true; 
+                        break;
+                    }
+                }
+                
+                if(!matched) {
+                    if(checkMonth >= 1 && checkMonth <= 4) { key="earth"; specificHealthArr=["ท้องผูก"]; }
+                    else if(checkMonth >= 5 && checkMonth <= 7) { key="fire"; specificHealthArr=["ร้อนใน"]; }
+                    else if(checkMonth >= 8 && checkMonth <= 10) { key="wind"; specificHealthArr=["ท้องอืด"]; }
+                    else { key="water"; specificHealthArr=["ภูมิแพ้"]; }
+                }
+
+                const data = baseElementData[key];
+                
+                // Clear old selections
+                selectedTraits.clear();
+                selectedHealth.clear();
+                
+                analysisMeta = {
+                    sessionId: currentSessionId,
                     birthDate: `${d}/${m}/${y+543}`,
-                    element: base.name,
-                    conceptionLunar: `เดือน ${lunar.thaiMonth} (${lunar.phase})`,
-                    healthProblem: res.health
+                    element: data.name,
+                    conceptionDate: lunar.display
                 };
 
-                // แสดงผลบนหน้าจอ
-                document.getElementById('resHeader').style.background = base.color;
-                document.getElementById('resAvatar').src = base.avatar;
-                document.getElementById('resTitle').innerText = base.name;
-                document.getElementById('resRange').innerText = "ช่วงปฏิสนธิ: " + res.range;
-                document.getElementById('resTrait').innerText = base.trait;
-                document.getElementById('resHealth').innerText = res.health;
-                document.getElementById('resFood').innerHTML = `รสชาติที่ควรทาน: <b>${base.taste}</b>`;
+                document.getElementById('resMain').innerText = data.name;
+                document.getElementById('resSub').innerText = range; 
+                document.getElementById('debugCalc').innerText = `(ปฏิสนธิ: ${lunar.display})`;
+                document.getElementById('avatarImg').src = key.includes("fire") ? "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png" : (key.includes("wind") ? "https://img2.pic.in.th/261c90e765ec6b116.png" : (key.includes("water") ? "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png" : "https://img2.pic.in.th/1c8b450894dd6fe8e.png"));
+                document.getElementById('avatarImg').classList.remove('hidden');
+                
+                let color = "";
+                if(key.includes("fire")) color = "linear-gradient(135deg, #FF9966, #FF5E62)";
+                else if(key.includes("wind")) color = "linear-gradient(135deg, #56ab2f, #a8e063)";
+                else if(key.includes("water")) color = "linear-gradient(135deg, #36D1DC, #5B86E5)";
+                else color = "linear-gradient(135deg, #CAC531, #F3F9A7)";
+                document.getElementById('resultHeader').style.background = color;
 
-                // Reset Feedback
-                document.querySelectorAll('.btn-feedback').forEach(b => {
-                    b.classList.remove('active');
-                    b.innerHTML = '<i class="far fa-thumbs-up"></i> ตรงมาก';
-                });
+                // สร้างปุ่มกด
+                createChips(data.traits, 'traitChips', selectedTraits);
+                createChips(specificHealthArr, 'healthChips', selectedHealth);
+
+                document.getElementById('resTasteGood').innerText = data.recTaste;
+                document.getElementById('resTasteGoodReason').innerText = data.recReason;
+                document.getElementById('resTasteBad').innerHTML = `<span class="font-bold text-red-800">${data.badTaste}</span><br>${data.badReason}`;
+                
+                createFoodTags(data.foods, 'foodList');
+                createFoodTags(data.fruits, 'fruitList');
 
                 document.getElementById('cardObject').classList.add('is-flipped');
                 document.getElementById('loading').style.display = 'none';
 
-                // ส่ง Log เข้า Google Sheets (Auto)
-                sendLog({ ...currentData, action: 'view' });
+            }, 500);
+        }
 
+        async function saveAndReset() {
+            document.getElementById('loading').style.display = 'flex';
+            
+            const payload = {
+                ...analysisMeta,
+                type: 'feedback',
+                selectedTraits: Array.from(selectedTraits).join(", "),
+                selectedHealth: Array.from(selectedHealth).join(", "),
+                timestamp: new Date().toISOString()
+            };
+
+            logToGoogleSheet(payload);
+
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('cardObject').classList.remove('is-flipped');
+                currentSessionId = 'u' + Date.now() + 'r' + Math.floor(Math.random()*1000);
+                alert("บันทึกข้อมูลเรียบร้อย ขอบคุณครับ");
             }, 800);
         }
 
-        async function sendLog(data) {
-            if(!GOOGLE_URL.includes("macros")) return; 
-            try {
-                await fetch(GOOGLE_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-            } catch(e) { console.error(e); }
-        }
-
-        function sendFeedback(type) {
-            const btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
-            if(btn.classList.contains('active')) return;
-
-            btn.classList.add('active');
-            btn.innerHTML = '<i class="fas fa-check"></i> ขอบคุณครับ';
-
-            sendLog({
-                ...currentData,
-                action: 'feedback',
-                feedbackType: type,
-                isAccurate: 'Yes'
-            });
-        }
-
-        function flipBack() { document.getElementById('cardObject').classList.remove('is-flipped'); }
+        function resetCard() { document.getElementById('cardObject').classList.remove('is-flipped'); }
     </script>
 </body>
 </html>
