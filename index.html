@@ -59,6 +59,7 @@
         .section-title { font-size: 15px; font-weight: bold; color: var(--green-deep); margin-bottom: 12px; display: flex; align-items: center; background: linear-gradient(to right, rgba(255,255,255,0.95), rgba(255,255,255,0.7)); padding: 8px 12px; border-radius: 10px; border-left: 4px solid var(--gold-main); box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .detail-box { background: #FAFAFA; border-radius: 16px; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.03); font-size: 13px; color: #555; line-height: 1.7; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         .food-tag { display: inline-block; padding: 8px 14px; margin: 0 6px 8px 0; background: white; border: 1px solid #E0E0E0; border-radius: 25px; font-size: 12px; color: #333; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
+        
         .debug-info { font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; }
     </style>
 </head>
@@ -157,133 +158,9 @@
     </div>
 
     <script>
-        // --- 1. Thai Lunar Calendar Class (Pongsathorn's Algorithm) ---
-        class ThaiLunarCalendar {
-            constructor() {
-                this.startYData = [
-                    [1901, 0.122733000004352], [1906, 1.91890000045229E-02], [1911, -8.43549999953059E-02], [1916, -0.187898999995135], [1921, -0.291442999994964],
-                    [1926, 7.44250000052413E-02], [1931, -2.91189999945876E-02], [1936, -0.132662999994416], [1941, -0.236206999994245], [1946, -0.339750999994074],
-                    [1951, -0.443294999993903], [1956, -7.74269999936981E-02], [1961, -0.180970999993527], [1966, -0.284514999993356], [1971, -0.388058999993185],
-                    [1976, -0.491602999993014], [1981, -0.595146999992842], [1986, -0.698690999992671], [1991, -0.332822999992466], [1996, -0.436366999992295],
-                    [2001, -0.539910999992124], [2006, -0.643454999991953], [2011, 0.253001000008218], [2016, 0.149457000008389], [2021, -0.484674999991406],
-                    [2026, -0.588218999991235], [2031, 0.308237000008937], [2036, 0.204693000009108], [2041, 0.101149000009279], [2046, -2.39499999055015E-03],
-                    [2051, -0.105938999990379], [2056, 0.259929000009826], [2061, 0.156385000009997], [2066, 5.28410000101682E-02], [2071, -5.07029999896607E-02],
-                    [2076, -0.15424699998949], [2081, -0.257790999989318], [2086, 0.108077000010887], [2091, 4.53300001105772E-03], [2096, -9.90109999887712E-02],
-                    [2101, -0.2025549999886], [2106, -0.306098999988429], [2111, -0.409642999988258], [2116, -4.37749999880528E-02], [2121, -0.147318999987882],
-                    [2126, -0.250862999987711], [2131, -0.354406999987539], [2136, -0.457950999987368], [2141, -0.561494999987197], [2146, -0.665038999987026],
-                    [2151, -0.299170999986821], [2156, -0.40271499998665], [2161, -0.506258999986479], [2166, -0.609802999986308], [2171, -0.713346999986137],
-                    [2176, 0.183109000014035], [2181, -0.45102299998576], [2186, -0.554566999985589], [2191, 0.341889000014582], [2196, 0.238345000014753],
-                    [2201, 0.134801000014924], [2206, 3.12570000150951E-02], [2211, -7.22869999847338E-02], [2216, 0.293581000015471], [2221, 0.190037000015642],
-                    [2226, 8.64930000158135E-02], [2231, -1.70509999840154E-02], [2236, -0.120594999983844], [2241, -0.224138999983673], [2246, 0.141729000016532],
-                    [2251, 0.038185000016703], [2256, -6.53589999831259E-02], [2261, -0.168902999982955], [2266, -0.272446999982784], [2271, -0.375990999982613],
-                    [2276, -1.01229999824075E-02], [2281, -0.113666999982236], [2286, -0.217210999982065], [2291, -0.320754999981894], [2296, -0.424298999981723],
-                    [2301, -0.527842999981552], [2306, -0.631386999981381], [2311, -0.265518999981176], [2316, -0.369062999981005], [2321, -0.472606999980834],
-                    [2326, -0.576150999980662], [2331, -0.679694999980491], [2336, 0.21676100001968], [2341, -0.417370999980115], [2346, -0.520914999979944],
-                    [2351, -0.624458999979773], [2356, 0.271997000020398], [2361, 0.168453000020569], [2366, 6.49090000207404E-02], [2371, -3.86349999790885E-02],
-                    [2376, 0.327233000021117], [2381, 0.223689000021288], [2386, 0.120145000021459], [2391, 1.66010000216299E-02], [2396, -0.086942999978199],
-                    [2401, -0.190486999978028], [2406, 0.175381000022177], [2411, 7.18370000223483E-02], [2416, -3.17069999774806E-02], [2421, -0.135250999977309],
-                    [2426, -0.238794999977138], [2431, -0.342338999976967], [2436, 2.35290000232378E-02], [2441, -8.00149999765911E-02], [2446, -0.18355899997642],
-                    [2451, -0.287102999976249], [2456, -0.390646999976078]
-                ];
-                this.sDate = [
-                    new Date(1902, 10, 30), new Date(1912, 11, 8), new Date(1922, 10, 19), new Date(1932, 10, 27), new Date(1942, 11, 7),
-                    new Date(1952, 10, 16), new Date(1962, 10, 26), new Date(1972, 11, 5), new Date(1982, 10, 15), new Date(1992, 10, 24),
-                    new Date(2002, 11, 4), new Date(2012, 10, 13), new Date(2022, 10, 23), new Date(2032, 11, 2), new Date(2042, 11, 12),
-                    new Date(2052, 10, 21), new Date(2062, 11, 1), new Date(2072, 11, 9), new Date(2082, 10, 20), new Date(2092, 10, 28),
-                    new Date(2102, 11, 9), new Date(2112, 10, 18), new Date(2122, 10, 28), new Date(2132, 11, 7), new Date(2142, 10, 17),
-                    new Date(2152, 10, 26), new Date(2162, 11, 6), new Date(2172, 10, 15), new Date(2182, 10, 25), new Date(2192, 11, 4),
-                    new Date(2202, 11, 15), new Date(2212, 10, 24), new Date(2222, 11, 4), new Date(2232, 11, 12), new Date(2242, 10, 23),
-                    new Date(2252, 11, 1), new Date(2262, 11, 11), new Date(2272, 10, 20), new Date(2282, 10, 30), new Date(2292, 11, 9),
-                    new Date(2302, 10, 20), new Date(2312, 10, 29), new Date(2322, 11, 9), new Date(2332, 10, 18), new Date(2342, 10, 28),
-                    new Date(2352, 11, 7), new Date(2362, 11, 17), new Date(2372, 10, 26), new Date(2382, 11, 6), new Date(2392, 11, 14),
-                    new Date(2402, 10, 25), new Date(2412, 11, 3), new Date(2422, 11, 13), new Date(2432, 10, 23), new Date(2442, 11, 2),
-                    new Date(2452, 11, 11)
-                ];
-            }
-            xlMod(a, b) { return a - b * Math.floor(a / b); }
-            athikaMas(iYear) { let athi = this.xlMod((iYear - 78) - 0.45222, 2.7118886); return athi < 1; }
-            athikaVar(iYear) {
-                let cutOff;
-                if (this.athikaMas(iYear)) return false;
-                else {
-                    if (this.athikaMas(iYear + 1)) cutOff = 1.69501433191599E-02;
-                    else cutOff = -1.42223099315486E-02;
-                    return this.deviation(iYear) > cutOff;
-                }
-            }
-            deviation(iYear) {
-                let fDev = 0, fYear = 0, currDev = 0, lastDev = 0;
-                for (let k = 0; k < this.startYData.length; k++) {
-                    if (iYear >= this.startYData[k][0]) { fYear = this.startYData[k][0]; fDev = this.startYData[k][1]; } else break;
-                }
-                if (fYear === 0) return 0;
-                if (iYear === fYear) currDev = fDev;
-                else {
-                    fYear = fYear + 1;
-                    for (let i = fYear; i <= iYear; i++) {
-                        if (i === fYear) lastDev = fDev; else lastDev = currDev;
-                        if (this.athikaMas(i - 1)) currDev = -0.102356;
-                        else if (this.athikaVar(i - 1)) currDev = -0.632944;
-                        else currDev = 0.367056;
-                        currDev = lastDev + currDev;
-                    }
-                }
-                return currDev;
-            }
-            lDayInYear(iYear) {
-                if (this.athikaMas(iYear)) return 384;
-                else if (this.athikaVar(iYear)) return 355;
-                else return 354;
-            }
-            getThaiLunarDate(iDate) {
-                const year = iDate.getFullYear();
-                if (year < 1903 || year > 2460) return null;
-                let beginDate;
-                const cYear = year - 1;
-                const startYearBase = 1902;
-                let block = Math.floor((cYear - startYearBase) / 10);
-                if (block < 0) block = 0; if (block > 55) block = 55;
-                beginDate = new Date(this.sDate[block]); 
-                let tempDate = new Date(beginDate);
-                for (let i = beginDate.getFullYear() + 1; i <= year - 1; i++) {
-                    let dayInYear = this.lDayInYear(i);
-                    tempDate.setDate(tempDate.getDate() + dayInYear);
-                }
-                beginDate = new Date(tempDate);
-                let endOfPrevYear = new Date(beginDate.getFullYear(), 11, 31);
-                let rDayPrev = Math.round((endOfPrevYear - beginDate) / (1000 * 60 * 60 * 24));
-                let startOfCurrentYear = new Date(year, 0, 1);
-                let dayOfYear = Math.round((iDate - startOfCurrentYear) / (1000 * 60 * 60 * 24));
-                let dayFromOne = rDayPrev + dayOfYear + 1;
-                let nbLDayYear = this.lDayInYear(year);
-                let dofY = dayFromOne, thM, thS;
-                let monthDays = [];
-                if (nbLDayYear === 354) monthDays = [29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30]; 
-                else if (nbLDayYear === 355) monthDays = [29, 30, 29, 30, 29, 30, 30, 30, 29, 30, 29, 30, 29, 30]; 
-                else if (nbLDayYear === 384) monthDays = [29, 30, 29, 30, 29, 30, 29, 30, 30, 29, 30, 29, 30, 29, 30];
-                for (let j = 0; j < monthDays.length; j++) {
-                    thM = j + 1;
-                    if (dofY <= monthDays[j] && dofY > 0) break;
-                    else dofY -= monthDays[j];
-                }
-                if (nbLDayYear === 384) {
-                     if (thM > 13) thM -= 13;
-                     if (thM === 9) thM = 88; else if (thM >= 10) thM = thM - 1;
-                } else {
-                    if (thM > 12) thM -= 12;
-                }
-                if (dofY > 15) { thS = "Waning"; dofY -= 15; } else { thS = "Waxing"; }
-                const tNum = ["๐", "๑", "๒", "๓", "๔", "๕", "๖", "๗", "๘", "๙"];
-                const toT = (n) => n.toString().split('').map(x => tNum[x] || x).join('');
-                let mDisplay = thM;
-                if(thM == 88) mDisplay = "๘๘";
-                else mDisplay = toT(thM);
-                
-                return { phase: thS, day: dofY, month: thM, year: year, display: `${thS=='Waxing'?'ขึ้น':'แรม'} ${toT(dofY)} ค่ำ เดือน ${mDisplay}` };
-            }
-        }
+        // 1. Data & Variables
+        const adhikamasaYears = [1947,1950,1953,1956,1958,1961,1964,1966,1969,1972,1975,1977,1980,1983,1986,1988,1991,1994,1997,1999,2002,2004,2007,2010,2012,2015,2018,2020,2023,2026,2029,2031,2034,2037,2040,2042,2045,2048,2051,2053,2056,2059,2062,2065,2068];
 
-        // --- 2. Data from PDF ---
         const baseElementData = {
             earth: {
                 name: "ธาตุดิน (ปถวี)",
@@ -325,7 +202,7 @@
                 foods: ["แกงส้มดอกแค", "ต้มยำปลา", "ห่อหมก", "แกงเหลือง", "น้ำพริกมะขาม", "ส้มตำ"],
                 fruits: ["สับปะรด", "ส้มโอ", "มะเฟือง", "มะขามป้อม", "ตะลิงปลิง"]
             },
-            fire_wind: { // Mixed for Month 8-9
+            fire_wind: { // Special mix for Month 8-9 overlap
                 name: "ธาตุไฟระคนลม (ช่วงรอยต่อ)",
                 trait: "ผสมผสาน: หงุดหงิดง่าย (ไฟ) แต่ขี้กังวล (ลม) พูดเร็ว คิดเร็ว",
                 recTaste: "จืด, หอมเย็น, สุขุม",
@@ -359,6 +236,12 @@
                 check: (m, p) => (m==4 && p=='Waning') || (m==5 && p=='Waxing'),
                 range: "แรม ๑ ค่ำ เดือน ๔ - ขึ้น ๑๕ ค่ำ เดือน ๕", baseElement: "fire",
                 specificHealth: "เป็นลม หน้ามืด ไข้แดด ร้อนใน หลับยาก"
+            },
+            // *Gap Fills* : Month 5 Waning - Month 6 Waxing -> Map to Fire (General)
+            {
+                check: (m, p) => (m==5 && p=='Waning') || (m==6 && p=='Waxing'),
+                range: "แรม ๑ ค่ำ เดือน ๕ - ขึ้น ๑๕ ค่ำ เดือน ๖", baseElement: "fire",
+                specificHealth: "เสี่ยงต่อความร้อนภายใน ร้อนใน กระหายน้ำ (ช่วงรอยต่อฤดู)"
             },
             {
                 check: (m, p) => (m==6 && p=='Waning') || (m==7 && p=='Waxing'),
@@ -406,7 +289,7 @@
             winter: { name: "เหมันตฤดู (หนาว)", vul: "ธาตุน้ำ/ดิน", health: "ผิวแห้ง ปวดข้อ น้ำมูกไหล", food: "อาหารรสมัน เค็ม ร้อน", theme: "winter", fx: "snow" }
         };
 
-        // --- 3. App Logic ---
+        // 2. Main Logic
         window.onload = function() {
             const dS = document.getElementById('inputDay'); 
             for(let i=1; i<=31; i++) { let o = document.createElement('option'); o.value=i; o.innerText=i; dS.appendChild(o); }
@@ -420,17 +303,42 @@
             for(let i=0; i<100; i++) { 
                 let y = curY-i; 
                 let o = document.createElement('option'); 
-                o.value = y; // AD Value
-                o.innerText = y+543; // BE Display
+                o.value = y; // Value is AD
+                o.innerText = y+543; // Show BE
                 yS.appendChild(o); 
             }
             yS.value = curY-30;
+            
             updateDailyForecast();
         }
 
-        // Calculate a more precise moon phase for daily forecast
-        // Note: The main logic uses the ThaiLunarCalendar class for precision
-        const calendar = new ThaiLunarCalendar();
+        function calculateRealLunarDate(date) {
+            const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); 
+            const diffDays = (date.getTime() - knownNewMoon.getTime()) / (1000 * 3600 * 24);
+            let moonAge = (diffDays % 29.53059) + 1.3;
+            if (moonAge < 0) moonAge += 29.53059; 
+            if (moonAge > 29.53059) moonAge -= 29.53059;
+            
+            let lastNewMoon = new Date(date); 
+            lastNewMoon.setDate(date.getDate() - Math.floor(moonAge));
+            let nmMonth = lastNewMoon.getMonth() + 1;
+            
+            // Standard Mapping Dec=1(Ai), Jan=2(Yee)
+            const map = {12:1, 1:2, 2:3, 3:4, 4:5, 5:6, 6:7, 7:8, 8:9, 9:10, 10:11, 11:12};
+            let thaiMonth = map[nmMonth];
+            let phase = Math.floor(moonAge) + 1 <= 15 ? "Waxing" : "Waning";
+            
+            if (adhikamasaYears.includes(date.getFullYear()) && (nmMonth>=7 || nmMonth<=3)) { 
+                thaiMonth -= 1; if(thaiMonth<=0) thaiMonth=12; 
+            }
+            
+            // Generate Display Text
+            const tNum = ["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];
+            const toT = (n) => n.toString().split('').map(x=>tNum[x]||x).join('');
+            const dStr = `${phase=='Waxing'?'ขึ้น':'แรม'} ${toT(Math.floor(moonAge)+1 > 15 ? Math.floor(moonAge)+1-15 : Math.floor(moonAge)+1)} ค่ำ เดือน ${toT(thaiMonth)}`;
+            
+            return { thaiMonth, phase, display: dStr };
+        }
 
         function getDailySeason(m) {
             if (m>=5 && m<=6) return seasonData.summer;
@@ -439,15 +347,9 @@
         }
 
         function updateDailyForecast() {
-            const today = new Date();
-            const lunar = calendar.getThaiLunarDate(today);
-            if(!lunar) return;
-
-            // Handle Adhikamas display month for season check
-            let checkMonth = lunar.month;
-            if (checkMonth == 88) checkMonth = 8;
-
-            const season = getDailySeason(checkMonth);
+            const today = new Date(); 
+            const lunar = calculateRealLunarDate(today); 
+            const season = getDailySeason(lunar.thaiMonth);
             
             const mTh = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
             document.getElementById('todayDate').innerText = `${today.getDate()} ${mTh[today.getMonth()]} ${today.getFullYear()+543}`;
@@ -456,6 +358,7 @@
             document.getElementById('todayHealth').innerText = season.health;
             document.getElementById('todayFood').innerText = `แนะนำ: ${season.food}`;
             
+            // FX
             const div = document.getElementById('weatherContainer'); div.innerHTML='';
             const front = document.getElementById('cardFront');
             front.classList.remove('theme-winter','theme-summer','theme-rain');
@@ -479,34 +382,39 @@
         async function startAnalysis() {
             const d = parseInt(document.getElementById('inputDay').value);
             const m = parseInt(document.getElementById('inputMonth').value);
-            const y = parseInt(document.getElementById('inputYear').value);
+            const y = parseInt(document.getElementById('inputYear').value); // Value is AD
 
             let birthDate = new Date(y, m-1, d);
-            // Conception Date = Birth Date - 9 Months
             let conceptionDate = new Date(birthDate); 
             conceptionDate.setMonth(birthDate.getMonth()-9);
             
-            // Use High Precision Calculation
-            const lunar = calendar.getThaiLunarDate(conceptionDate);
-            if (!lunar) { alert("วันที่อยู่นอกเหนือช่วงที่รองรับ (พ.ศ. 2446-2599)"); return; }
-
-            // Handle Adhikamas (Month 88) for rule checking
-            // Treat 88 as 8 for element checking rules
-            let checkMonth = lunar.month;
-            if (checkMonth == 88) checkMonth = 8;
+            const lunar = calculateRealLunarDate(conceptionDate);
             
             // Logic Selection using PDF Rules
             let key = "earth"; 
             let specificHealth = "";
             let range = "";
 
+            // Find matching rule from array
+            let matched = false;
             for (let rule of sadaoData) {
-                if (rule.check(checkMonth, lunar.phase)) {
+                // FIXED VARIABLE NAME: lunar.thaiMonth instead of checkMonth or month
+                if (rule.check(lunar.thaiMonth, lunar.phase)) {
                     key = rule.baseElement;
                     specificHealth = rule.specificHealth;
                     range = rule.range;
+                    matched = true;
                     break;
                 }
+            }
+            
+            // Fallback for gaps if any
+            if (!matched) {
+               // Default based on month group if not matched by specific phase
+               if (lunar.thaiMonth >= 1 && lunar.thaiMonth <= 4) { key="earth"; specificHealth = "สุขภาพโดยรวมแข็งแรง แต่อาจมีปัญหาท้องผูกบ้าง"; }
+               else if (lunar.thaiMonth >= 5 && lunar.thaiMonth <= 7) { key="fire"; specificHealth = "ระวังความร้อนภายใน ร้อนในง่าย"; }
+               else if (lunar.thaiMonth >= 8 && lunar.thaiMonth <= 10) { key="wind"; specificHealth = "ระวังเรื่องลมในกระเพาะและวิงเวียน"; }
+               else { key="water"; specificHealth = "ระวังภูมิแพ้อากาศและเสมหะ"; }
             }
 
             const data = baseElementData[key];
@@ -519,7 +427,7 @@
             else { color="linear-gradient(135deg, #CAC531, #F3F9A7)"; avatar="https://img2.pic.in.th/1c8b450894dd6fe8e.png"; }
 
             document.getElementById('resMain').innerText = data.name;
-            document.getElementById('resSub').innerText = range; 
+            document.getElementById('resSub').innerText = lunar.display; 
             
             // Verify Box
             document.getElementById('debugCalc').innerText = `(ปฏิสนธิ: ${lunar.display})`;
@@ -541,7 +449,6 @@
 
             document.getElementById('cardObject').classList.add('is-flipped');
             
-            // Optional: Log to Google Sheet
             try {
                 const birthDateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 fetch(SCRIPT_URL, {
