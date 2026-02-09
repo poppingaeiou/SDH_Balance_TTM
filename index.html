@@ -74,9 +74,10 @@
         .section-title { font-size: 16px; font-weight: bold; color: var(--green-deep); display: flex; align-items: center; margin-top: 15px; margin-bottom: 5px; }
         .section-title i { margin-right: 8px; color: var(--gold-main); font-size: 18px; }
         
+        /* Helper Text */
         .helper-text { font-size: 11px; color: #888; margin-bottom: 10px; display: block; font-style: italic; }
 
-        /* Chips / Tags Styles */
+        /* Chips / Tags */
         .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .chip {
             padding: 8px 14px; background: white; border: 1px solid #ddd;
@@ -338,82 +339,107 @@
             });
         }
 
+        // --- OPTIMIZED LOGGING (Fire & Forget) ---
+        function logToGoogleSheet(data) {
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).catch(e => console.error("Log Error:", e));
+        }
+
         async function startAnalysis() {
             document.getElementById('loading').style.display = 'flex';
             
-            setTimeout(async () => {
-                const d = parseInt(document.getElementById('inputDay').value);
-                const m = parseInt(document.getElementById('inputMonth').value);
-                const y = parseInt(document.getElementById('inputYear').value);
-                
-                let birthDate = new Date(y, m-1, d);
-                let conceptionDate = new Date(birthDate); conceptionDate.setMonth(birthDate.getMonth()-9);
-                const lunar = calculateRealLunarDate(conceptionDate);
-                
-                if (!lunar) { alert("ปีไม่อยู่ในช่วงที่รองรับ"); document.getElementById('loading').style.display = 'none'; return; }
+            // Reduced Timeout for faster feel (100ms)
+            setTimeout(() => {
+                try {
+                    const d = parseInt(document.getElementById('inputDay').value);
+                    const m = parseInt(document.getElementById('inputMonth').value);
+                    const y = parseInt(document.getElementById('inputYear').value);
+                    
+                    let birthDate = new Date(y, m-1, d);
+                    let conceptionDate = new Date(birthDate); conceptionDate.setMonth(birthDate.getMonth()-9);
+                    const lunar = calculateRealLunarDate(conceptionDate);
+                    
+                    if (!lunar) { alert("ปีไม่อยู่ในช่วงที่รองรับ"); document.getElementById('loading').style.display = 'none'; return; }
 
-                let checkMonth = lunar.month; if (checkMonth == 88) checkMonth = 8;
-                let key = "earth"; let specificHealthArr = []; let range = ""; let matched = false;
+                    let checkMonth = lunar.month; if (checkMonth == 88) checkMonth = 8;
+                    let key = "earth"; let specificHealthArr = []; let range = ""; let matched = false;
 
-                for (let rule of sadaoData) {
-                    if (rule.check(checkMonth, lunar.phase)) {
-                        key = rule.baseElement; 
-                        specificHealthArr = rule.health; 
-                        range = rule.range; 
-                        matched = true; 
-                        break;
+                    for (let rule of sadaoData) {
+                        if (rule.check(checkMonth, lunar.phase)) {
+                            key = rule.baseElement; 
+                            specificHealthArr = rule.health; 
+                            range = rule.range; 
+                            matched = true; 
+                            break;
+                        }
                     }
+                    
+                    if(!matched) {
+                        if(checkMonth >= 1 && checkMonth <= 4) { key="earth"; specificHealthArr=["ท้องผูก"]; }
+                        else if(checkMonth >= 5 && checkMonth <= 7) { key="fire"; specificHealthArr=["ร้อนใน"]; }
+                        else if(checkMonth >= 8 && checkMonth <= 10) { key="wind"; specificHealthArr=["ท้องอืด"]; }
+                        else { key="water"; specificHealthArr=["ภูมิแพ้"]; }
+                    }
+
+                    const data = baseElementData[key];
+                    
+                    // Clear old selections
+                    selectedTraits.clear();
+                    selectedHealth.clear();
+                    
+                    // Save meta
+                    analysisMeta = {
+                        sessionId: currentSessionId,
+                        birthDate: `${d}/${m}/${y+543}`,
+                        element: data.name,
+                        conceptionDate: lunar.display
+                    };
+
+                    // UI Updates
+                    document.getElementById('resMain').innerText = data.name;
+                    document.getElementById('resSub').innerText = range; 
+                    document.getElementById('debugCalc').innerText = `(ปฏิสนธิ: ${lunar.display})`;
+                    document.getElementById('avatarImg').src = key.includes("fire") ? "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png" : (key.includes("wind") ? "https://img2.pic.in.th/261c90e765ec6b116.png" : (key.includes("water") ? "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png" : "https://img2.pic.in.th/1c8b450894dd6fe8e.png"));
+                    document.getElementById('avatarImg').classList.remove('hidden');
+                    
+                    let color = "";
+                    if(key.includes("fire")) color = "linear-gradient(135deg, #FF9966, #FF5E62)";
+                    else if(key.includes("wind")) color = "linear-gradient(135deg, #56ab2f, #a8e063)";
+                    else if(key.includes("water")) color = "linear-gradient(135deg, #36D1DC, #5B86E5)";
+                    else color = "linear-gradient(135deg, #CAC531, #F3F9A7)";
+                    document.getElementById('resultHeader').style.background = color;
+
+                    createChips(data.traits, 'traitChips', selectedTraits);
+                    createChips(specificHealthArr, 'healthChips', selectedHealth);
+
+                    document.getElementById('resTasteGood').innerText = data.recTaste;
+                    document.getElementById('resTasteGoodReason').innerText = data.recReason;
+                    document.getElementById('resTasteBad').innerHTML = `<span class="font-bold text-red-800">${data.badTaste}</span><br>${data.badReason}`;
+                    
+                    createFoodTags(data.foods, 'foodList');
+                    createFoodTags(data.fruits, 'fruitList');
+
+                    // 1. Flip & Hide Spinner FIRST (Fast UX)
+                    document.getElementById('cardObject').classList.add('is-flipped');
+                    document.getElementById('loading').style.display = 'none';
+
+                    // 2. Log Data in Background (Don't wait)
+                    logToGoogleSheet({
+                        type: 'analysis',
+                        sessionId: currentSessionId,
+                        timestamp: new Date().toISOString(),
+                        ...analysisMeta
+                    });
+
+                } catch (e) {
+                    console.error(e);
+                    alert("เกิดข้อผิดพลาดในการประมวลผล");
+                    document.getElementById('loading').style.display = 'none';
                 }
-                
-                if(!matched) {
-                    if(checkMonth >= 1 && checkMonth <= 4) { key="earth"; specificHealthArr=["ท้องผูก"]; }
-                    else if(checkMonth >= 5 && checkMonth <= 7) { key="fire"; specificHealthArr=["ร้อนใน"]; }
-                    else if(checkMonth >= 8 && checkMonth <= 10) { key="wind"; specificHealthArr=["ท้องอืด"]; }
-                    else { key="water"; specificHealthArr=["ภูมิแพ้"]; }
-                }
-
-                const data = baseElementData[key];
-                
-                // Clear old selections
-                selectedTraits.clear();
-                selectedHealth.clear();
-                
-                // Save meta
-                analysisMeta = {
-                    sessionId: currentSessionId,
-                    birthDate: `${d}/${m}/${y+543}`,
-                    element: data.name,
-                    conceptionDate: lunar.display
-                };
-
-                // UI Updates
-                document.getElementById('resMain').innerText = data.name;
-                document.getElementById('resSub').innerText = range; 
-                document.getElementById('debugCalc').innerText = `(ปฏิสนธิ: ${lunar.display})`;
-                document.getElementById('avatarImg').src = key.includes("fire") ? "https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png" : (key.includes("wind") ? "https://img2.pic.in.th/261c90e765ec6b116.png" : (key.includes("water") ? "https://img5.pic.in.th/file/secure-sv1/3141eb0166e3e7f51.png" : "https://img2.pic.in.th/1c8b450894dd6fe8e.png"));
-                document.getElementById('avatarImg').classList.remove('hidden');
-                
-                let color = "";
-                if(key.includes("fire")) color = "linear-gradient(135deg, #FF9966, #FF5E62)";
-                else if(key.includes("wind")) color = "linear-gradient(135deg, #56ab2f, #a8e063)";
-                else if(key.includes("water")) color = "linear-gradient(135deg, #36D1DC, #5B86E5)";
-                else color = "linear-gradient(135deg, #CAC531, #F3F9A7)";
-                document.getElementById('resultHeader').style.background = color;
-
-                createChips(data.traits, 'traitChips', selectedTraits);
-                createChips(specificHealthArr, 'healthChips', selectedHealth);
-
-                document.getElementById('resTasteGood').innerText = data.recTaste;
-                document.getElementById('resTasteGoodReason').innerText = data.recReason;
-                document.getElementById('resTasteBad').innerHTML = `<span class="font-bold text-red-800">${data.badTaste}</span><br>${data.badReason}`;
-                
-                createFoodTags(data.foods, 'foodList');
-                createFoodTags(data.fruits, 'fruitList');
-
-                document.getElementById('cardObject').classList.add('is-flipped');
-                document.getElementById('loading').style.display = 'none';
-
-            }, 600);
+            }, 100);
         }
 
         async function saveAndReset() {
@@ -422,27 +448,23 @@
             // Prepare Data
             const payload = {
                 ...analysisMeta,
+                type: 'feedback',
                 selectedTraits: Array.from(selectedTraits).join(", "),
-                selectedHealth: Array.from(selectedHealth).join(", ")
+                selectedHealth: Array.from(selectedHealth).join(", "),
+                timestamp: new Date().toISOString()
             };
 
-            // Send to Google Sheet
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-            } catch(e) { console.log(e); }
+            // Send to Google Sheet (Fire & Forget for speed, or await if you must confirm)
+            // Using Fire & Forget strategy to make it fast for user
+            logToGoogleSheet(payload);
 
-            // Reset UI
+            // Fake delay for UX (0.8s) then reset
             setTimeout(() => {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('cardObject').classList.remove('is-flipped');
-                currentSessionId = 'u' + Date.now(); // New Session
+                currentSessionId = 'u' + Date.now() + 'r' + Math.floor(Math.random()*1000);
                 alert("บันทึกข้อมูลเรียบร้อย ขอบคุณครับ");
-            }, 1000);
+            }, 800);
         }
 
         function resetCard() { document.getElementById('cardObject').classList.remove('is-flipped'); }
