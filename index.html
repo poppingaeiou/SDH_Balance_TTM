@@ -3,51 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sadao Elements V4.0 (Glass & FX)</title>
+    <title>Sadao Elements V6.0 (Corrected)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
         /* --- Themes & Variables --- */
-        :root { --gold: #D4AF37; --green: #1B4D3E; }
+        :root { --gold: #D4AF37; --green: #1B4D3E; --red-warn: #C62828; }
         body { 
             font-family: 'Prompt', sans-serif; 
-            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
             min-height: 100vh; overflow-x: hidden; color: #333;
         }
-        @keyframes gradientBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
 
         /* --- Glassmorphism --- */
         .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
         }
 
         /* --- 3D Flip & Layout --- */
         .card-scene { width: 100%; max-width: 420px; margin: 0 auto; min-height: 100vh; perspective: 1500px; display: flex; align-items: center; justify-content: center; padding: 20px 10px; }
-        .card-object { width: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy Flip */ }
-        .card-face { width: 100%; border-radius: 30px; backface-visibility: hidden; min-height: 800px; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .card-object { width: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .card-face { width: 100%; border-radius: 30px; backface-visibility: hidden; min-height: 850px; position: relative; overflow: hidden; display: flex; flex-direction: column; }
         .card-front { transform: rotateY(0deg); }
         .card-back { position: absolute; top: 0; left: 0; height: 100%; transform: rotateY(180deg); }
         .is-flipped { transform: rotateY(180deg); }
 
         /* --- Input & UI --- */
-        .custom-select { width: 100%; padding: 14px; border: 1px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.8); border-radius: 16px; font-family: 'Prompt'; outline: none; transition: 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .custom-select { width: 100%; padding: 14px; border: 1px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.9); border-radius: 16px; font-family: 'Prompt'; outline: none; transition: 0.3s; }
         .custom-select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(27,77,62,0.1); }
         
         .btn-bouncy { 
             background: linear-gradient(135deg, var(--green), #2E7D32); color: white; border: none; 
             padding: 16px; width: 100%; border-radius: 50px; font-size: 18px; font-weight: bold; 
             cursor: pointer; box-shadow: 0 10px 20px rgba(27,77,62,0.25); 
-            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 20; position: relative;
+            transition: transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 20; position: relative;
         }
         .btn-bouncy:active { transform: scale(0.95); }
 
@@ -58,42 +54,35 @@
             border: 4px solid rgba(255,255,255,0.6); background: white; overflow: hidden; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; z-index: 20; 
         }
-        .avatar-img { width: 100%; height: 100%; object-fit: cover; object-position: top; } /* Fix Head Cut */
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
         
-        /* --- Particle Effects (The Magic) --- */
+        /* --- Particle Effects --- */
         .fx-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
-        
-        /* 1. Rain */
-        .rain-drop { position: absolute; background: rgba(255,255,255,0.6); width: 2px; height: 15px; top: -20px; animation: rainFall linear infinite; }
+        .rain-drop { position: absolute; background: rgba(0,100,255,0.2); width: 2px; height: 15px; top: -20px; animation: rainFall linear infinite; }
         @keyframes rainFall { to { transform: translateY(800px); } }
-
-        /* 2. Sun/Flare */
-        .sun-flare { position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,255,200,0.8) 0%, rgba(255,255,255,0) 70%); animation: sunPulse 5s ease-in-out infinite; opacity: 0.7; }
+        .sun-flare { position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,200,50,0.4) 0%, rgba(255,255,255,0) 70%); animation: sunPulse 5s infinite; opacity: 0.7; }
         @keyframes sunPulse { 0%,100%{transform: scale(1);} 50%{transform: scale(1.1);} }
-
-        /* 3. Snow/Dust */
         .snow-flake { position: absolute; background: white; border-radius: 50%; top: -10px; animation: snowFall linear infinite; }
         @keyframes snowFall { to { transform: translateY(800px) rotate(360deg); } }
-
-        /* 4. Embers (Fire) */
         .ember { position: absolute; width: 6px; height: 6px; background: #FFCC00; border-radius: 50%; bottom: -10px; filter: blur(2px); animation: riseUp linear infinite; opacity: 0; }
         @keyframes riseUp { 0% {transform: translateY(0) scale(1); opacity: 1;} 100% {transform: translateY(-800px) scale(0); opacity: 0;} }
-
-        /* 5. Bubbles (Water) */
         .bubble { position: absolute; border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; bottom: -20px; animation: bubbleRise ease-in infinite; }
         @keyframes bubbleRise { 0% {transform: translateY(0) translateX(0);} 50% {transform: translateY(-400px) translateX(20px);} 100% {transform: translateY(-900px) translateX(-20px); opacity:0;} }
-
-        /* 6. Wind/Clouds */
         .wind-line { position: absolute; background: rgba(255,255,255,0.3); height: 2px; border-radius: 2px; animation: windBlow linear infinite; }
         @keyframes windBlow { from {transform: translateX(-100px);} to {transform: translateX(500px);} }
-
-        /* 7. Leaves (Earth) */
         .leaf { position: absolute; width: 12px; height: 12px; background: #81C784; border-radius: 2px 10px; animation: leafFall linear infinite; }
         @keyframes leafFall { 0%{transform: translateY(-20px) rotate(0deg);} 100%{transform: translateY(800px) rotate(360deg);} }
 
         /* Chips & Loading */
-        .chip { display: inline-block; padding: 6px 12px; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.05); border-radius: 20px; font-size: 12px; margin: 2px; cursor: pointer; transition: 0.2s; }
-        .chip.selected { background: var(--green); color: white; transform: scale(1.05); box-shadow: 0 4px 10px rgba(27,77,62,0.3); }
+        .chip { display: inline-block; padding: 6px 12px; background: white; border: 1px solid #eee; border-radius: 20px; font-size: 12px; margin: 3px; cursor: pointer; transition: 0.2s; color: #555; }
+        .chip.selected { background: var(--green); color: white; transform: scale(1.05); box-shadow: 0 4px 10px rgba(27,77,62,0.3); border-color: var(--green); }
+        .section-sub { font-size: 10px; color: #666; font-weight: normal; margin-left: auto; font-style: italic; }
+        
+        /* Popup */
+        #thankYouPopup { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .popup-content { background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 300px; width: 90%; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
         #loading { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 9999; backdrop-filter: blur(10px); flex-direction: column; align-items: center; justify-content: center; }
         .spinner { width: 50px; height: 50px; border: 4px solid #ddd; border-top-color: var(--green); border-radius: 50%; animation: spin 1s infinite; }
         @keyframes spin { to {transform: rotate(360deg);} }
@@ -101,19 +90,35 @@
 </head>
 <body class="flex flex-col items-center justify-center">
 
-    <div id="loading"><div class="spinner"></div><p class="mt-4 font-bold text-green-900">กำลังผูกดวง...</p></div>
+    <div id="loading"><div class="spinner"></div><p class="mt-4 font-bold text-green-900">กำลังประมวลผล...</p></div>
+
+    <div id="thankYouPopup">
+        <div class="popup-content">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600 text-2xl">
+                <i class="fas fa-heart"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">ขอบคุณครับ</h3>
+            <p class="text-sm text-gray-600 mb-4">ข้อมูลของท่านถูกบันทึกเรียบร้อยแล้ว</p>
+            <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mb-4">
+                <p class="text-xs text-yellow-800 italic">"อโรคยา ปรมา ลาภา"<br>ความไม่มีโรค เป็นลาภอันประเสริฐ</p>
+            </div>
+            <button onclick="closePopup()" class="w-full bg-gray-800 text-white py-2 rounded-xl text-sm font-bold">ตกลง</button>
+        </div>
+    </div>
 
     <div class="card-scene">
         <div id="cardObject" class="card-object">
             
             <div class="card-face card-front glass-card">
-                <div id="frontFx" class="fx-container"></div> <div class="relative z-10 p-6 flex flex-col h-full">
+                <div id="frontFx" class="fx-container"></div>
+                
+                <div class="relative z-10 p-6 flex flex-col h-full">
                     <div class="text-center mt-6 mb-8">
                         <div class="w-24 h-24 mx-auto bg-white rounded-full p-1 shadow-xl mb-4 animate-bounce" style="animation-duration: 3s;">
                             <img src="https://img5.pic.in.th/file/secure-sv1/2613be45e1aa0f1e99dd6a6f89e87139.png" class="w-full h-full object-contain rounded-full">
                         </div>
                         <h1 class="text-2xl font-bold text-gray-800">วิเคราะห์ธาตุเจ้าเรือน</h1>
-                        <p class="text-xs bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full inline-block mt-2">Sadao Official Modern V4.0</p>
+                        <p class="text-xs bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full inline-block mt-2">Sadao Official V6.0</p>
                     </div>
 
                     <div class="space-y-4">
@@ -144,54 +149,62 @@
 
             <div class="card-face card-back glass-card bg-white">
                 <div id="resultHeader" class="header-bg">
-                    <div id="backFx" class="fx-container"></div> <div class="avatar-box">
+                    <div id="backFx" class="fx-container"></div>
+                    
+                    <div class="avatar-box">
                         <img id="avatarImg" src="" class="avatar-img">
                     </div>
-                    <h2 class="text-3xl font-extrabold drop-shadow-md mt-2" id="resElementName">...</h2>
-                    <p class="text-xs bg-white/20 inline-block px-3 py-1 rounded-full backdrop-blur-sm" id="resSub">...</p>
+                    <h2 class="text-2xl font-extrabold drop-shadow-md mt-2" id="resElementName">...</h2>
+                    <p class="text-[11px] bg-white/20 inline-block px-3 py-1 rounded-full backdrop-blur-sm mt-1" id="resSub">...</p>
                 </div>
 
                 <div class="p-4 overflow-y-auto flex-grow -mt-4 relative z-20">
-                    <div class="bg-white/90 backdrop-blur rounded-2xl p-4 shadow-sm border border-gray-100 min-h-[400px]">
+                    <div class="bg-white/90 backdrop-blur rounded-2xl p-4 shadow-sm border border-gray-100 pb-20">
                         
-                        <div class="mb-4">
-                            <h3 class="text-sm font-bold text-green-800 mb-2 flex items-center"><i class="fas fa-user-check mr-2"></i> ลักษณะนิสัย</h3>
+                        <div class="mb-5">
+                            <h3 class="text-sm font-bold text-green-800 mb-2 flex items-center justify-between border-b pb-1">
+                                <span><i class="fas fa-user-check mr-2"></i> ลักษณะ/นิสัย</span>
+                                <span class="section-sub text-[9px]"><i class="fas fa-hand-pointer"></i> เลือกข้อที่ตรงกับท่าน</span>
+                            </h3>
                             <div id="traitChips"></div>
                         </div>
 
-                        <div class="mb-4">
-                            <h3 class="text-sm font-bold text-red-800 mb-2 flex items-center"><i class="fas fa-heartbeat mr-2"></i> ปัญหาสุขภาพ</h3>
+                        <div class="mb-5">
+                            <h3 class="text-sm font-bold text-red-800 mb-2 flex items-center justify-between border-b pb-1">
+                                <span><i class="fas fa-heartbeat mr-2"></i> ปัญหาสุขภาพ</span>
+                                <span class="section-sub text-[9px]"><i class="fas fa-hand-pointer"></i> เลือกอาการที่เป็นบ่อย</span>
+                            </h3>
                             <div id="healthChips"></div>
                         </div>
 
                         <div class="bg-green-50 rounded-xl p-3 border border-green-100 mb-4">
                             <div class="flex gap-2 items-start mb-2">
-                                <i class="fas fa-thumbs-up text-green-600 mt-1"></i>
+                                <i class="fas fa-utensils text-green-600 mt-1"></i>
                                 <div>
-                                    <span class="text-xs font-bold text-gray-500">รสที่ควรทาน</span>
-                                    <div id="resTasteGood" class="text-sm font-bold text-gray-800"></div>
+                                    <span class="text-xs font-bold text-gray-500">รสชาติที่แนะนำ</span>
+                                    <div id="resTasteGood" class="text-sm font-bold text-green-900"></div>
                                 </div>
                             </div>
-                            <div class="h-px bg-green-200 my-2"></div>
-                             <div class="flex gap-2 items-start">
-                                <i class="fas fa-ban text-red-500 mt-1"></i>
-                                <div>
-                                    <span class="text-xs font-bold text-gray-500">ควรเลี่ยง</span>
-                                    <div id="resTasteBad" class="text-sm text-gray-800"></div>
-                                </div>
-                            </div>
+                            <div id="foodList" class="flex flex-wrap gap-1 mb-2 mt-1"></div>
+                            <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> <span id="resFoodTip">...</span></p>
                         </div>
 
-                        <p class="text-xs font-bold text-gray-400 mb-1">เมนูแนะนำ</p>
-                        <div id="foodList" class="flex flex-wrap gap-1 mb-4"></div>
-                        <p class="text-xs font-bold text-gray-400 mb-1">ผลไม้แนะนำ</p>
-                        <div id="fruitList" class="flex flex-wrap gap-1"></div>
+                        <div class="bg-red-50 rounded-xl p-3 border border-red-200 mb-4 relative overflow-hidden">
+                            <div class="absolute -right-2 -top-2 text-red-100 text-6xl opacity-20"><i class="fas fa-ban"></i></div>
+                            <h4 class="text-xs font-bold text-red-700 mb-1"><i class="fas fa-exclamation-triangle mr-1"></i> พฤติกรรมควรเลี่ยง</h4>
+                            <p id="resAvoid" class="text-xs text-red-900 leading-relaxed">...</p>
+                        </div>
+
+                        <div class="text-[9px] text-gray-400 text-center mt-4">
+                            อ้างอิง: คัมภีร์สมุฏฐานวินิจฉัย และ จักรราศีสมุฏฐาน<br>กลุ่มงานการแพทย์แผนไทยฯ รพ.สะเดา
+                        </div>
+
                     </div>
                 </div>
 
-                <div class="p-4 bg-white border-t flex gap-2 relative z-30">
+                <div class="p-3 bg-white border-t flex gap-2 relative z-30 shadow-lg" style="position: absolute; bottom: 0; width: 100%;">
                     <button onclick="resetCard()" class="w-12 h-12 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-gray-200 transition"><i class="fas fa-undo"></i></button>
-                    <button onclick="saveAndReset()" class="btn-bouncy flex-grow" id="btnSave">
+                    <button onclick="saveAndReset()" class="btn-bouncy flex-grow text-sm" id="btnSave">
                         บันทึกข้อมูล <i class="fas fa-check-circle"></i>
                     </button>
                 </div>
@@ -202,26 +215,88 @@
 
     <script>
         // --- CONFIG ---
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX7ZJvwflkNzhZ1SPPOJZZcJBvh_Bpbc2acOjh6fEcj58fv9wHu4i9M8J5BoCNmIoDbw/exec'; // <--- ใส่ URL ตรงนี้
+        const GOOGLE_SCRIPT_URL = 'PASTE_YOUR_WEB_APP_URL_HERE'; // <--- ใส่ URL ตรงนี้
 
-        // --- PARTICLE SYSTEM ---
+        // --- CORE DATA (UPDATED V6.0 CORRECTED) ---
+        const baseElementData = {
+            earth: { 
+                name: "ธาตุดิน", 
+                traits: ["รูปร่างสูงใหญ่", "แข็งแรง", "กระดูกใหญ่", "ผมดกดำเส้นหนา", "พูดจาฉะฉาน", "เสียงดังหนักแน่น", "สุขุมรอบคอบ", "จิตใจมั่นคง", "ดื้อรั้น"],
+                recTaste: "ฝาด, หวาน, มัน, เค็ม", 
+                foodTip: "ควรกินอาหารให้ครบ 5 หมู่ เลือกกินอาหารที่มีรสฝาด หวาน มัน เค็ม",
+                foods: ["ผักกูด", "มังคุด", "ฝรั่งดิบ", "ฟักทอง", "เผือก", "ถั่วต่างๆ", "เงาะ", "น้ำนม", "อ้อย", "เกลือ"],
+                avoid: "หลีกเลี่ยงอาหารมันที่ดูดซึมหรือเผาผลาญได้ยาก",
+                fx: "earth" 
+            },
+            fire: { 
+                name: "ธาตุไฟ", 
+                traits: ["รูปร่างสมส่วน", "ผิวขาวเหลือง", "พูดชัด", "เสียงดัง", "หิวบ่อย", "กินจุ", "ขี้หงุดหงิด", "โกรธง่ายหายเร็ว", "ผมหงอกก่อนวัย"],
+                recTaste: "ขม, เย็น, จืด", 
+                foodTip: "เน้นอาหารรสเย็น จืด เพื่อดับพิษร้อน",
+                foods: ["แกงจืดตำลึง", "ต้มฟัก", "แตงกวาผัดไข่", "แกงส้ม(ไม่เผ็ด)", "แตงโม", "แก้วมังกร", "ชมพู่"],
+                avoid: "หลีกเลี่ยงอาหารรสจัด (เผ็ด/เปรี้ยว/เค็มจัด) ความโมโห เครื่องดื่มแอลกอฮอล์ และแสงแดดจัด",
+                fx: "fire" 
+            },
+            wind: { 
+                name: "ธาตุลม", 
+                traits: ["ร่างกายผอม", "ผิวแห้ง", "ผมบาง", "พูดเยอะ", "อารมณ์แปรปรวน", "ขี้กลัว", "วิตกกังวล", "อยากรู้อยากเห็น", "นอนหลับยาก"],
+                recTaste: "เผ็ดร้อน, สุขุม", 
+                foodTip: "เน้นอาหารช่วยขับลม กระจายเลือดลม",
+                foods: ["ต้มยำ", "ข่าไก่", "แกงป่า", "ผัดกะเพรา", "ส้ม", "เงาะ", "ลำไย", "น้ำขิง"],
+                avoid: "หลีกเลี่ยงการอดอาหาร อดนอน กลั้นอุจจาระ/ปัสสาวะ ยกของหนัก อาหารรสจัด เคี้ยวไม่ละเอียด และความวิตกกังวล",
+                fx: "wind" 
+            },
+            water: { 
+                name: "ธาตุน้ำ", 
+                traits: ["รูปร่างอวบ", "ผิวขาว", "ตาโต", "พูดช้าเสียงไพเราะ", "เคลื่อนไหวช้า", "ผมละเอียดสวย", "ผมดกดำ", "ชอบนอน", "ใจเย็น"],
+                recTaste: "เปรี้ยว, ขม, ร้อน", 
+                foodTip: "เน้นอาหารรสเปรี้ยว ขม ร้อน เพื่อกัดเสมหะ",
+                foods: ["แกงส้ม", "ต้มยำปลา", "ห่อหมก", "แกงเหลือง", "สับปะรด", "ส้มโอ", "มะเฟือง"],
+                avoid: "หลีกเลี่ยงอาหารรสหวานจัด เปรี้ยวจัด เค็มจัด และการนอนกลางวันมากเกินไป",
+                fx: "water" 
+            }
+        };
+
+        // Logic ช่วงเดือน (Corrected V6.0)
+        const sadaoData = [
+            // --- ดิน (เดือน 1-4) ---
+            { check: (m, p) => (m==1 && p=='Waning') || (m==2 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑ - ขึ้น ๑๕ ค่ำ เดือน ๒", baseElement: "earth", health: ["ท้องผูก", "ขับถ่ายลำบาก", "ปวดท้อง", "ลมติดในเส้น"] },
+            { check: (m, p) => (m==2 && p=='Waning') || (m==3 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๒ - ขึ้น ๑๕ ค่ำ เดือน ๓", baseElement: "earth", health: ["หายใจไม่สุด", "หายใจไม่เต็มอิ่ม", "เหนื่อยง่าย"] },
+            { check: (m, p) => (m==3 && p=='Waning') || (m==4 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๓ - ขึ้น ๑๕ ค่ำ เดือน ๔", baseElement: "earth", health: ["ถ่ายเหลวได้ง่าย", "ลำไส้แปรปรวน", "ปัญหาประจำเดือน", "ปัญหาระบบปัสสาวะ"] },
+            
+            // --- ไฟ (เดือน 4-7) ---
+            { check: (m, p) => (m==4 && p=='Waning') || (m==5 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๔ - ขึ้น ๑๕ ค่ำ เดือน ๕", baseElement: "fire", health: ["เป็นลม", "หน้ามืด", "ไข้แดด", "ร้อนใน", "หลับยาก"] },
+            { check: (m, p) => (m==5 && p=='Waning') || (m==6 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๕ - ขึ้น ๑๕ ค่ำ เดือน ๖", baseElement: "fire", health: ["ความดันโลหิต", "อารมณ์แปรปรวน", "นอนหลับยาก", "ตื่นง่าย"] },
+            { check: (m, p) => (m==6 && p=='Waning') || (m==7 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๖ - ขึ้น ๑๕ ค่ำ เดือน ๗", baseElement: "fire", health: ["ปวดศีรษะ", "ปวดกระบอกตา", "หูอื้อ", "วิงเวียนศีรษะ"] },
+            
+            // --- ลม (เดือน 7-10) ---
+            { check: (m, p) => (m==7 && p=='Waning') || (m==8 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๗ - ขึ้น ๑๕ ค่ำ เดือน ๘", baseElement: "wind", health: ["ไอ", "ระคายเคืองคอ", "เจ็บคอ", "จุกคอ", "ลมตีขึ้น"] },
+            { check: (m, p) => (m==8 && p=='Waning') || (m==9 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๘ - ขึ้น ๑๕ ค่ำ เดือน ๙", baseElement: "wind", health: ["ท้องอืด", "แน่นท้อง", "อาหารไม่ย่อย", "เรอเหม็นเปรี้ยว"] },
+            { check: (m, p) => (m==9 && p=='Waning') || (m==10 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๙ - ขึ้น ๑๕ ค่ำ เดือน ๑๐", baseElement: "wind", health: ["กรดไหลย้อน", "ท้องเฟ้อ", "ท้องบิด", "แสบร้อนกลางอก", "อาหารไม่ย่อย"] },
+
+            // --- น้ำ (เดือน 10-1) ---
+            { check: (m, p) => (m==10 && p=='Waning') || (m==11 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๐ - ขึ้น ๑๕ ค่ำ เดือน ๑๑", baseElement: "water", health: ["อาการปวดในข้อ", "ปวดข้อเข่า", "ปวดกระดูก", "ริดสีดวง", "ฝี", "สิว"] },
+            { check: (m, p) => (m==11 && p=='Waning') || (m==12 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๑ - ขึ้น ๑๕ ค่ำ เดือน ๑๒", baseElement: "water", health: ["ภูมิแพ้", "หวัด", "น้ำมูก", "กรน", "หายใจติดขัด", "แน่นหน้าอก"] },
+            { check: (m, p) => (m==12 && p=='Waning') || (m==1 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๒ - ขึ้น ๑๕ ค่ำ เดือน ๑", baseElement: "water", health: ["ผดผื่น", "สิว", "ลมพิษ", "คันง่าย", "ภูมิแพ้ผิวหนัง"] }
+        ];
+
+        // --- PARTICLE SYSTEM & UTILS ---
         function renderParticles(type, containerId) {
             const container = document.getElementById(containerId);
-            container.innerHTML = ''; // Clear
+            container.innerHTML = ''; 
 
-            const count = 25; // จำนวน particles
+            const count = 20; 
             for(let i=0; i<count; i++) {
                 let p = document.createElement('div');
-                let size, dur, delay, left;
+                let size;
                 
-                // Set properties based on type
                 if (type === 'rain') {
                     p.className = 'rain-drop';
                     p.style.left = Math.random() * 100 + '%';
                     p.style.animationDuration = (0.5 + Math.random() * 0.5) + 's';
-                    p.style.animationDelay = Math.random() * 2 + 's';
+                    p.style.animationDelay = Math.random() + 's';
                 } else if (type === 'sun') {
-                    if(i===0) { p.className = 'sun-flare'; container.appendChild(p); return; } // Only 1 sun
+                    if(i===0) { p.className = 'sun-flare'; container.appendChild(p); return; }
                 } else if (type === 'snow' || type === 'winter') {
                     p.className = 'snow-flake';
                     size = Math.random() * 5 + 2 + 'px';
@@ -252,40 +327,17 @@
                     p.style.left = Math.random() * 100 + '%';
                     p.style.animationDuration = (4 + Math.random() * 4) + 's';
                     p.style.animationDelay = Math.random() * 2 + 's';
-                    if(Math.random()>0.5) p.style.background = '#A1887F'; // Brown leaf variant
+                    if(Math.random()>0.5) p.style.background = '#8D6E63'; 
                 }
                 container.appendChild(p);
             }
         }
 
-        // --- CORE LOGIC (UNCHANGED) ---
+        // --- CORE LOGIC ---
         const adhikamasaYears = [1947,1950,1953,1956,1958,1961,1964,1966,1969,1972,1975,1977,1980,1983,1986,1988,1991,1994,1997,1999,2002,2004,2007,2010,2012,2015,2018,2020,2023,2026,2029,2031,2034,2037,2040,2042,2045,2048,2051,2053,2056,2059,2062,2065,2068];
-        const seasonData = { summer: { name: "คิมหันตฤดู (ร้อน)", vul: "ธาตุไฟ", health: "เสี่ยงลมแดด ร้อนใน", food: "รสขม เย็น จืด", fx: "sun" }, rain: { name: "วสันตฤดู (ฝน)", vul: "ธาตุลม/ไฟ", health: "หวัด วิงเวียน", food: "รสเปรี้ยว เผ็ดร้อน", fx: "rain" }, winter: { name: "เหมันตฤดู (หนาว)", vul: "ธาตุน้ำ/ดิน", health: "ผิวแห้ง ปวดข้อ", food: "รสมัน เค็ม ร้อน", fx: "winter" } };
+        const seasonData = { summer: { name: "คิมหันตฤดู (ร้อน)", vul: "ธาตุไฟ", health: "เสี่ยงลมแดด ร้อนใน", fx: "sun" }, rain: { name: "วสันตฤดู (ฝน)", vul: "ธาตุลม/ไฟ", health: "หวัด วิงเวียน", fx: "rain" }, winter: { name: "เหมันตฤดู (หนาว)", vul: "ธาตุน้ำ/ดิน", health: "ผิวแห้ง ปวดข้อ", fx: "winter" } };
         function getDailySeason(m) { if (m>=5 && m<=6) return seasonData.summer; if (m>=7 && m<=10) return seasonData.rain; return seasonData.winter; }
         function calculateRealLunarDate(date) { const knownNewMoon=new Date(2000,0,6,18,14,0);const diffDays=(date.getTime()-knownNewMoon.getTime())/(1000*3600*24);let moonAge=(diffDays%29.53059)+1.3;if(moonAge<0)moonAge+=29.53059;if(moonAge>29.53059)moonAge-=29.53059;let lastNewMoon=new Date(date);lastNewMoon.setDate(date.getDate()-Math.floor(moonAge));let nmMonth=lastNewMoon.getMonth()+1;const map={12:1,1:2,2:3,3:4,4:5,5:6,6:7,7:8,8:9,9:10,10:11,11:12};let thaiMonth=map[nmMonth];let phase=Math.floor(moonAge)+1<=15?"Waxing":"Waning";if(adhikamasaYears.includes(date.getFullYear())&&(nmMonth>=7||nmMonth<=3)){thaiMonth-=1;if(thaiMonth<=0)thaiMonth=12;}const tNum=["๐","๑","๒","๓","๔","๕","๖","๗","๘","๙"];const toT=(n)=>n.toString().split('').map(x=>tNum[x]||x).join('');const dStr=`${phase=='Waxing'?'ขึ้น':'แรม'} ${toT(Math.floor(moonAge)+1>15?Math.floor(moonAge)+1-15:Math.floor(moonAge)+1)} ค่ำ เดือน ${toT(thaiMonth)}`;return{thaiMonth,phase,display:dStr};}
-
-        const baseElementData = {
-            earth: { name: "ธาตุดิน", traits: ["หนักแน่น", "สุขุม", "ผมดกดำ", "พูดเสียงดัง", "ดื้อรั้น"], recTaste: "ฝาด, หวาน, มัน, เค็ม", badTaste: "มันจัด, หวานจัด", foods: ["ผักกูด", "แกงเลียง", "พะโล้"], fruits: ["มังคุด", "ฝรั่ง", "ฟักทอง"], fx: "earth" },
-            fire: { name: "ธาตุไฟ", traits: ["พูดชัด", "หิวบ่อย", "ขี้หงุดหงิด", "ผิวขาวเหลือง"], recTaste: "ขม, เย็น, จืด", badTaste: "เผ็ด/เปรี้ยว/เค็มจัด", foods: ["แกงจืดตำลึง", "ต้มฟัก", "แตงกวาผัดไข่"], fruits: ["แตงโม", "แก้วมังกร", "ชมพู่"], fx: "fire" },
-            wind: { name: "ธาตุลม", traits: ["พูดเก่ง", "ช่างสงสัย", "ผอม", "ผิวแห้ง", "นอนยาก"], recTaste: "เผ็ดร้อน, สุขุม", badTaste: "หมักดอง", foods: ["ต้มยำ", "ผัดกะเพรา", "ข่าไก่"], fruits: ["ส้ม", "เงาะ", "น้ำขิง"], fx: "wind" },
-            water: { name: "ธาตุน้ำ", traits: ["พูดช้า", "ใจเย็น", "ผิวสวย", "ตาหวาน", "สมบูรณ์"], recTaste: "เปรี้ยว, ขม, ร้อน", badTaste: "หวาน/เค็มจัด", foods: ["แกงส้ม", "ห่อหมก", "แกงเหลือง"], fruits: ["สับปะรด", "ส้มโอ", "มะเฟือง"], fx: "water" },
-            fire_wind: { name: "ธาตุไฟระคนลม", traits: ["คิดเร็ว", "หงุดหงิดง่าย", "ขี้กังวล"], recTaste: "จืด, หอมเย็น", badTaste: "เผ็ด/ร้อนจัด", foods: ["ปลานึ่ง", "แกงจืด", "น้ำสมุนไพร"], fruits: ["แตงโม", "ส้มโอ"], fx: "fire" }
-        };
-
-        const sadaoData = [
-            { check: (m, p) => (m==1 && p=='Waning') || (m==2 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑ - ขึ้น ๑๕ ค่ำ เดือน ๒", baseElement: "earth", health: ["ท้องผูก", "ขับถ่ายลำบาก", "ลมติดในเส้น"] },
-            { check: (m, p) => (m==2 && p=='Waning') || (m==3 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๒ - ขึ้น ๑๕ ค่ำ เดือน ๓", baseElement: "earth", health: ["หายใจไม่เต็มอิ่ม", "เหนื่อยง่าย"] },
-            { check: (m, p) => (m==3 && p=='Waning') || (m==4 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๓ - ขึ้น ๑๕ ค่ำ เดือน ๔", baseElement: "earth", health: ["ถ่ายเหลว", "ลำไส้แปรปรวน", "ประจำเดือน"] },
-            { check: (m, p) => (m==4 && p=='Waning') || (m==5 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๔ - ขึ้น ๑๕ ค่ำ เดือน ๕", baseElement: "fire", health: ["เป็นลม", "หน้ามืด", "ไข้แดด"] },
-            { check: (m, p) => (m==5 && p=='Waning') || (m==6 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๕ - ขึ้น ๑๕ ค่ำ เดือน ๖", baseElement: "fire", health: ["ร้อนใน", "กระหายน้ำ"] },
-            { check: (m, p) => (m==6 && p=='Waning') || (m==7 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๖ - ขึ้น ๑๕ ค่ำ เดือน ๗", baseElement: "fire", health: ["ความดัน", "อารมณ์แปรปรวน", "นอนยาก"] },
-            { check: (m, p) => (m==8 && p=='Waning') || (m==9 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๘ - ขึ้น ๑๕ ค่ำ เดือน ๙", baseElement: "fire_wind", health: ["ปวดศีรษะ", "ปวดตา", "วิงเวียน"] },
-            { check: (m, p) => (m==7 && p=='Waning') || (m==8 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๗ - ขึ้น ๑๕ ค่ำ เดือน ๘", baseElement: "wind", health: ["ไอ", "เจ็บคอ", "จุกคอ"] },
-            { check: (m, p) => (m==9 && p=='Waning') || (m==10 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๙ - ขึ้น ๑๕ ค่ำ เดือน ๑๐", baseElement: "wind", health: ["กรดไหลย้อน", "ท้องเฟ้อ", "แน่นอก"] },
-            { check: (m, p) => (m==10 && p=='Waning') || (m==11 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๐ - ขึ้น ๑๕ ค่ำ เดือน ๑๑", baseElement: "water", health: ["ปวดข้อ/เข่า", "ริดสีดวง", "สิว/ฝี"] },
-            { check: (m, p) => (m==11 && p=='Waning') || (m==12 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๑ - ขึ้น ๑๕ ค่ำ เดือน ๑๒", baseElement: "water", health: ["ภูมิแพ้", "หวัด", "น้ำมูก"] },
-            { check: (m, p) => (m==12 && p=='Waning') || (m==1 && p=='Waxing'), range: "แรม ๑ ค่ำ เดือน ๑๒ - ขึ้น ๑๕ ค่ำ เดือน ๑", baseElement: "water", health: ["ผดผื่น", "ลมพิษ", "คันง่าย"] }
-        ];
 
         let currentSessionId = "", analysisMeta = {}, selectedTraits = new Set(), selectedHealth = new Set();
 
@@ -308,8 +360,6 @@
             
             const icon = season.fx === 'sun' ? '<i class="fas fa-sun text-yellow-500"></i>' : (season.fx === 'rain' ? '<i class="fas fa-cloud-showers-heavy text-blue-500"></i>' : '<i class="fas fa-snowflake text-blue-300"></i>');
             document.getElementById('weatherIcon').innerHTML = icon;
-
-            // Trigger Weather Particles
             renderParticles(season.fx, 'frontFx');
         }
 
@@ -325,7 +375,7 @@
             const c=document.getElementById(id); c.innerHTML='';
             items.forEach(i=>{
                 const a=document.createElement('a'); a.href=`https://www.google.com/search?q=${i} อาหาร`; a.target='_blank';
-                a.className='bg-gray-100 text-[10px] px-2 py-1 rounded hover:bg-green-100 text-gray-600'; a.innerText=i; c.appendChild(a);
+                a.className='bg-white border border-gray-200 text-[10px] px-2 py-1 rounded-full hover:bg-green-50 text-gray-600 shadow-sm'; a.innerText=i; c.appendChild(a);
             });
         }
 
@@ -352,7 +402,7 @@
                 selectedTraits.clear(); selectedHealth.clear();
                 analysisMeta={ sessionId:currentSessionId, birthDate:`${d}/${m}/${y+543}`, element:data.name, conceptionDate:lunar.display };
 
-                // Set Theme Colors
+                // Set Theme Colors & Avatar
                 let headBg, avatar;
                 if(key.includes("fire")) { headBg="linear-gradient(135deg, #FF512F, #DD2476)"; avatar="https://img5.pic.in.th/file/secure-sv1/41a8f63dde1ba7c4b.png"; }
                 else if(key.includes("wind")) { headBg="linear-gradient(135deg, #11998e, #38ef7d)"; avatar="https://img2.pic.in.th/261c90e765ec6b116.png"; }
@@ -367,10 +417,10 @@
                 createChips(data.traits, 'traitChips', selectedTraits);
                 createChips(specH, 'healthChips', selectedHealth);
                 document.getElementById('resTasteGood').innerText=data.recTaste;
-                document.getElementById('resTasteBad').innerText=data.badTaste;
-                createLink(data.foods, 'foodList'); createLink(data.fruits, 'fruitList');
+                document.getElementById('resFoodTip').innerText=data.foodTip;
+                document.getElementById('resAvoid').innerText=data.avoid;
+                createLink(data.foods, 'foodList'); 
 
-                // Trigger Element Particles
                 renderParticles(data.fx, 'backFx');
 
                 document.getElementById('cardObject').classList.add('is-flipped');
@@ -385,10 +435,16 @@
                 await fetch(GOOGLE_SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
                     body: JSON.stringify({...analysisMeta, selectedTraits:[...selectedTraits].join(", ")||"-", selectedHealth:[...selectedHealth].join(", ")||"-", type:'feedback'})
                 });
-                alert("บันทึกข้อมูลเรียบร้อย!");
-                resetCard(); currentSessionId='u'+Date.now();
+                // Show Popup
+                document.getElementById('thankYouPopup').style.display = 'flex';
+                currentSessionId='u'+Date.now();
             } catch(e) { alert("Error: "+e); }
             btn.innerHTML='บันทึกข้อมูล <i class="fas fa-check-circle"></i>';
+        }
+
+        function closePopup() {
+            document.getElementById('thankYouPopup').style.display = 'none';
+            resetCard();
         }
 
         function resetCard() { document.getElementById('cardObject').classList.remove('is-flipped'); }
